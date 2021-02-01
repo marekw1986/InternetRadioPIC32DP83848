@@ -1,13 +1,20 @@
+#include <stdio.h>
 #include "i2c.h"
 
+int actualClock;
 
 void i2c_init (void) {
     TRISFbits.TRISF8 = 0; //SCL
     TRISFbits.TRISF2 = 0; //SDA
+    ODCFbits.ODCF8 = 1;
+    ODCFbits.ODCF2 = 1;
     
     //OpenI2C1( I2C_EN, BRG_VAL );
      I2CConfigure(I2C1A, I2C_ENABLE_HIGH_SPEED);
-     I2CSetFrequency(I2C1A, GetPeripheralClock(), 400000);
+     actualClock = I2CSetFrequency(I2C1A, GetPeripheralClock(), 400000);
+     if ( abs(actualClock-400000) > 400000/10 ) {
+         printf("i2c_init: I2C1A clock frequency (%u) error exceeds 10%%.\n", (unsigned)actualClock);
+     }
      I2CEnable(I2C1A, TRUE);
 }
 

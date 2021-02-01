@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     button_init(&prev_btn, &PORTE, _PORTE_RE2_MASK, &prev_func, &prev_hold_func);
     button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, &next_hold_func);
     button_init(&rot_btn, &PORTA, _PORTA_RA15_MASK, &rot_func, &rot_hold_func);
-    //i2c_init();
+    i2c_init();
     //lcd_init();
     //lcd_cls();
     //lcd_str("Test wyswietlacza");
@@ -165,6 +165,7 @@ int main(int argc, char** argv) {
         if ((uint32_t)(millis()-usb_timer) >= 5000) {
             usb_timer = millis();
             //usb_write();
+            i2c_rcv_byte(0x20);
             printf("Test\r\n");
         }
         
