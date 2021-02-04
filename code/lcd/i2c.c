@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "i2c.h"
 
+#define FIXLAT LATDbits.LATD2
+#define FIXTRIS TRISDbits.TRISD2
+
 int actualClock;
 
 void i2c_init (void) {
@@ -18,18 +21,56 @@ void i2c_init (void) {
      I2CEnable(I2C1A, TRUE);
 }
 
+
 uint8_t i2c_rcv_byte (uint8_t address) {
+    int tmpbrg;
     int rcv = 0;
+    uint32_t timeout;
+    
+    tmpbrg = I2C1ABRG;
+    I2C1ACONbits.ON = 0;
+    FIXLAT = 0;
+    FIXTRIS = 0;
+    I2C1ACONbits.ON = 1;
+    delay_us(10);
+    FIXTRIS = 1;
+    delay_us(10);
+    I2C1ABRG = tmpbrg;
+    
     
 	I2CStart(I2C1A);				//Send line start condition
-    while ( !(I2CGetStatus(I2C1A) & I2C_START) ); 
+    timeout = millis();
+    while ( !(I2CGetStatus(I2C1A) & I2C_START) ) {           //TU SIE WIESZA!!!!!!!
+        if ((uint32_t)(millis() - timeout) > 100) {
+            printf("I2CStart timeout!\r\n");
+            break;
+        }
+    }
 	I2CSendByte(I2C1A, (address << 1) | 1);	//Write out slave address OR 1 (read command)
-    while(!I2CTransmissionHasCompleted(I2C1A));
+    timeout = millis();
+    while(!I2CTransmissionHasCompleted(I2C1A)) {
+         if ((uint32_t)(millis() - timeout) > 100) {
+            printf("I2CSendByte timeout!\r\n");
+            break;
+        }       
+    }
     if(I2CByteWasAcknowledged(I2C1A) && I2CReceiverEnable(I2C1A, TRUE) != I2C_RECEIVE_OVERFLOW) {
-        while(!I2CReceivedDataIsAvailable(I2C1A));
-        I2CAcknowledgeByte (I2C1A, TRUE);
+        timeout = millis();
+        while(!I2CReceivedDataIsAvailable(I2C1A)) {
+           if ((uint32_t)(millis() - timeout) > 100) {
+               printf("I2CReceivedDataIsAvailable timeout!\r\n");
+               break;
+           } 
+        }
         rcv = I2CGetByte(I2C1A);		//Read in a value
-        while( !I2CAcknowledgeHasCompleted(I2C1)); 
+        I2CAcknowledgeByte (I2C1A, FALSE);
+        timeout = millis();
+        while( !I2CAcknowledgeHasCompleted(I2C1A)) {
+           if ((uint32_t)(millis() - timeout) > 100) {
+               printf("I2CAcknowledgeByte timeout!\r\n");
+               break;
+           }            
+        } 
     }
     else {
         rcv = 0xFF;
@@ -38,7 +79,20 @@ uint8_t i2c_rcv_byte (uint8_t address) {
 	return rcv;				//Return read value
 }
 
-void i2c_send_byte (uint8_t data, uint8_t address) {	        
+
+void i2c_send_byte (uint8_t data, uint8_t address) {	  
+    int tmpbrg;
+    
+    tmpbrg = I2C1ABRG;
+    I2C1ACONbits.ON = 0;
+    FIXLAT = 0;
+    FIXTRIS = 0;
+    I2C1ACONbits.ON = 1;
+    delay_us(10);
+    FIXTRIS = 1;
+    delay_us(10);
+    I2C1ABRG = tmpbrg;
+    
     I2CStart(I2C1A);        //Send the Start Bit
     while ( !(I2CGetStatus(I2C1A) & I2C_START) );
 	I2CSendByte(I2C1A, (address << 1) | 0);  //Sends the slave address over the I2C line.  This must happen first so the proper slave is selected to receive data.

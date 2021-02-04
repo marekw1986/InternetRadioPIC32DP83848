@@ -127,9 +127,9 @@ int main(int argc, char** argv) {
     button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, &next_hold_func);
     button_init(&rot_btn, &PORTA, _PORTA_RA15_MASK, &rot_func, &rot_hold_func);
     i2c_init();
-    //lcd_init();
-    //lcd_cls();
-    //lcd_str("Test wyswietlacza");
+    lcd_init();
+    lcd_cls();
+    lcd_str("Test wyswietlacza");
     //VS1003_begin();
     //VS1003_setVolume(0x00);
     //VS1003_stopSong();
@@ -155,6 +155,11 @@ int main(int argc, char** argv) {
         if (tmp = rotary_handle()) {
             counter += tmp;
             printf("Rotary: %d\r\n", counter);
+            lcd_locate(1, 0);
+            lcd_str("                    ");
+            lcd_locate(1, 0);
+            sprintf(buffer, "Rotary: %d", counter);
+            lcd_str(buffer);
         }
         
         if ((uint32_t)(millis()-wdt_timer) >= 300) {
@@ -165,8 +170,9 @@ int main(int argc, char** argv) {
         if ((uint32_t)(millis()-usb_timer) >= 5000) {
             usb_timer = millis();
             //usb_write();
-            i2c_rcv_byte(0x20);
             printf("Test\r\n");
+            
+            //printf("PCF8574A: %d\r\n", i2c_rcv_byte(0x38));
         }
         
         /*

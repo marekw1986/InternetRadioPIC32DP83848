@@ -89,7 +89,7 @@ void _lcd_write_byte(unsigned char _data) {
 		while( (check_BF() & (1<<7)) );
 
 	#else
-		_delay_us(120);
+		delay_us(120);
 	#endif
 
 }
@@ -179,7 +179,7 @@ void lcd_cls(void) {
 	lcd_write_cmd( LCDC_CLS );
 
 	#if USE_RW == 0
-		_delay_ms(4.9);
+		delay_ms(5);
 	#endif
 }
 
@@ -189,7 +189,7 @@ void lcd_home(void) {
 	lcd_write_cmd( LCDC_CLS|LCDC_HOME );
 
 	#if USE_RW == 0
-		_delay_ms(4.9);
+		delay_ms(5);
 	#endif
 }
 

@@ -14,9 +14,7 @@
 #define LCD_COLS 20
 
 #define USE_RW 1
-#define PCF8574_LCD_ADDR 0x20
-
-#define PCF8574_IO_ADDR 0x24
+#define PCF8574_LCD_ADDR 0x38
 
 //#define LCD_LED_ON i2c_send_byte(0x0F | (i2c_rcv_byte(PCF8574_IO_ADDR) & 0xE0) | 0x10, PCF8574_IO_ADDR);
 //#define LCD_LED_OFF i2c_send_byte(0x0F | (i2c_rcv_byte(PCF8574_IO_ADDR) & 0xE0), PCF8574_IO_ADDR);
