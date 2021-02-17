@@ -8,7 +8,9 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/main.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/rc5/rc5.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/sd.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/rotary.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/sd.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/ff.h</file>
         </group>
     </open-files>

@@ -65,11 +65,14 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-uint8_t vsBuffer[512];
+#define VS_BUFFER_SIZE  512
+
+uint8_t vsBuffer[VS_BUFFER_SIZE];
 uint16_t vsBufferIndex = 0;
 uint16_t vsBufferSize = 0;
 
 FIL fsrc;
+DIR vsdir;
 
 // Register names
 
