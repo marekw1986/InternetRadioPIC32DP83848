@@ -10,6 +10,16 @@ static volatile uint32_t upt = 0;
 void time_init (void) {
     OpenTimer2(T2_ON | T2_PS_1_2 | T2_SOURCE_INT, 40000);
     ConfigIntTimer2(T2_INT_ON | T2_INT_PRIOR_2);
+    
+    RtccInit();
+    while(RtccGetClkStat()!=RTCC_CLK_ON); // wait for the SOSC to be actually running and RTCC to have its clock source
+    RtccChimeEnable();            			// rollover
+    RtccSetAlarmRptCount(0); 
+    RtccSetAlarmRpt(RTCC_RPT_SEC);
+    RtccAlarmEnable();
+    mRTCCSetIntPriority(3);
+    mRTCCClearIntFlag();
+    mRTCCIntEnable(1);    
 }
 
 uint32_t millis (void) {
@@ -52,5 +62,11 @@ uint32_t get_fattime (void) {
 void __ISR(_TIMER_2_VECTOR, ipl2auto) _Timer2Handler(void) {
     mT2ClearIntFlag();
 	milliseconds++;
-    if (milliseconds%1000 == 0) upt++;
+    //if (milliseconds%1000 == 0) upt++;
+}
+
+
+void __ISR(_RTCC_VECTOR, ipl3auto) _RtccHandler(void) {
+    upt++;    
+    mRTCCClearIntFlag();
 }

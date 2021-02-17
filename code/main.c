@@ -28,6 +28,7 @@
 #include "nvram/nvram.h"
 #include "lcd/hd44780.h"
 #include "lcd/i2c.h"
+#include "rc5/rc5.h"
 #include "btn/buttons.h"
 #include "HardwareProfile.h"
 #include "btn/rotary.h"
@@ -55,9 +56,6 @@
 
 uint8_t buffer[512];
 FATFS FatFS;
-FRESULT res;
-FIL fsrc;               // file objects
-UINT br;         		// File R/W count
 button_t prev_btn, next_btn, rot_btn;
 
 
@@ -83,6 +81,8 @@ int main(int argc, char** argv) {
     int i;
     uint8_t counter = 0;
     int8_t tmp;
+    uint32_t upt = 0;
+    FRESULT res;
     
     uint32_t wdt_timer, usb_timer, vs_timer;
     
@@ -116,24 +116,24 @@ int main(int argc, char** argv) {
     if (res != FR_OK) {printf("f_mount error code: %i\r\n", res);}
     else {printf("f_mount OK\r\n");}
     
-    res = f_open(&fsrc, "2:/test.mp3", FA_READ);
-    if (res != FR_OK) {printf("f_open error code: %i\r\n", res);}
-    else {printf("f_open OK\r\n");}
-    
     StackInit();
     
     rotary_init();
+    //rc5_init();
     button_init(&prev_btn, &PORTE, _PORTE_RE2_MASK, &prev_func, &prev_hold_func);
     button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, &next_hold_func);
-    button_init(&rot_btn, &PORTA, _PORTA_RA15_MASK, &rot_func, &rot_hold_func);
+    button_init(&rot_btn, &PORTD, _PORTD_RD1_MASK, &rot_func, &rot_hold_func);
     i2c_init();
     lcd_init();
     lcd_cls();
-    lcd_str("Test wyswietlacza");
-    //VS1003_begin();
-    //VS1003_setVolume(0x00);
-    //VS1003_stopSong();
-    //VS1003_startSong();
+    lcd_locate(0, 0);
+    lcd_str("Uptime: ");
+    lcd_locate(1, 0);
+    lcd_str("Rotary: ");
+    
+    VS1003_begin();
+    VS1003_setVolume(0x00);
+    VS1003_play("2:/test.mp3");
     
     ClearWDT();
     EnableWDT();
@@ -144,9 +144,9 @@ int main(int argc, char** argv) {
         StackApplications();
         UART_RX_STR_EVENT(buffer);
         GenericTCPServer();
-        
         USBTasks();
         disk_timerproc();
+        VS1003_handle();
         
         button_handle(&prev_btn);
         button_handle(&next_btn);
@@ -155,10 +155,10 @@ int main(int argc, char** argv) {
         if (tmp = rotary_handle()) {
             counter += tmp;
             printf("Rotary: %d\r\n", counter);
-            lcd_locate(1, 0);
-            lcd_str("                    ");
-            lcd_locate(1, 0);
-            sprintf(buffer, "Rotary: %d", counter);
+            lcd_locate(1, 8);
+            lcd_str("            ");
+            lcd_locate(1, 8);
+            sprintf(buffer, "%d", counter);
             lcd_str(buffer);
         }
         
@@ -167,33 +167,23 @@ int main(int argc, char** argv) {
             ClearWDT();
         }
         
+        /*
         if ((uint32_t)(millis()-usb_timer) >= 5000) {
             usb_timer = millis();
-            //usb_write();
+            usb_write();
             printf("Test\r\n");
-            
-            //printf("PCF8574A: %d\r\n", i2c_rcv_byte(0x38));
-        }
-        
-        /*
-        if (VS_DREQ_PIN) {
-            res = f_read(&fsrc, buffer, sizeof(buffer), &br);
-            if(res == FR_OK) {
-                VS1003_playChunk(buffer, br);
-            }
-            //End of file
-            if(br == 0) {
-                VS1003_stopSong();
-                VS1003_startSong();
-                res = f_lseek(&fsrc, 0);
-                if (res != FR_OK) printf("f_lseek ERROR\r\n");
-                else printf("f_lseek OK\r\n");
-            }
         }
         */
         
+        if (uptime() != upt) {
+            upt = uptime();
+            lcd_locate(0, 8);
+            lcd_str("            ");
+            lcd_locate(0, 8);
+            sprintf(buffer, "%d", upt);
+            lcd_str(buffer);
+        }
     }
-
     return (EXIT_SUCCESS);
 }
 
@@ -224,9 +214,10 @@ static inline void init_periph (void) {
     TRISFbits.TRISF8 = 0;           //SCL is output
     TRISFbits.TRISF2 = 0;           //SDA is output
     
-    TRISDbits.TRISD9 = 1;           //Rotary CLK is input
-    TRISDbits.TRISD1 = 1;           //Rotary DT is input
-    TRISAbits.TRISA15 = 1;          //Rotary dial switch is input
+    TRISAbits.TRISA14 = 1;          //RC5 data input
+    TRISAbits.TRISA15 = 1;           //Rotary CLK is input
+    TRISDbits.TRISD9 = 1;           //Rotary DT is input
+    TRISDbits.TRISD1 = 1;          //Rotary dial switch is input
     TRISGbits.TRISG13 = 1;          //NEXT button is input
     TRISEbits.TRISE2 = 1;           //PREV button is input
 }

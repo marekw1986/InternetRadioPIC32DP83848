@@ -25,7 +25,6 @@ void i2c_init (void) {
 uint8_t i2c_rcv_byte (uint8_t address) {
     int tmpbrg;
     int rcv = 0;
-    uint32_t timeout;
     
     tmpbrg = I2C1ABRG;
     I2C1ACONbits.ON = 0;
@@ -39,38 +38,14 @@ uint8_t i2c_rcv_byte (uint8_t address) {
     
     
 	I2CStart(I2C1A);				//Send line start condition
-    timeout = millis();
-    while ( !(I2CGetStatus(I2C1A) & I2C_START) ) {           //TU SIE WIESZA!!!!!!!
-        if ((uint32_t)(millis() - timeout) > 100) {
-            printf("I2CStart timeout!\r\n");
-            break;
-        }
-    }
+    while ( !(I2CGetStatus(I2C1A) & I2C_START) );
 	I2CSendByte(I2C1A, (address << 1) | 1);	//Write out slave address OR 1 (read command)
-    timeout = millis();
-    while(!I2CTransmissionHasCompleted(I2C1A)) {
-         if ((uint32_t)(millis() - timeout) > 100) {
-            printf("I2CSendByte timeout!\r\n");
-            break;
-        }       
-    }
+    while(!I2CTransmissionHasCompleted(I2C1A));
     if(I2CByteWasAcknowledged(I2C1A) && I2CReceiverEnable(I2C1A, TRUE) != I2C_RECEIVE_OVERFLOW) {
-        timeout = millis();
-        while(!I2CReceivedDataIsAvailable(I2C1A)) {
-           if ((uint32_t)(millis() - timeout) > 100) {
-               printf("I2CReceivedDataIsAvailable timeout!\r\n");
-               break;
-           } 
-        }
+        while(!I2CReceivedDataIsAvailable(I2C1A));
         rcv = I2CGetByte(I2C1A);		//Read in a value
         I2CAcknowledgeByte (I2C1A, FALSE);
-        timeout = millis();
-        while( !I2CAcknowledgeHasCompleted(I2C1A)) {
-           if ((uint32_t)(millis() - timeout) > 100) {
-               printf("I2CAcknowledgeByte timeout!\r\n");
-               break;
-           }            
-        } 
+        while( !I2CAcknowledgeHasCompleted(I2C1A));
     }
     else {
         rcv = 0xFF;

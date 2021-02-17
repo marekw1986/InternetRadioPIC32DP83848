@@ -70,6 +70,9 @@
       <logicalFolder name="f4" displayName="NVRAM" projectFiles="true">
         <itemPath>nvram/nvram.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f12" displayName="RC5" projectFiles="true">
+        <itemPath>rc5/rc5.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f5" displayName="Time" projectFiles="true">
         <itemPath>time/time.h</itemPath>
       </logicalFolder>
@@ -171,6 +174,9 @@
       </logicalFolder>
       <logicalFolder name="f2" displayName="NVRAM" projectFiles="true">
         <itemPath>nvram/nvram.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f12" displayName="RC5" projectFiles="true">
+        <itemPath>rc5/rc5.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Time" projectFiles="true">
         <itemPath>time/time.c</itemPath>
@@ -419,7 +425,6 @@
         <property key="UART6" value="true"/>
         <property key="USB" value="true"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

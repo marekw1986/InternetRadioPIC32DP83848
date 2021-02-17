@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/InternetRadio_DP83848.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=InternetRadio_DP83848.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=internetradiodp83848/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/code.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=code.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=code/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/internetradiodp83848/bin
+makeDirectory ${TMPDIR}/code/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/internetradiodp83848.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/code.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/internetradiodp83848.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/code.tar *
 checkReturnCode
 
 # Cleanup

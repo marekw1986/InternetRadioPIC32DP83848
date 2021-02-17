@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "../HardwareProfile.h"
+#include "../fatfs/ff.h"
 #include "vs1003.h"
 
 #define vs1003_chunk_size 32
@@ -64,6 +65,12 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
+uint8_t vsBuffer[512];
+uint16_t vsBufferIndex = 0;
+uint16_t vsBufferSize = 0;
+
+FIL fsrc;
+
 // Register names
 
 typedef enum {
@@ -111,6 +118,8 @@ const char * register_names[] =
  static inline void data_mode_on(void);
  static inline void data_mode_off(void);
  static uint8_t VS1003_SPI_transfer(uint8_t outB);
+ static uint8_t is_audio_file (char* name);
+ static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info);
 
 
 /****************************************************************************/
@@ -161,6 +170,16 @@ void VS1003_sdi_send_buffer(const uint8_t* data, int len) {
 
 /****************************************************************************/
 
+void VS1003_sdi_send_chunk(const uint8_t* data, int len) {
+    if (len > 32) return;
+    data_mode_on();
+    await_data_request();
+    while ( len-- ) VS1003_SPI_transfer(*data++);
+    data_mode_off();
+}
+
+/****************************************************************************/
+
 void VS1003_sdi_send_zeroes(int len) {
   int chunk_length;  
   data_mode_on();
@@ -172,6 +191,71 @@ void VS1003_sdi_send_zeroes(int len) {
   }
   data_mode_off();
 }
+
+/****************************************************************************/
+
+uint8_t VS1003_feed_from_buffer (void) {
+    uint8_t toSend = 0;
+    uint8_t *pointer;
+    
+    if (vsBufferSize == 0) return 1;        // We return 1 to indicate that buffer is empty
+    if (!VS_DREQ_PIN) return 0;
+    
+    if (vsBufferSize >= 32) {
+        toSend = 32;
+    }
+    else {
+        toSend = vsBufferSize;
+    }
+    
+    pointer = vsBuffer + vsBufferIndex;
+    VS1003_sdi_send_chunk(pointer, toSend);
+    
+    vsBufferIndex += toSend;
+    vsBufferSize -= toSend;
+    
+    return 0;
+}
+
+/****************************************************************************/
+
+
+void VS1003_handle (void) {
+    FRESULT res;
+    unsigned int br;
+    
+    if (VS1003_feed_from_buffer()) {
+        res = f_read(&fsrc, vsBuffer, sizeof(vsBuffer), &br);
+        if (res == FR_OK) {
+            if (br == 0) {
+                VS1003_stopSong();
+                VS1003_startSong();
+                res = f_lseek(&fsrc, 0);
+                if (res != FR_OK) printf("f_lseek ERROR\r\n");
+                else printf("f_lseek OK\r\n");
+            }
+            else {
+                vsBufferIndex = 0;
+                vsBufferSize = br;
+            }
+        }
+    }    
+}
+
+void VS1003_play (char* url) {
+    FRESULT res;
+    
+    VS1003_stopSong();          //Stop song that is already playing
+    
+    res = f_open(&fsrc, url, FA_READ);
+    if (res != FR_OK) {
+        printf("f_open error code: %i\r\n", res);
+        return;
+    }
+    
+    VS1003_startSong();         //Start playing song
+}
+
 
 /****************************************************************************/
 
@@ -336,17 +420,27 @@ void VS1003_loadUserCode(const uint16_t* buf, size_t len) {
 }
   
 
-/*
-void VS1003_SPI_conf(){
-	//SPI1 configuration     
-    SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-    SPI1BRG = (GetPeripheralClock()-1ul)/2ul/4000000;       //4MHz
+static uint8_t is_audio_file (char* name) {
+    if (strstr(name, ".MP3") || strstr(name, ".WMA") || strstr(name, ".MID") || strstr(name, ".mp3") || strstr(name, ".wma") || strstr(name, ".mid")) {
+        return 1;
+    }
+    return 0;
+ }
+  
+  
+static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info) {
+    while (f_readdir(directory, info) == FR_OK) {
+        if (!info->fname[0]) {           //Empty string - end of directory
+            break;
+        }
+        else {
+            if (is_audio_file(info->fname)) {
+                f_close(file);
+                f_open(file, info->fname, FA_READ);
+                return 1;
+            }
+        }
+    }
+    
+    return 0;
 }
-
-uint8_t VS1003_SPIPutChar(uint8_t outB){
-    SPI1BUF = outB;
-    while (SPI1STATbits.SPITBF);
-    while (!SPI1STATbits.SPIRBF);
-    return SPI1BUF;
-}
-*/

@@ -26,7 +26,7 @@ int sd_writeSECTOR( LBA, const char *); // writes a block of data
 #define SD_SPICON SPI4CON
 #define SD_SPIBRG SPI4BRG
 #define SD_SPIBRGINITVAL 142   // clock = Fpb/144 = 250kHz max
-#define SD_SPIBRGRUNVAL 2    ///Fpb/(2*(SD_SPIBRG+1))=  Hz
+#define SD_SPIBRGRUNVAL 1    ///Fpb/(2*(SD_SPIBRG+1))=  Hz
 #define SD_SPIBUF SPI4BUF
 #define SD_BUFNSENT !SPI4STATbits.SPIRBF
 
