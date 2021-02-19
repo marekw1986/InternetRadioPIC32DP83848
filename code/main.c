@@ -152,6 +152,7 @@ int main(int argc, char** argv) {
         button_handle(&next_btn);
         button_handle(&rot_btn);
         
+        
         if (tmp = rotary_handle()) {
             counter += tmp;
             printf("Rotary: %d\r\n", counter);
@@ -161,6 +162,7 @@ int main(int argc, char** argv) {
             sprintf(buffer, "%d", counter);
             lcd_str(buffer);
         }
+        
         
         if ((uint32_t)(millis()-wdt_timer) >= 300) {
             wdt_timer = millis();
@@ -174,7 +176,7 @@ int main(int argc, char** argv) {
             printf("Test\r\n");
         }
         */
-        
+        /*
         if (uptime() != upt) {
             upt = uptime();
             lcd_locate(0, 8);
@@ -183,6 +185,7 @@ int main(int argc, char** argv) {
             sprintf(buffer, "%d", upt);
             lcd_str(buffer);
         }
+        */
     }
     return (EXIT_SUCCESS);
 }

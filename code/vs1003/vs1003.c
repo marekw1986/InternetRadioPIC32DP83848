@@ -65,9 +65,7 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-#define VS_BUFFER_SIZE  512
-
-uint8_t vsBuffer[VS_BUFFER_SIZE];
+uint8_t vsBuffer[2048];
 uint16_t vsBufferIndex = 0;
 uint16_t vsBufferSize = 0;
 
@@ -222,7 +220,6 @@ uint8_t VS1003_feed_from_buffer (void) {
 
 /****************************************************************************/
 
-
 void VS1003_handle (void) {
     FRESULT res;
     unsigned int br;
@@ -232,7 +229,7 @@ void VS1003_handle (void) {
         if (res == FR_OK) {
             if (br == 0) {
                 VS1003_stopSong();
-                VS1003_startSong();
+                //VS1003_startSong();
                 res = f_lseek(&fsrc, 0);
                 if (res != FR_OK) printf("f_lseek ERROR\r\n");
                 else printf("f_lseek OK\r\n");
@@ -244,6 +241,8 @@ void VS1003_handle (void) {
         }
     }    
 }
+
+/****************************************************************************/
 
 void VS1003_play (char* url) {
     FRESULT res;
@@ -350,7 +349,10 @@ void VS1003_playChunk(const uint8_t* data, size_t len) {
 /****************************************************************************/
 
 void VS1003_stopSong(void) {
-  VS1003_sdi_send_zeroes(2048);
+  //VS1003_sdi_send_zeroes(2048);
+    memset(vsBuffer, 0x00, sizeof(vsBuffer));
+    vsBufferIndex = 0;
+    vsBufferSize = sizeof(vsBuffer);
 }
 
 /****************************************************************************/
