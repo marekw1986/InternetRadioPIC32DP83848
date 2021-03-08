@@ -24,8 +24,8 @@
 enum lcd_cmd {LCD_HOME, LCD_CLS, LCD_LOCATE};
 
 uint8_t  LCD_Buf[LCD_BUF_SIZE];
-volatile uint8_t LCD_Head;
-volatile uint8_t LCD_Tail;
+uint8_t LCD_Head;
+uint8_t LCD_Tail;
 
 static void lcd_buf_put(uint8_t data);
 static uint8_t lcd_buf_get(void);
@@ -60,6 +60,9 @@ void lcd_handle(void) {
     uint8_t x, y;
     
     data = lcd_buf_get();
+    
+    if (!data) return;
+    
     if (data & 0x80) {  //It is command for LCD!
         cmd = (data & 0x70) >> 4;
         switch(cmd) {
@@ -313,5 +316,12 @@ void lcd_init( void ) {
 	lcd_write_cmd( LCDC_ENTRY|LCDC_ENTRYR );
 
 	// kasowanie ekranu
-	lcd_cls();
+	//lcd_cls();
+    lcd_write_cmd( LCDC_CLS );
+    #if USE_RW == 0
+    delay_ms(5);
+    #endif
+
+    LCD_Head = 0;
+    LCD_Tail = 0;
 }
