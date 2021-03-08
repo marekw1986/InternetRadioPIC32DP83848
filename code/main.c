@@ -147,6 +147,7 @@ int main(int argc, char** argv) {
         USBTasks();
         disk_timerproc();
         VS1003_handle();
+        lcd_handle();
         
         button_handle(&prev_btn);
         button_handle(&next_btn);
