@@ -79,7 +79,7 @@ uint8_t IsPlayable(char* File_Name);
 int main(int argc, char** argv) {
     
     int i;
-    uint8_t counter = 0;
+    int8_t counter = 0;
     int8_t tmp;
     uint32_t upt = 0;
     FRESULT res;
@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
     
     VS1003_begin();
     VS1003_setVolume(0x00);
-    VS1003_play("2:/test.mp3");
+    VS1003_play_dir("2:/");
     
     ClearWDT();
     EnableWDT();
@@ -155,12 +155,14 @@ int main(int argc, char** argv) {
         
         if (tmp = rotary_handle()) {
             counter += tmp;
-            printf("Rotary: %d\r\n", counter);
+            if (counter > 100) counter = 100;
+            if (counter < 0) counter = 0;
             lcd_locate(1, 8);
             lcd_str("            ");
             lcd_locate(1, 8);
             sprintf(buffer, "%d", counter);
             lcd_str(buffer);
+            VS1003_setVolume(map(counter, 0, 100, 0xFE, 0x00));
         }
         
         
@@ -257,6 +259,7 @@ void prev_func (void) {
 
 void next_func (void) {
     printf("NEXT button pressed!\r\n");
+    VS1003_play_next_audio_file_from_directory();
 }
 
 

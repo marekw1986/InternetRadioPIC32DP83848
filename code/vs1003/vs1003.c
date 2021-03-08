@@ -230,9 +230,10 @@ void VS1003_handle (void) {
             if (br == 0) {
                 VS1003_stopSong();
                 //VS1003_startSong();
-                res = f_lseek(&fsrc, 0);
-                if (res != FR_OK) printf("f_lseek ERROR\r\n");
-                else printf("f_lseek OK\r\n");
+                //res = f_lseek(&fsrc, 0);
+                //if (res != FR_OK) printf("f_lseek ERROR\r\n");
+                //else printf("f_lseek OK\r\n");
+                VS1003_play_next_audio_file_from_directory();
             }
             else {
                 vsBufferIndex = 0;
@@ -247,6 +248,8 @@ void VS1003_handle (void) {
 void VS1003_play (char* url) {
     FRESULT res;
     
+    f_close(&fsrc);
+    
     VS1003_stopSong();          //Stop song that is already playing
     
     res = f_open(&fsrc, url, FA_READ);
@@ -258,6 +261,18 @@ void VS1003_play (char* url) {
     VS1003_startSong();         //Start playing song
 }
 
+/****************************************************************************/
+
+void VS1003_play_dir (const char* url) {
+    FRESULT res;
+    
+    res = f_opendir(&vsdir, url);
+    if (res != FR_OK) {
+        printf("f_opendir error code: %i\r\n", res);
+        return;
+    }
+    VS1003_play_next_audio_file_from_directory();
+}
 
 /****************************************************************************/
 
@@ -433,19 +448,24 @@ static uint8_t is_audio_file (char* name) {
  }
   
   
-static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info) {
-    while (f_readdir(directory, info) == FR_OK) {
-        if (!info->fname[0]) {           //Empty string - end of directory
-            break;
+void VS1003_play_next_audio_file_from_directory (void) {
+    FILINFO info;
+    char buf[257];
+            
+    while (f_readdir(&vsdir, &info) == FR_OK) {
+        if (!info.fname[0]) {           //Empty string - end of directory
+            f_rewinddir(&vsdir);
         }
         else {
-            if (is_audio_file(info->fname)) {
-                f_close(file);
-                f_open(file, info->fname, FA_READ);
-                return 1;
+            if (is_audio_file(info.fname)) {
+                //f_close(file);
+                //f_open(file, info.fname, FA_READ);
+                snprintf(buf, sizeof(buf)-1, "2:/%s", info.fname);
+                VS1003_play(buf);
+                return;
             }
         }
     }
     
-    return 0;
+    return;
 }

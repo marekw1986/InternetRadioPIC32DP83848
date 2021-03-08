@@ -31,6 +31,7 @@ FRESULT FormatSpiFlashDisk (void);
 unsigned char BcdToByte(unsigned char bcd);
 unsigned char ByteToBcd(unsigned char i);
 unsigned char StringToMACAddress(BYTE* str, MAC_ADDR* MACAddress);
+long map(long x, long in_min, long in_max, long out_min, long out_max);
 
 #ifdef	__cplusplus
 }
