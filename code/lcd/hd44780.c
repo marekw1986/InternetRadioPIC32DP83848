@@ -9,6 +9,9 @@
 #include "hd44780.h"
 #include "i2c.h"
 
+#define LCD_BUF_SIZE 512
+#define LCD_BUF_MASK ( LCD_BUF_SIZE - 1)
+
 #define SET_RS 	mpxLCD |= (1<<LCD_RS); 	SEND_I2C
 #define CLR_RS 	mpxLCD &= ~(1<<LCD_RS); SEND_I2C
 
@@ -17,6 +20,95 @@
 
 #define SET_E 	mpxLCD |= (1<<LCD_E); 	SEND_I2C
 #define CLR_E 	mpxLCD &= ~(1<<LCD_E); 	SEND_I2C
+
+#define LCD_HOME    0x00
+#define LCD_CLS     0x01
+#define LCD_LOCATE  0x02
+
+uint8_t  LCD_Buf[LCD_BUF_SIZE];
+uint8_t LCD_Head;
+uint8_t LCD_Tail;
+
+static void lcd_buf_put(uint8_t data);
+static uint8_t lcd_buf_get(void);
+void lcd_write_cmd(uint8_t cmd);
+void lcd_write_data(uint8_t data);
+
+
+static void lcd_buf_put(uint8_t data) {
+    uint8_t tmp_head;
+    
+    tmp_head = ( LCD_Head + 1) & LCD_BUF_MASK;
+    if ( tmp_head == LCD_Tail ) {
+        LCD_Head = LCD_Tail;
+    }
+    else {
+        LCD_Head = tmp_head;
+        LCD_Buf[tmp_head] = data;
+    }
+}
+
+static uint8_t lcd_buf_get(void) {
+    uint8_t data;
+    if ( LCD_Head == LCD_Tail ) return 0;
+    LCD_Tail = (LCD_Tail + 1) & LCD_BUF_MASK;
+    data = LCD_Buf[LCD_Tail];
+    return data;
+}
+
+void lcd_handle(void) {
+    uint8_t data;
+    uint8_t cmd;
+    uint8_t x, y;
+    
+    data = lcd_buf_get();
+    
+    if (!data) return;
+    
+    if (data & 0x80) {  //It is command for LCD!
+        cmd = (uint8_t)((data & 0x70) >> 4);
+        switch(cmd) {
+            case LCD_HOME:
+            //lcd_write_cmd( LCDC_CLS|LCDC_HOME );
+            #if USE_RW == 0
+            delay_ms(5);
+            #endif            
+            break;
+
+            case LCD_CLS:
+            lcd_write_cmd( LCDC_CLS );
+            #if USE_RW == 0
+            delay_ms(5);
+            #endif
+            break;            
+            
+            case LCD_LOCATE:
+            y = (data & 0x0F);
+            x = lcd_buf_get();
+            switch(y) {
+                case 0: y = LCD_LINE1; break;
+                #if (LCD_ROWS>1)
+                case 1: y = LCD_LINE2; break;
+                #endif
+                #if (LCD_ROWS>2)
+                case 2: y = LCD_LINE3; break;
+                #endif
+                #if (LCD_ROWS>3)
+                case 3: y = LCD_LINE4; break;
+                #endif
+            }
+            lcd_write_cmd( (0x80 + y + x) );            
+            break;
+            
+            default:
+            
+            break;
+        }
+    }
+    else {  //It is just an ASCII character, send it to LCD
+        lcd_write_data(data);
+    }
+}
 
 
 #if USE_RW
@@ -142,7 +234,7 @@ void lcd_write_data(uint8_t data) {
 
 
 void lcd_char(char c) {
-	lcd_write_data( ( c>=0x80 && c<=0x87 ) ? (c & 0x07) : c);
+	lcd_buf_put( ( c>=0x80 && c<=0x87 ) ? (c & 0x07) : c);
 }
 
 
@@ -155,42 +247,27 @@ void lcd_str(char * str) {
 
 
 void lcd_locate(uint8_t y, uint8_t x) {
-
-	switch(y) {
-		case 0: y = LCD_LINE1; break;
-
-#if (LCD_ROWS>1)
-	    case 1: y = LCD_LINE2; break;
-#endif
-#if (LCD_ROWS>2)
-    	case 2: y = LCD_LINE3; break;
-#endif
-#if (LCD_ROWS>3)
-    	case 3: y = LCD_LINE4; break;
-#endif
-	}
-
-	lcd_write_cmd( (0x80 + y + x) );
+    uint8_t tmp;
+    
+    tmp = 0x80 | (0x70 & (LCD_LOCATE << 4)) | (0x0F & y);
+    lcd_buf_put(tmp);
+    lcd_buf_put(x);
 }
 
 
 void lcd_cls(void) {
-
-	lcd_write_cmd( LCDC_CLS );
-
-	#if USE_RW == 0
-		delay_ms(5);
-	#endif
+    uint8_t tmp;
+    
+    tmp = 0x80 | (0x70 & (LCD_CLS << 4));
+    lcd_buf_put(tmp);
 }
 
 
 void lcd_home(void) {
-
-	lcd_write_cmd( LCDC_CLS|LCDC_HOME );
-
-	#if USE_RW == 0
-		delay_ms(5);
-	#endif
+    uint8_t tmp;
+    
+    tmp = 0x80 | (0x70 & (LCD_HOME << 4));
+    lcd_buf_put(tmp);
 }
 
 
@@ -241,5 +318,12 @@ void lcd_init( void ) {
 	lcd_write_cmd( LCDC_ENTRY|LCDC_ENTRYR );
 
 	// kasowanie ekranu
-	lcd_cls();
+	//lcd_cls();
+    lcd_write_cmd( LCDC_CLS );
+    #if USE_RW == 0
+    delay_ms(5);
+    #endif
+
+    LCD_Head = 0;
+    LCD_Tail = 0;
 }

@@ -78,6 +78,7 @@ void lcd_char(char c);
 void lcd_str(char * str);
 void lcd_locate(uint8_t y, uint8_t x);
 void lcd_home(void);
+void lcd_handle(void);
 
 
 #ifdef	__cplusplus
