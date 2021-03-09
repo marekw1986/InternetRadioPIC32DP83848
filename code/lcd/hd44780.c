@@ -9,7 +9,7 @@
 #include "hd44780.h"
 #include "i2c.h"
 
-#define LCD_BUF_SIZE 256
+#define LCD_BUF_SIZE 512
 #define LCD_BUF_MASK ( LCD_BUF_SIZE - 1)
 
 #define SET_RS 	mpxLCD |= (1<<LCD_RS); 	SEND_I2C
@@ -21,7 +21,9 @@
 #define SET_E 	mpxLCD |= (1<<LCD_E); 	SEND_I2C
 #define CLR_E 	mpxLCD &= ~(1<<LCD_E); 	SEND_I2C
 
-enum lcd_cmd {LCD_HOME, LCD_CLS, LCD_LOCATE};
+#define LCD_HOME    0x00
+#define LCD_CLS     0x01
+#define LCD_LOCATE  0x02
 
 uint8_t  LCD_Buf[LCD_BUF_SIZE];
 uint8_t LCD_Head;
@@ -64,10 +66,10 @@ void lcd_handle(void) {
     if (!data) return;
     
     if (data & 0x80) {  //It is command for LCD!
-        cmd = (data & 0x70) >> 4;
+        cmd = (uint8_t)((data & 0x70) >> 4);
         switch(cmd) {
             case LCD_HOME:
-            lcd_write_cmd( LCDC_CLS|LCDC_HOME );
+            //lcd_write_cmd( LCDC_CLS|LCDC_HOME );
             #if USE_RW == 0
             delay_ms(5);
             #endif            
@@ -247,7 +249,7 @@ void lcd_str(char * str) {
 void lcd_locate(uint8_t y, uint8_t x) {
     uint8_t tmp;
     
-    tmp = 0x80 | (0x70 & (LCD_CLS << 4)) | (0x0F & y);
+    tmp = 0x80 | (0x70 & (LCD_LOCATE << 4)) | (0x0F & y);
     lcd_buf_put(tmp);
     lcd_buf_put(x);
 }

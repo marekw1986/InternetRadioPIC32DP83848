@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
             printf("Test\r\n");
         }
         */
-        /*
+        
         if (uptime() != upt) {
             upt = uptime();
             lcd_locate(0, 8);
@@ -188,7 +188,7 @@ int main(int argc, char** argv) {
             sprintf(buffer, "%d", upt);
             lcd_str(buffer);
         }
-        */
+        
     }
     return (EXIT_SUCCESS);
 }
