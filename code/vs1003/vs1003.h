@@ -55,4 +55,3 @@ void VS1003_play_next_audio_file_from_directory (void);
 #endif
 
 #endif	/* VS1003_H */
-
