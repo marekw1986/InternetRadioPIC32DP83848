@@ -66,6 +66,10 @@
 #define SM_LINE_IN          14
 
 uint8_t vsBuffer[2048];
+uint16_t vsBuffer_head = 0;
+uint16_t vsBuffer_tail = 0;
+
+
 uint16_t vsBufferIndex = 0;
 uint16_t vsBufferSize = 0;
 
@@ -113,15 +117,60 @@ const char * register_names[] =
   "AICTRL3",
 };
 
- static inline void await_data_request(void);
- static inline void control_mode_on(void);
- static inline void control_mode_off(void);
- static inline void data_mode_on(void);
- static inline void data_mode_off(void);
- static uint8_t VS1003_SPI_transfer(uint8_t outB);
- static uint8_t is_audio_file (char* name);
- static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info);
+#define VSBUFFER_MASK (sizeof(vsBuffer)-1);
 
+static void vsBuffer_put_byte(uint8_t data);
+static void vsBuffer_put_array(uint8_t *src, uint16_t len);
+static uint8_t vsBuffer_get_byte(uint8_t *data);
+static uint16_t vsBuffer_get_array(uint8_t *dst, uint16_t len);
+
+static inline void await_data_request(void);
+static inline void control_mode_on(void);
+static inline void control_mode_off(void);
+static inline void data_mode_on(void);
+static inline void data_mode_off(void);
+static uint8_t VS1003_SPI_transfer(uint8_t outB);
+static uint8_t is_audio_file (char* name);
+static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info);
+
+
+
+static void vsBuffer_put_byte(uint8_t data) {
+    uint16_t tmp_head;
+    
+    tmp_head = ( vsBuffer_head + 1) & VSBUFFER_MASK;
+    if ( tmp_head == vsBuffer_tail ) {
+        vsBuffer_head = vsBuffer_tail;
+    } else {
+        vsBuffer_head = tmp_head;
+        vsBuffer[tmp_head] = data;
+    }
+}
+
+static void vsBuffer_put_array(uint8_t *src, uint16_t len) {
+    int i;
+    
+    for (i=0; i<len; i++) {
+        vsBuffer_put_byte(*(src + i));
+    }
+}
+
+static uint8_t vsBuffer_get_byte(uint8_t *data) {
+    if ( vsBuffer_head == vsBuffer_tail ) return 0;
+    vsBuffer_tail = (vsBuffer_tail + 1) & VSBUFFER_MASK;
+    *data = vsBuffer[vsBuffer_tail];
+    return 1;
+}
+
+static uint16_t vsBuffer_get_array(uint8_t *dst, uint16_t len) {
+    int i;
+    
+    for (i=0; i<len; i++) {
+        if (!vsBuffer_get_byte(dst+i)) break;
+    }
+    
+    return i;
+}
 
 /****************************************************************************/
 
