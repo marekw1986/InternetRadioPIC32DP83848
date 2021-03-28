@@ -167,6 +167,7 @@ int main(int argc, char** argv) {
         }
         
         
+        
         if ((uint32_t)(millis()-wdt_timer) >= 300) {
             wdt_timer = millis();
             ClearWDT();
@@ -180,6 +181,7 @@ int main(int argc, char** argv) {
         }
         */
         
+        
         if (uptime() != upt) {
             upt = uptime();
             lcd_locate(0, 8);
@@ -188,6 +190,7 @@ int main(int argc, char** argv) {
             sprintf(buffer, "%d", upt);
             lcd_str(buffer);
         }
+        
         
     }
     return (EXIT_SUCCESS);
