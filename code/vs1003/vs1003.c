@@ -65,10 +65,11 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-uint8_t vsBuffer[4096];
-uint16_t vsBuffer_head = 0;
-uint16_t vsBuffer_tail = 0;
+#define VS_BUFFER_SIZE  2048
 
+static uint8_t vsBuffer[2][VS_BUFFER_SIZE];
+static uint8_t active_buffer = 0x01;
+static uint8_t new_data_needed = 0;
 
 uint16_t vsBufferIndex = 0;
 uint16_t vsBufferSize = 0;
@@ -117,15 +118,6 @@ const char * register_names[] =
   "AICTRL3",
 };
 
-#define VSBUFFER_MASK (sizeof(vsBuffer)-1);
-#define vsBuffer_free_space() ((vsBuffer_tail > vsBuffer_head) ? vsBuffer_tail-vsBuffer_head : sizeof(vsBuffer) - vsBuffer_head + vsBuffer_tail)
-#define vsBuffer_available_data() (sizeof(vsBuffer) - vsBuffer_free_space())
-
-static void vsBuffer_put_byte(uint8_t data);
-static void vsBuffer_put_array(uint8_t *src, uint16_t len);
-static uint8_t vsBuffer_get_byte(void);
-static void vsBuffer_get_array(uint8_t *dst, uint16_t len);
-
 static inline void await_data_request(void);
 static inline void control_mode_on(void);
 static inline void control_mode_off(void);
@@ -135,41 +127,6 @@ static uint8_t VS1003_SPI_transfer(uint8_t outB);
 static uint8_t is_audio_file (char* name);
 static uint8_t find_next_audio_file (FIL* file, DIR* directory, FILINFO* info);
 
-
-
-static void vsBuffer_put_byte(uint8_t data) {
-    uint16_t tmp_head;
-    
-    tmp_head = ( vsBuffer_head + 1) & VSBUFFER_MASK;
-    if ( tmp_head == vsBuffer_tail ) {
-        vsBuffer_head = vsBuffer_tail;
-    } else {
-        vsBuffer_head = tmp_head;
-        vsBuffer[tmp_head] = data;
-    }
-}
-
-static void vsBuffer_put_array(uint8_t *src, uint16_t len) {    
-    while (len) {
-        vsBuffer_put_byte(*src);
-        src++;
-        len--;
-    }
-}
-
-static uint8_t vsBuffer_get_byte(void) {
-    if ( vsBuffer_head == vsBuffer_tail ) return 0;
-    vsBuffer_tail = (vsBuffer_tail + 1) & VSBUFFER_MASK;
-    return vsBuffer[vsBuffer_tail];
-}
-
-static void vsBuffer_get_array(uint8_t *dst, uint16_t len) {
-    while (len) {
-        *dst = vsBuffer_get_byte();
-        dst++;
-        len--;
-    }
-}
 
 /****************************************************************************/
 
@@ -244,14 +201,17 @@ void VS1003_sdi_send_zeroes(int len) {
 /****************************************************************************/
 
 uint8_t VS1003_feed_from_buffer (void) {
-    uint8_t buf[32];
+    static uint16_t shift = 0;
     
-    //if (vsBufferSize == 0) return 1;        // We return 1 to indicate that buffer is empty
-    if (vsBuffer_available_data() < 32) return 0;
     if (!VS_DREQ_PIN) return 0;
     
-    vsBuffer_get_array(buf, 32);
-    VS1003_sdi_send_chunk(buf, 32);
+    VS1003_sdi_send_chunk(&vsBuffer[active_buffer][shift], 32);
+    shift += 32;
+    if (shift >= VS_BUFFER_SIZE) {
+        shift = 0;
+        active_buffer ^= 0x01;
+        new_data_needed = 1;
+    }
     
     return 0;
 }
@@ -261,11 +221,19 @@ uint8_t VS1003_feed_from_buffer (void) {
 void VS1003_handle (void) {
     FRESULT res;
     unsigned int br;
-    uint8_t buf[512];
+    static uint16_t shift = 0;
     
-    if (vsBuffer_free_space() >= 512) {
-        res = f_read(&fsrc, buf, 512, &br);
+    if (new_data_needed) {
+        //new_data_needed = 0;
+        
+        res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][shift], 512, &br);
         if (res == FR_OK) {
+            shift += 512;
+            if (shift >= VS_BUFFER_SIZE) {
+                shift = 0;
+                new_data_needed = 0;
+            }
+            
             if (br < 512) {
                 VS1003_stopSong();
                 //VS1003_startSong();
@@ -274,10 +242,10 @@ void VS1003_handle (void) {
                 //else printf("f_lseek OK\r\n");
                 VS1003_play_next_audio_file_from_directory();
             }
-            vsBuffer_put_array(buf, 512);
-        }
-    }
 
+        }
+
+    }
     VS1003_feed_from_buffer();
 }
 
