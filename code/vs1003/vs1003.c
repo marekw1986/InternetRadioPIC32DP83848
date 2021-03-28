@@ -65,7 +65,7 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-uint8_t vsBuffer[2048];
+uint8_t vsBuffer[4096];
 uint16_t vsBuffer_head = 0;
 uint16_t vsBuffer_tail = 0;
 
@@ -118,11 +118,13 @@ const char * register_names[] =
 };
 
 #define VSBUFFER_MASK (sizeof(vsBuffer)-1);
+#define vsBuffer_free_space() ((vsBuffer_tail > vsBuffer_head) ? vsBuffer_tail-vsBuffer_head : sizeof(vsBuffer) - vsBuffer_head + vsBuffer_tail)
+#define vsBuffer_available_data() (sizeof(vsBuffer) - vsBuffer_free_space())
 
 static void vsBuffer_put_byte(uint8_t data);
 static void vsBuffer_put_array(uint8_t *src, uint16_t len);
-static uint8_t vsBuffer_get_byte(uint8_t *data);
-static uint16_t vsBuffer_get_array(uint8_t *dst, uint16_t len);
+static uint8_t vsBuffer_get_byte(void);
+static void vsBuffer_get_array(uint8_t *dst, uint16_t len);
 
 static inline void await_data_request(void);
 static inline void control_mode_on(void);
@@ -147,29 +149,26 @@ static void vsBuffer_put_byte(uint8_t data) {
     }
 }
 
-static void vsBuffer_put_array(uint8_t *src, uint16_t len) {
-    int i;
-    
-    for (i=0; i<len; i++) {
-        vsBuffer_put_byte(*(src + i));
+static void vsBuffer_put_array(uint8_t *src, uint16_t len) {    
+    while (len) {
+        vsBuffer_put_byte(*src);
+        src++;
+        len--;
     }
 }
 
-static uint8_t vsBuffer_get_byte(uint8_t *data) {
+static uint8_t vsBuffer_get_byte(void) {
     if ( vsBuffer_head == vsBuffer_tail ) return 0;
     vsBuffer_tail = (vsBuffer_tail + 1) & VSBUFFER_MASK;
-    *data = vsBuffer[vsBuffer_tail];
-    return 1;
+    return vsBuffer[vsBuffer_tail];
 }
 
-static uint16_t vsBuffer_get_array(uint8_t *dst, uint16_t len) {
-    int i;
-    
-    for (i=0; i<len; i++) {
-        if (!vsBuffer_get_byte(dst+i)) break;
+static void vsBuffer_get_array(uint8_t *dst, uint16_t len) {
+    while (len) {
+        *dst = vsBuffer_get_byte();
+        dst++;
+        len--;
     }
-    
-    return i;
 }
 
 /****************************************************************************/
@@ -245,24 +244,14 @@ void VS1003_sdi_send_zeroes(int len) {
 /****************************************************************************/
 
 uint8_t VS1003_feed_from_buffer (void) {
-    uint8_t toSend = 0;
-    uint8_t *pointer;
+    uint8_t buf[32];
     
-    if (vsBufferSize == 0) return 1;        // We return 1 to indicate that buffer is empty
+    //if (vsBufferSize == 0) return 1;        // We return 1 to indicate that buffer is empty
+    if (vsBuffer_available_data() < 32) return 0;
     if (!VS_DREQ_PIN) return 0;
     
-    if (vsBufferSize >= 32) {
-        toSend = 32;
-    }
-    else {
-        toSend = vsBufferSize;
-    }
-    
-    pointer = vsBuffer + vsBufferIndex;
-    VS1003_sdi_send_chunk(pointer, toSend);
-    
-    vsBufferIndex += toSend;
-    vsBufferSize -= toSend;
+    vsBuffer_get_array(buf, 32);
+    VS1003_sdi_send_chunk(buf, 32);
     
     return 0;
 }
@@ -272,11 +261,12 @@ uint8_t VS1003_feed_from_buffer (void) {
 void VS1003_handle (void) {
     FRESULT res;
     unsigned int br;
+    uint8_t buf[512];
     
-    if (VS1003_feed_from_buffer()) {
-        res = f_read(&fsrc, vsBuffer, sizeof(vsBuffer), &br);
+    if (vsBuffer_free_space() >= 512) {
+        res = f_read(&fsrc, buf, 512, &br);
         if (res == FR_OK) {
-            if (br == 0) {
+            if (br < 512) {
                 VS1003_stopSong();
                 //VS1003_startSong();
                 //res = f_lseek(&fsrc, 0);
@@ -284,12 +274,11 @@ void VS1003_handle (void) {
                 //else printf("f_lseek OK\r\n");
                 VS1003_play_next_audio_file_from_directory();
             }
-            else {
-                vsBufferIndex = 0;
-                vsBufferSize = br;
-            }
+            vsBuffer_put_array(buf, 512);
         }
-    }    
+    }
+
+    VS1003_feed_from_buffer();
 }
 
 /****************************************************************************/
