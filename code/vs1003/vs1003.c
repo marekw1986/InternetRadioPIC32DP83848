@@ -66,7 +66,7 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-#define VS_BUFFER_SIZE  2048
+#define VS_BUFFER_SIZE  1024
 
 static uint8_t vsBuffer[2][VS_BUFFER_SIZE];
 static uint8_t active_buffer = 0x01;
