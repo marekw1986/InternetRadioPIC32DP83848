@@ -16,6 +16,7 @@
 #include "../HardwareProfile.h"
 #include "../fatfs/ff.h"
 #include "vs1003.h"
+#include "../net/TCPIP.h"
 
 #define vs1003_chunk_size 32
 
@@ -70,9 +71,6 @@
 static uint8_t vsBuffer[2][VS_BUFFER_SIZE];
 static uint8_t active_buffer = 0x01;
 static uint8_t new_data_needed = 0;
-
-uint16_t vsBufferIndex = 0;
-uint16_t vsBufferSize = 0;
 
 FIL fsrc;
 DIR vsdir;
@@ -218,7 +216,7 @@ uint8_t VS1003_feed_from_buffer (void) {
 
 /****************************************************************************/
 
-void VS1003_handle (void) {
+void handle_file_reading (void) {
     FRESULT res;
     unsigned int br;
     static uint16_t shift = 0;
@@ -228,6 +226,7 @@ void VS1003_handle (void) {
         
         res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][shift], 512, &br);
         if (res == FR_OK) {
+            printf("%d bytes of data loaded. Buffer %d. Shift %d\r\n", br, (active_buffer ^ 0x01), shift);
             shift += 512;
             if (shift >= VS_BUFFER_SIZE) {
                 shift = 0;
@@ -246,6 +245,127 @@ void VS1003_handle (void) {
         }
 
     }
+}
+
+
+void handle_internet_radio(void)
+{
+    static BYTE ServerName[] =	"195.150.20.246";
+    static WORD ServerPort = 80;
+	ROM BYTE RemoteURL[] = "/rmf_fm";
+    BYTE 				i;
+	WORD				w;
+    WORD                to_load;
+    static uint16_t shift = 0;
+	static DWORD		Timer;
+	static TCP_SOCKET	MySocket = INVALID_SOCKET;
+	static enum _GenericTCPExampleState
+	{
+		SM_HOME = 0,
+		SM_SOCKET_OBTAINED,
+		SM_PROCESS_RESPONSE,
+		SM_DISCONNECT,
+		SM_DONE
+	} GenericTCPExampleState = SM_DONE;
+
+	switch(GenericTCPExampleState)
+	{
+		case SM_HOME:
+			// Connect a socket to the remote TCP server
+			MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
+			
+			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
+			// If this ever happens, you need to go add one to TCPIPConfig.h
+			if(MySocket == INVALID_SOCKET)
+				break;
+
+			#if defined(STACK_USE_UART)
+			putrsUART((ROM char*)"\r\n\r\nConnecting using Microchip TCP API...\r\n");
+			#endif
+            //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
+
+			GenericTCPExampleState++;
+			Timer = TickGet();
+			break;
+
+		case SM_SOCKET_OBTAINED:
+			// Wait for the remote server to accept our connection request
+			if(!TCPIsConnected(MySocket))
+			{
+				// Time out if too much time is spent in this state
+				if(TickGet()-Timer > 5*TICK_SECOND)
+				{
+					// Close the socket so it can be used by other modules
+					TCPDisconnect(MySocket);
+					MySocket = INVALID_SOCKET;
+					GenericTCPExampleState--;
+				}
+				break;
+			}
+
+			Timer = TickGet();
+
+			// Make certain the socket can be written to
+			if(TCPIsPutReady(MySocket) < 125u)
+				break;
+			
+			// Place the application protocol data into the transmit buffer.  For this example, we are connected to an HTTP server, so we'll send an HTTP GET request.
+			TCPPutROMString(MySocket, (ROM BYTE*)"GET ");
+			TCPPutROMString(MySocket, RemoteURL);
+			TCPPutROMString(MySocket, (ROM BYTE*)" HTTP/1.0\r\nHost: ");
+			TCPPutString(MySocket, ServerName);
+			TCPPutROMString(MySocket, (ROM BYTE*)"\r\nConnection: keep-alive\r\n\r\n");
+
+            //printf("Sending headers\r\n");
+            
+			// Send the packet
+			TCPFlush(MySocket);
+			GenericTCPExampleState++;
+			break;
+
+		case SM_PROCESS_RESPONSE:
+			// Check to see if the remote node has disconnected from us or sent us any application data
+			// If application data is available, write it to the UART
+			if(!TCPIsConnected(MySocket))
+			{
+				GenericTCPExampleState = SM_DISCONNECT;
+				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
+			}
+            
+            if (new_data_needed) {
+			// Get count of RX bytes waiting
+                to_load = TCPIsGetReady(MySocket);
+                w = TCPGetArray(MySocket, &vsBuffer[active_buffer ^ 0x01][shift], (((VS_BUFFER_SIZE - shift) >= to_load) ? to_load : (VS_BUFFER_SIZE-shift)));
+                //printf("Received %d bytes from audo stream, Saved in %d buffer at shift %d\r\n", w, (active_buffer ^ 0x01), shift);
+                shift += w;
+                if (shift >= VS_BUFFER_SIZE) {
+                    shift = 0;
+                    new_data_needed = 0;
+                }
+                //printf("New shjift is %d. There is %s need for new data\r\n", shift, new_data_needed ? "still a" : "no");
+            }
+	
+			break;
+	
+		case SM_DISCONNECT:
+			// Close the socket so it can be used by other modules
+			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
+			TCPDisconnect(MySocket);
+			MySocket = INVALID_SOCKET;
+			GenericTCPExampleState = SM_DONE;
+			break;
+	
+		case SM_DONE:
+			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
+			//if(BUTTON1_IO == 0u)
+            GenericTCPExampleState = SM_HOME;
+			break;
+	}
+}
+
+
+void VS1003_handle (void) {
+    handle_internet_radio();
     VS1003_feed_from_buffer();
 }
 
@@ -372,8 +492,6 @@ void VS1003_playChunk(const uint8_t* data, size_t len) {
 void VS1003_stopSong(void) {
   //VS1003_sdi_send_zeroes(2048);
     memset(vsBuffer, 0x00, sizeof(vsBuffer));
-    vsBufferIndex = 0;
-    vsBufferSize = sizeof(vsBuffer);
 }
 
 /****************************************************************************/

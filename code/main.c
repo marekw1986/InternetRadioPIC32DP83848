@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
         disk_timerproc();
         VS1003_handle();
         lcd_handle();
-        handle_internet_radio();
+        //handle_internet_radio();
         
         button_handle(&prev_btn);
         button_handle(&next_btn);
@@ -284,114 +284,6 @@ void next_hold_func (void) {
 
 void rot_hold_func (void) {
     printf("ROTARY DIAL HELD!\r\n");
-}
-
-
-void handle_internet_radio(void)
-{
-    static uint8_t vBuffer[512];
-    static BYTE ServerName[] =	"195.150.20.246";
-    static WORD ServerPort = 80;
-	ROM BYTE RemoteURL[] = "/rmf_fm";
-    BYTE 				i;
-	WORD				w;
-	static DWORD		Timer;
-	static TCP_SOCKET	MySocket = INVALID_SOCKET;
-	static enum _GenericTCPExampleState
-	{
-		SM_HOME = 0,
-		SM_SOCKET_OBTAINED,
-		SM_PROCESS_RESPONSE,
-		SM_DISCONNECT,
-		SM_DONE
-	} GenericTCPExampleState = SM_DONE;
-
-	switch(GenericTCPExampleState)
-	{
-		case SM_HOME:
-			// Connect a socket to the remote TCP server
-			MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
-			
-			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
-			// If this ever happens, you need to go add one to TCPIPConfig.h
-			if(MySocket == INVALID_SOCKET)
-				break;
-
-			#if defined(STACK_USE_UART)
-			putrsUART((ROM char*)"\r\n\r\nConnecting using Microchip TCP API...\r\n");
-			#endif
-            //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
-
-			GenericTCPExampleState++;
-			Timer = TickGet();
-			break;
-
-		case SM_SOCKET_OBTAINED:
-			// Wait for the remote server to accept our connection request
-			if(!TCPIsConnected(MySocket))
-			{
-				// Time out if too much time is spent in this state
-				if(TickGet()-Timer > 5*TICK_SECOND)
-				{
-					// Close the socket so it can be used by other modules
-					TCPDisconnect(MySocket);
-					MySocket = INVALID_SOCKET;
-					GenericTCPExampleState--;
-				}
-				break;
-			}
-
-			Timer = TickGet();
-
-			// Make certain the socket can be written to
-			if(TCPIsPutReady(MySocket) < 125u)
-				break;
-			
-			// Place the application protocol data into the transmit buffer.  For this example, we are connected to an HTTP server, so we'll send an HTTP GET request.
-			TCPPutROMString(MySocket, (ROM BYTE*)"GET ");
-			TCPPutROMString(MySocket, RemoteURL);
-			TCPPutROMString(MySocket, (ROM BYTE*)" HTTP/1.0\r\nHost: ");
-			TCPPutString(MySocket, ServerName);
-			TCPPutROMString(MySocket, (ROM BYTE*)"\r\nConnection: keep-alive\r\n\r\n");
-
-            //printf("Sending headers\r\n");
-            
-			// Send the packet
-			TCPFlush(MySocket);
-			GenericTCPExampleState++;
-			break;
-
-		case SM_PROCESS_RESPONSE:
-			// Check to see if the remote node has disconnected from us or sent us any application data
-			// If application data is available, write it to the UART
-			if(!TCPIsConnected(MySocket))
-			{
-				GenericTCPExampleState = SM_DISCONNECT;
-				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
-			}
-	
-			// Get count of RX bytes waiting
-			if ( TCPIsGetReady(MySocket) >= 512) {
-                w = TCPGetArray(MySocket, vBuffer, 512);
-                printf("Received %d bytes from audo stream\r\n", w);
-            }	
-	
-			break;
-	
-		case SM_DISCONNECT:
-			// Close the socket so it can be used by other modules
-			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
-			TCPDisconnect(MySocket);
-			MySocket = INVALID_SOCKET;
-			GenericTCPExampleState = SM_DONE;
-			break;
-	
-		case SM_DONE:
-			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
-			//if(BUTTON1_IO == 0u)
-            GenericTCPExampleState = SM_HOME;
-			break;
-	}
 }
 
 static enum {
