@@ -250,9 +250,9 @@ void handle_file_reading (void) {
 
 void handle_internet_radio(void)
 {
-    static BYTE ServerName[] =	"195.150.20.246";
-    static WORD ServerPort = 80;
-	ROM BYTE RemoteURL[] = "/rmf_fm";
+    static BYTE ServerName[] =	"ic01.cdn.eurozet.pl";
+    static WORD ServerPort = 8602;
+	ROM BYTE RemoteURL[] = "/ant-waw.mp3";
     BYTE 				i;
 	WORD				w;
     WORD                to_load;
