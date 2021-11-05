@@ -16825,7 +16825,7 @@ Based on the following sources:
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="R11" library="pot" deviceset="TRIM_EU-" device="B25U"/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
-<part name="R13" library="rcl" deviceset="R-EU_" device="0204/7"/>
+<part name="R13" library="rcl" deviceset="R-EU_" device="0207/12"/>
 <part name="Q1" library="transistor-pnp" deviceset="BC857*" device="SMD" technology="B"/>
 <part name="R9" library="rcl" deviceset="R-EU_" device="R0603" value="4k7"/>
 <part name="R3" library="rcl" deviceset="R-EU_" device="R0603" value="4k7"/>
@@ -17225,6 +17225,7 @@ Based on the following sources:
 <segment>
 <wire x1="185.42" y1="162.56" x2="200.66" y2="162.56" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="A" pin="1"/>
+<label x="200.66" y="162.56" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="SCL_3V" class="0">
@@ -17413,13 +17414,14 @@ Based on the following sources:
 </net>
 <net name="BACKLIGHT" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="3"/>
-<wire x1="185.42" y1="165.1" x2="200.66" y2="165.1" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="R13" gate="G$1" pin="2"/>
 <wire x1="0" y1="111.76" x2="-2.54" y2="111.76" width="0.1524" layer="91"/>
 <label x="-2.54" y="111.76" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="G$1" pin="P0"/>
+<wire x1="-33.02" y1="129.54" x2="-25.4" y2="129.54" width="0.1524" layer="91"/>
+<label x="-25.4" y="129.54" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="S1" class="0">

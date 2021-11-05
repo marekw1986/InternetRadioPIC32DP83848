@@ -20701,6 +20701,7 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="SV1" gate="G$1" pin="1"/>
 <wire x1="340.36" y1="243.84" x2="345.44" y2="243.84" width="0.1524" layer="91"/>
+<label x="345.44" y="243.84" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="DP_RST" class="0">
@@ -20747,6 +20748,7 @@ SOurce: www.abracon.com</description>
 <segment>
 <pinref part="SV1" gate="G$1" pin="2"/>
 <wire x1="325.12" y1="243.84" x2="320.04" y2="243.84" width="0.1524" layer="91"/>
+<label x="320.04" y="243.84" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="A3V" class="0">
