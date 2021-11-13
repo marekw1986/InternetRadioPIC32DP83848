@@ -1,0 +1,31 @@
+build/default/production/vs1003/vs1003.o:  \
+vs1003/vs1003.c  \
+ vs1003/../HardwareProfile.h  \
+vs1003/../fatfs/ff.h  \
+ vs1003/../fatfs/integer.h  \
+vs1003/../fatfs/ffconf.h  \
+vs1003/vs1003.h  \
+ vs1003/../net/TCPIP.h  \
+vs1003/../net/../GenericTypeDefs.h  \
+ vs1003/../net/../Compiler.h  \
+vs1003/../net/../HardwareProfile.h  \
+ vs1003/../net/../TCPIPConfig.h  \
+vs1003/../net/../GenericTypeDefs.h  \
+ vs1003/../net/../Compiler.h  \
+vs1003/../net/StackTsk.h  \
+ vs1003/../net/Helpers.h  \
+vs1003/../net/Delay.h  \
+vs1003/../net/Tick.h  \
+ vs1003/../net/TCPIP.h  \
+vs1003/../net/MAC.h  \
+vs1003/../net/IP.h  \
+ vs1003/../net/ARP.h  \
+vs1003/../net/XEEPROM.h  \
+vs1003/../net/UDP.h  \
+ vs1003/../net/TCP.h  \
+vs1003/../net/DHCP.h  \
+vs1003/../net/DNS.h  \
+ vs1003/../net/MPFS2.h  \
+vs1003/../net/HTTP2.h  \
+vs1003/../net/ICMP.h  \
+ vs1003/../net/SNTP.h 

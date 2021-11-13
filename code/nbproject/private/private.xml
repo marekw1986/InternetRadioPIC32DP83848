@@ -6,17 +6,13 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/rotary.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/vs1003/vs1003.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/TCPIPConfig.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/i2c.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/diskio.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/hd44780.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/main.c</file>
-<<<<<<< HEAD
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/config/config.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
-=======
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/vs1003/vs1003.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/config/config.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/TCPIPConfig.h</file>
->>>>>>> main
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/rotary.h</file>
         </group>
     </open-files>
 </project-private>
