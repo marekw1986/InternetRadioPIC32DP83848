@@ -12,12 +12,21 @@ void rotary_init (void) {
 
 int8_t rotary_handle (void) {
     static uint8_t last_clk = 0;
-    uint8_t tmp;
+    static uint8_t last_dt = 0;
+    uint8_t tmp_clk, tmp_dt;
     
-    tmp = ROTARY_CLK_PIN;
-    if (tmp != last_clk) {
-        last_clk = tmp;
-        if (ROTARY_DT_PIN) {
+    tmp_clk = ROTARY_CLK_PIN;
+    tmp_dt = ROTARY_DT_PIN;
+    
+    if (tmp_clk != last_clk) {
+        last_clk = tmp_clk;
+        
+        if (tmp_dt != last_dt) {
+            last_dt = tmp_dt;
+            return 0;
+        }
+        
+        if (tmp_dt) {
             return -1;
         }
         else {
