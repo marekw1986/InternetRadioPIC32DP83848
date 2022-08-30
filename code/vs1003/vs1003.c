@@ -249,10 +249,10 @@ void handle_file_reading (void) {
 
 
 void handle_internet_radio(void)
-{
-    static BYTE ServerName[] =	"ic01.cdn.eurozet.pl";
-    static WORD ServerPort = 8602;
-	ROM BYTE RemoteURL[] = "/ant-waw.mp3";
+{   //http://n-15-22.dcs.redcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5
+    static BYTE ServerName[] =	"n-15-22.dcs.redcdn.pl";
+    static WORD ServerPort = 80;
+	ROM BYTE RemoteURL[] = "/sc/o2/Eurozet/live/antyradio.livx?audio=5";
     BYTE 				i;
 	WORD				w;
     WORD                to_load;
@@ -264,9 +264,10 @@ void handle_internet_radio(void)
 		SM_HOME = 0,
 		SM_SOCKET_OBTAINED,
 		SM_PROCESS_RESPONSE,
-		SM_DISCONNECT,
-		SM_DONE
-	} GenericTCPExampleState = SM_DONE;
+		SM_CLOSE,
+        SM_RECONNECT,
+        SM_RECONNECT_WAIT        
+	} GenericTCPExampleState = SM_RECONNECT;
 
 	switch(GenericTCPExampleState)
 	{
@@ -276,15 +277,17 @@ void handle_internet_radio(void)
 			
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
-			if(MySocket == INVALID_SOCKET)
+			if(MySocket == INVALID_SOCKET) {
+                GenericTCPExampleState=SM_RECONNECT;
 				break;
+            }
 
 			#if defined(STACK_USE_UART)
 			putrsUART((ROM char*)"\r\n\r\nConnecting using Microchip TCP API...\r\n");
 			#endif
             //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
 
-			GenericTCPExampleState++;
+			GenericTCPExampleState=SM_SOCKET_OBTAINED;
 			Timer = TickGet();
 			break;
 
@@ -318,25 +321,38 @@ void handle_internet_radio(void)
 
             //printf("Sending headers\r\n");
             
+            TCPWasReset(MySocket);
 			// Send the packet
 			TCPFlush(MySocket);
-			GenericTCPExampleState++;
+            Timer = TickGet();
+			GenericTCPExampleState = SM_PROCESS_RESPONSE;
 			break;
 
 		case SM_PROCESS_RESPONSE:
 			// Check to see if the remote node has disconnected from us or sent us any application data
 			// If application data is available, write it to the UART
-			if(!TCPIsConnected(MySocket))
+			if(TCPWasReset(MySocket))
 			{
-				GenericTCPExampleState = SM_DISCONNECT;
+				GenericTCPExampleState = SM_CLOSE;
+                printf("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
 			}
+            
+            if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
+                //There was no data in 5 seconds - reconnect
+                printf("Internet radio: no new data timeout - reseting\r\n");
+                GenericTCPExampleState = SM_CLOSE;
+            }
             
             if (new_data_needed) {
 			// Get count of RX bytes waiting
                 to_load = TCPIsGetReady(MySocket);
                 w = TCPGetArray(MySocket, &vsBuffer[active_buffer ^ 0x01][shift], (((VS_BUFFER_SIZE - shift) >= to_load) ? to_load : (VS_BUFFER_SIZE-shift)));
                 //printf("Received %d bytes from audo stream, Saved in %d buffer at shift %d\r\n", w, (active_buffer ^ 0x01), shift);
+                if (w) {
+                    //We still receiving new data, so update timer to not reconnect
+                    Timer = TickGet();
+                }
                 shift += w;
                 if (shift >= VS_BUFFER_SIZE) {
                     shift = 0;
@@ -347,19 +363,28 @@ void handle_internet_radio(void)
 	
 			break;
 	
-		case SM_DISCONNECT:
+		case SM_CLOSE:
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			TCPDisconnect(MySocket);
 			MySocket = INVALID_SOCKET;
-			GenericTCPExampleState = SM_DONE;
+			GenericTCPExampleState = SM_RECONNECT;
 			break;
 	
-		case SM_DONE:
+		case SM_RECONNECT:
 			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
 			//if(BUTTON1_IO == 0u)
-            GenericTCPExampleState = SM_HOME;
+            Timer = TickGet();
+            VS1003_stopSong();
+            GenericTCPExampleState = SM_RECONNECT_WAIT;
 			break;
+            
+        case SM_RECONNECT_WAIT:
+            if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
+                printf("Internet radio: reconnecting\r\n");
+                GenericTCPExampleState = SM_HOME;
+            }
+            break;
 	}
 }
 
