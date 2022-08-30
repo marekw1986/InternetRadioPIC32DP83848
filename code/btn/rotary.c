@@ -1,8 +1,5 @@
 #include "rotary.h"
 
-volatile uint8_t rotary_flag = 0;
-volatile int16_t rotary_counter = 0; 
-
 
 void rotary_init (void) {
     ROTARY_CLK_TRIS = 1;
@@ -12,21 +9,18 @@ void rotary_init (void) {
 
 int8_t rotary_handle (void) {
     static uint8_t last_clk = 0;
-    static uint8_t last_dt = 0;
-    uint8_t tmp_clk, tmp_dt;
+    uint8_t tmp_clk;
     
     tmp_clk = ROTARY_CLK_PIN;
-    tmp_dt = ROTARY_DT_PIN;
     
     if (tmp_clk != last_clk) {
         last_clk = tmp_clk;
         
-        if (tmp_dt != last_dt) {
-            last_dt = tmp_dt;
+        if (tmp_clk) {
             return 0;
         }
         
-        if (tmp_dt) {
+        if (ROTARY_DT_PIN) {
             return -1;
         }
         else {
