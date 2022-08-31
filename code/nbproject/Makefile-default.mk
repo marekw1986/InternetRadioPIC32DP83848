@@ -107,365 +107,365 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/btn/buttons.o: btn/buttons.c  .generated_files/flags/default/83a1a16a9274420c541f98b4b75c3cf391938861 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/btn/buttons.o: btn/buttons.c  .generated_files/flags/default/4a14ecfbabeceeba5d36bacef439474b33b4c356 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/btn" 
 	@${RM} ${OBJECTDIR}/btn/buttons.o.d 
 	@${RM} ${OBJECTDIR}/btn/buttons.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/btn/buttons.o.d" -o ${OBJECTDIR}/btn/buttons.o btn/buttons.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/btn/buttons.o.d" -o ${OBJECTDIR}/btn/buttons.o btn/buttons.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/btn/rotary.o: btn/rotary.c  .generated_files/flags/default/36cca71c7c7cd502a65ab996fc50d506ebead9a3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/btn/rotary.o: btn/rotary.c  .generated_files/flags/default/cd424bdda0f289cf40ebb9b9a75f3ad504566475 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/btn" 
 	@${RM} ${OBJECTDIR}/btn/rotary.o.d 
 	@${RM} ${OBJECTDIR}/btn/rotary.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/btn/rotary.o.d" -o ${OBJECTDIR}/btn/rotary.o btn/rotary.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/btn/rotary.o.d" -o ${OBJECTDIR}/btn/rotary.o btn/rotary.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/config/config.o: config/config.c  .generated_files/flags/default/91e1537a1e98300b5545dee6680ed09e2c6427b1 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/config/config.o: config/config.c  .generated_files/flags/default/932953ad69bd3dbeb735dda703a305fdc4c07a91 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/config" 
 	@${RM} ${OBJECTDIR}/config/config.o.d 
 	@${RM} ${OBJECTDIR}/config/config.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/config/config.o.d" -o ${OBJECTDIR}/config/config.o config/config.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/config/config.o.d" -o ${OBJECTDIR}/config/config.o config/config.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/delay/delay.o: delay/delay.c  .generated_files/flags/default/ea74853c648e17fa2e95457a0a4ae34579b24ed4 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/delay/delay.o: delay/delay.c  .generated_files/flags/default/75f710f40a0cdf51cb65a9a4d8817c0ecdeab43d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/delay" 
 	@${RM} ${OBJECTDIR}/delay/delay.o.d 
 	@${RM} ${OBJECTDIR}/delay/delay.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/delay/delay.o.d" -o ${OBJECTDIR}/delay/delay.o delay/delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/delay/delay.o.d" -o ${OBJECTDIR}/delay/delay.o delay/delay.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/ff.o: fatfs/ff.c  .generated_files/flags/default/a45341f4862e5eb39e02de18bd07d473f9e12c56 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/ff.o: fatfs/ff.c  .generated_files/flags/default/e4afe70f2415ffd7096bc2f343bc11cc0bc619a1 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/ff.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/ff.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ff.o.d" -o ${OBJECTDIR}/fatfs/ff.o fatfs/ff.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ff.o.d" -o ${OBJECTDIR}/fatfs/ff.o fatfs/ff.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/ffsystem.o: fatfs/ffsystem.c  .generated_files/flags/default/b40afc08f0dee8aa299ae45c7aaf22a1d58d8fe9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/ffsystem.o: fatfs/ffsystem.c  .generated_files/flags/default/501365541e99610eca0592e5f16d82bbcba80e32 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/ffsystem.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/ffsystem.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ffsystem.o.d" -o ${OBJECTDIR}/fatfs/ffsystem.o fatfs/ffsystem.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ffsystem.o.d" -o ${OBJECTDIR}/fatfs/ffsystem.o fatfs/ffsystem.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/ffunicode.o: fatfs/ffunicode.c  .generated_files/flags/default/982ed5fae0c8ef2b339e548f0ec80185c8ce09b5 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/ffunicode.o: fatfs/ffunicode.c  .generated_files/flags/default/504707e5cb048302a06740dfb647d822c8fa1461 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/ffunicode.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/ffunicode.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ffunicode.o.d" -o ${OBJECTDIR}/fatfs/ffunicode.o fatfs/ffunicode.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/ffunicode.o.d" -o ${OBJECTDIR}/fatfs/ffunicode.o fatfs/ffunicode.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/SPIFlash.o: fatfs/SPIFlash.c  .generated_files/flags/default/44ceea3467368847e2cff4729913d8346f7f80ad .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/SPIFlash.o: fatfs/SPIFlash.c  .generated_files/flags/default/e93e606ada7e3190fbc1916bc38a3e0988e532d3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/SPIFlash.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/SPIFlash.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/SPIFlash.o.d" -o ${OBJECTDIR}/fatfs/SPIFlash.o fatfs/SPIFlash.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/SPIFlash.o.d" -o ${OBJECTDIR}/fatfs/SPIFlash.o fatfs/SPIFlash.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/diskio.o: fatfs/diskio.c  .generated_files/flags/default/a8c6ad2bfc543152a67768beeb40c0f7f3233b03 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/diskio.o: fatfs/diskio.c  .generated_files/flags/default/a01d9ed4ac0105a71b6f6ff8c5a541a063931e27 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/diskio.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/diskio.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/diskio.o.d" -o ${OBJECTDIR}/fatfs/diskio.o fatfs/diskio.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/diskio.o.d" -o ${OBJECTDIR}/fatfs/diskio.o fatfs/diskio.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/fatfs/sd.o: fatfs/sd.c  .generated_files/flags/default/2426767f7c166e19b163b62f672d5dd88d887551 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/fatfs/sd.o: fatfs/sd.c  .generated_files/flags/default/aa4dffe23ee5b1731ba4d2fb97c68fef1bf1fcfa .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/fatfs" 
 	@${RM} ${OBJECTDIR}/fatfs/sd.o.d 
 	@${RM} ${OBJECTDIR}/fatfs/sd.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/sd.o.d" -o ${OBJECTDIR}/fatfs/sd.o fatfs/sd.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/fatfs/sd.o.d" -o ${OBJECTDIR}/fatfs/sd.o fatfs/sd.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/lcd/hd44780.o: lcd/hd44780.c  .generated_files/flags/default/d7be5f42c80d0edf918c73140642df457eae1393 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/lcd/hd44780.o: lcd/hd44780.c  .generated_files/flags/default/d522a3230a8fcc92292444bde7c426057afd8473 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/lcd" 
 	@${RM} ${OBJECTDIR}/lcd/hd44780.o.d 
 	@${RM} ${OBJECTDIR}/lcd/hd44780.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/lcd/hd44780.o.d" -o ${OBJECTDIR}/lcd/hd44780.o lcd/hd44780.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/lcd/hd44780.o.d" -o ${OBJECTDIR}/lcd/hd44780.o lcd/hd44780.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/lcd/i2c.o: lcd/i2c.c  .generated_files/flags/default/a7248ead0f481a4c77314f2bd1b73c0117396ca6 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/lcd/i2c.o: lcd/i2c.c  .generated_files/flags/default/85ed0ce3ef79520a69341354faf293ebdec915a7 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/lcd" 
 	@${RM} ${OBJECTDIR}/lcd/i2c.o.d 
 	@${RM} ${OBJECTDIR}/lcd/i2c.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/lcd/i2c.o.d" -o ${OBJECTDIR}/lcd/i2c.o lcd/i2c.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/lcd/i2c.o.d" -o ${OBJECTDIR}/lcd/i2c.o lcd/i2c.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Announce.o: net/Announce.c  .generated_files/flags/default/86b40663a5e954eecd468189e617908394bba220 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Announce.o: net/Announce.c  .generated_files/flags/default/c8b3ede37a51a4db9d9e31408d69d89d4d1ce424 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Announce.o.d 
 	@${RM} ${OBJECTDIR}/net/Announce.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Announce.o.d" -o ${OBJECTDIR}/net/Announce.o net/Announce.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Announce.o.d" -o ${OBJECTDIR}/net/Announce.o net/Announce.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ARCFOUR.o: net/ARCFOUR.c  .generated_files/flags/default/1e0138126789e68191ccf73f682d3a09c5177771 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ARCFOUR.o: net/ARCFOUR.c  .generated_files/flags/default/3a519ab9ff6a3429b91abb8de38eb4b3c6a736b1 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ARCFOUR.o.d 
 	@${RM} ${OBJECTDIR}/net/ARCFOUR.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ARCFOUR.o.d" -o ${OBJECTDIR}/net/ARCFOUR.o net/ARCFOUR.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ARCFOUR.o.d" -o ${OBJECTDIR}/net/ARCFOUR.o net/ARCFOUR.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ARP.o: net/ARP.c  .generated_files/flags/default/9dacd48e7b011d44ef9ca216840a7b2b7b52d7b3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ARP.o: net/ARP.c  .generated_files/flags/default/54a9000c969186ab42733a8f41cf57d1853d3d19 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ARP.o.d 
 	@${RM} ${OBJECTDIR}/net/ARP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ARP.o.d" -o ${OBJECTDIR}/net/ARP.o net/ARP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ARP.o.d" -o ${OBJECTDIR}/net/ARP.o net/ARP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/AutoIP.o: net/AutoIP.c  .generated_files/flags/default/c36287e147fb1e54b1b08fd2d236558ea20e0995 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/AutoIP.o: net/AutoIP.c  .generated_files/flags/default/25fcfb811e8cf72245c46855e9e11aa591b84b71 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/AutoIP.o.d 
 	@${RM} ${OBJECTDIR}/net/AutoIP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/AutoIP.o.d" -o ${OBJECTDIR}/net/AutoIP.o net/AutoIP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/AutoIP.o.d" -o ${OBJECTDIR}/net/AutoIP.o net/AutoIP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/BerkeleyAPI.o: net/BerkeleyAPI.c  .generated_files/flags/default/594ebf184b45cb14d1399860071648a871f83f7 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/BerkeleyAPI.o: net/BerkeleyAPI.c  .generated_files/flags/default/75f1cf7e5bbfef948a2bf6336493c98b1808bf0d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/BerkeleyAPI.o.d 
 	@${RM} ${OBJECTDIR}/net/BerkeleyAPI.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/BerkeleyAPI.o.d" -o ${OBJECTDIR}/net/BerkeleyAPI.o net/BerkeleyAPI.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/BerkeleyAPI.o.d" -o ${OBJECTDIR}/net/BerkeleyAPI.o net/BerkeleyAPI.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/BigInt.o: net/BigInt.c  .generated_files/flags/default/ccbbcc526cb28a8e8e3cb5a2a9de491222914857 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/BigInt.o: net/BigInt.c  .generated_files/flags/default/13f3a8ebfbc592a3e692888863135e36230719e3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/BigInt.o.d 
 	@${RM} ${OBJECTDIR}/net/BigInt.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/BigInt.o.d" -o ${OBJECTDIR}/net/BigInt.o net/BigInt.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/BigInt.o.d" -o ${OBJECTDIR}/net/BigInt.o net/BigInt.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/CustomHTTPApp.o: CustomHTTPApp.c  .generated_files/flags/default/105b2b615ebe3b03eb8360c8cea16b556b8317b2 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/CustomHTTPApp.o: CustomHTTPApp.c  .generated_files/flags/default/657447c8f4ae2dc7ccaab8a7af133e054594c27f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/CustomHTTPApp.o.d 
 	@${RM} ${OBJECTDIR}/CustomHTTPApp.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/CustomHTTPApp.o.d" -o ${OBJECTDIR}/CustomHTTPApp.o CustomHTTPApp.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/CustomHTTPApp.o.d" -o ${OBJECTDIR}/CustomHTTPApp.o CustomHTTPApp.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/DHCP.o: net/DHCP.c  .generated_files/flags/default/a49183d7942b8ace520e1bcbe08bae9d68f40e62 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/DHCP.o: net/DHCP.c  .generated_files/flags/default/ae1c682835ea48c7655209ed4e1cddf77ee8f3d3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/DHCP.o.d 
 	@${RM} ${OBJECTDIR}/net/DHCP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/DHCP.o.d" -o ${OBJECTDIR}/net/DHCP.o net/DHCP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/DHCP.o.d" -o ${OBJECTDIR}/net/DHCP.o net/DHCP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/DNS.o: net/DNS.c  .generated_files/flags/default/24156efed99a5c38755ab4921f14bdd0908123f4 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/DNS.o: net/DNS.c  .generated_files/flags/default/b92ca22d602115ba5af0bdfc2101e7d92737037f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/DNS.o.d 
 	@${RM} ${OBJECTDIR}/net/DNS.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/DNS.o.d" -o ${OBJECTDIR}/net/DNS.o net/DNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/DNS.o.d" -o ${OBJECTDIR}/net/DNS.o net/DNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/FTP.o: net/FTP.c  .generated_files/flags/default/e38927b7e1c45fb803d5acc0b232f67840c1b9ba .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/FTP.o: net/FTP.c  .generated_files/flags/default/67a56cdb54d37502919ea1a442f46865e09f30a7 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/FTP.o.d 
 	@${RM} ${OBJECTDIR}/net/FTP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/FTP.o.d" -o ${OBJECTDIR}/net/FTP.o net/FTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/FTP.o.d" -o ${OBJECTDIR}/net/FTP.o net/FTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/GenericTCPServer.o: net/GenericTCPServer.c  .generated_files/flags/default/39a73dd93e7d5d9ab9b683a6e09c5a45ad4a761e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/GenericTCPServer.o: net/GenericTCPServer.c  .generated_files/flags/default/16413f9f856150fa8946901a861d4727c72cf2f9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/GenericTCPServer.o.d 
 	@${RM} ${OBJECTDIR}/net/GenericTCPServer.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/GenericTCPServer.o.d" -o ${OBJECTDIR}/net/GenericTCPServer.o net/GenericTCPServer.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/GenericTCPServer.o.d" -o ${OBJECTDIR}/net/GenericTCPServer.o net/GenericTCPServer.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Hashes.o: net/Hashes.c  .generated_files/flags/default/780703fc5b7fff25e4da5cb45647d4b9a4cd68e3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Hashes.o: net/Hashes.c  .generated_files/flags/default/fe063a0ba99756bb028e81f4b0cba322222353b9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Hashes.o.d 
 	@${RM} ${OBJECTDIR}/net/Hashes.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Hashes.o.d" -o ${OBJECTDIR}/net/Hashes.o net/Hashes.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Hashes.o.d" -o ${OBJECTDIR}/net/Hashes.o net/Hashes.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Helpers.o: net/Helpers.c  .generated_files/flags/default/1455dd51ee9f1143b69891467c2a838728d306a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Helpers.o: net/Helpers.c  .generated_files/flags/default/499a50fa25f6a45317a72e7f832bbf88b91a0852 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Helpers.o.d 
 	@${RM} ${OBJECTDIR}/net/Helpers.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Helpers.o.d" -o ${OBJECTDIR}/net/Helpers.o net/Helpers.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Helpers.o.d" -o ${OBJECTDIR}/net/Helpers.o net/Helpers.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/HTTP2.o: net/HTTP2.c  .generated_files/flags/default/6d1b853b050cd19376e70faf7f6a0c31b838a9d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/HTTP2.o: net/HTTP2.c  .generated_files/flags/default/5ab9dc081f4608925192590cb8eb57c624c2e91f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/HTTP2.o.d 
 	@${RM} ${OBJECTDIR}/net/HTTP2.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/HTTP2.o.d" -o ${OBJECTDIR}/net/HTTP2.o net/HTTP2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/HTTP2.o.d" -o ${OBJECTDIR}/net/HTTP2.o net/HTTP2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ICMP.o: net/ICMP.c  .generated_files/flags/default/5db233d051b21afd2bdf7727dce29e04ce2243ce .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ICMP.o: net/ICMP.c  .generated_files/flags/default/3b4ee7b5b7711cc0e7a5c0fd8cb6ce5ba9b10670 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ICMP.o.d 
 	@${RM} ${OBJECTDIR}/net/ICMP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ICMP.o.d" -o ${OBJECTDIR}/net/ICMP.o net/ICMP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ICMP.o.d" -o ${OBJECTDIR}/net/ICMP.o net/ICMP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/IP.o: net/IP.c  .generated_files/flags/default/7769665314707c1e7d476f70614d3ec13c2d6acc .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/IP.o: net/IP.c  .generated_files/flags/default/ab9965013c05029f95f2ac3245a32fdb2ef4c798 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/IP.o.d 
 	@${RM} ${OBJECTDIR}/net/IP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/IP.o.d" -o ${OBJECTDIR}/net/IP.o net/IP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/IP.o.d" -o ${OBJECTDIR}/net/IP.o net/IP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/MPFS2.o: net/MPFS2.c  .generated_files/flags/default/e618d6e39e7b844c80568631317f95b703ce347e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/MPFS2.o: net/MPFS2.c  .generated_files/flags/default/86dae2c4cf494e61da249733e2763926b6b96619 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/MPFS2.o.d 
 	@${RM} ${OBJECTDIR}/net/MPFS2.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/MPFS2.o.d" -o ${OBJECTDIR}/net/MPFS2.o net/MPFS2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/MPFS2.o.d" -o ${OBJECTDIR}/net/MPFS2.o net/MPFS2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/MPFSImg2.o: MPFSImg2.c  .generated_files/flags/default/3026e13d1551430b2a5fb975ebbc92367ac916ef .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/MPFSImg2.o: MPFSImg2.c  .generated_files/flags/default/c6eacb0855fa81e114066851cf3721f84e94211a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/MPFSImg2.o.d 
 	@${RM} ${OBJECTDIR}/MPFSImg2.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/MPFSImg2.o.d" -o ${OBJECTDIR}/MPFSImg2.o MPFSImg2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/MPFSImg2.o.d" -o ${OBJECTDIR}/MPFSImg2.o MPFSImg2.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/NBNS.o: net/NBNS.c  .generated_files/flags/default/9becf908f3a91faef998080421c239203cbeb814 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/NBNS.o: net/NBNS.c  .generated_files/flags/default/dc607037bcd29685de09a67fd95c195f18a95c17 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/NBNS.o.d 
 	@${RM} ${OBJECTDIR}/net/NBNS.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/NBNS.o.d" -o ${OBJECTDIR}/net/NBNS.o net/NBNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/NBNS.o.d" -o ${OBJECTDIR}/net/NBNS.o net/NBNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Random.o: net/Random.c  .generated_files/flags/default/6c47fb49d3226c3410b9e3aa9386de54a7dac52e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Random.o: net/Random.c  .generated_files/flags/default/a31b35163afb4c89e7eb96a0145110a61b5a7965 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Random.o.d 
 	@${RM} ${OBJECTDIR}/net/Random.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Random.o.d" -o ${OBJECTDIR}/net/Random.o net/Random.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Random.o.d" -o ${OBJECTDIR}/net/Random.o net/Random.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Reboot.o: net/Reboot.c  .generated_files/flags/default/4a60aac869218dcff5404db01c83093ae9925ab .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Reboot.o: net/Reboot.c  .generated_files/flags/default/add975763c2808e58b4378cb8d8216be5bddafa0 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Reboot.o.d 
 	@${RM} ${OBJECTDIR}/net/Reboot.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Reboot.o.d" -o ${OBJECTDIR}/net/Reboot.o net/Reboot.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Reboot.o.d" -o ${OBJECTDIR}/net/Reboot.o net/Reboot.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/RSA.o: net/RSA.c  .generated_files/flags/default/8414b3c07e7632070aea991ead1cb8d72a992378 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/RSA.o: net/RSA.c  .generated_files/flags/default/6f558a85178d562e8da28451c839c03fc39de1a9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/RSA.o.d 
 	@${RM} ${OBJECTDIR}/net/RSA.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/RSA.o.d" -o ${OBJECTDIR}/net/RSA.o net/RSA.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/RSA.o.d" -o ${OBJECTDIR}/net/RSA.o net/RSA.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/SMTP.o: net/SMTP.c  .generated_files/flags/default/2b5762346160e755dee2d08503daf786f1e3467a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/SMTP.o: net/SMTP.c  .generated_files/flags/default/a6cdb33e0ddf8e344dbdec1bc6f844405d8648b1 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/SMTP.o.d 
 	@${RM} ${OBJECTDIR}/net/SMTP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SMTP.o.d" -o ${OBJECTDIR}/net/SMTP.o net/SMTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SMTP.o.d" -o ${OBJECTDIR}/net/SMTP.o net/SMTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/SNTP.o: net/SNTP.c  .generated_files/flags/default/f3adc56c116e966bf3d017067b1641225e7be3e2 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/SNTP.o: net/SNTP.c  .generated_files/flags/default/7977a332dd7833bcf6a6aa32d54324aa77930903 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/SNTP.o.d 
 	@${RM} ${OBJECTDIR}/net/SNTP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SNTP.o.d" -o ${OBJECTDIR}/net/SNTP.o net/SNTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SNTP.o.d" -o ${OBJECTDIR}/net/SNTP.o net/SNTP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/SSL.o: net/SSL.c  .generated_files/flags/default/966a94ca1c52fdd5a1780e2471b873ba776fd369 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/SSL.o: net/SSL.c  .generated_files/flags/default/d6dc5bf7051794ece478ac2e6dcf11b745805391 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/SSL.o.d 
 	@${RM} ${OBJECTDIR}/net/SSL.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SSL.o.d" -o ${OBJECTDIR}/net/SSL.o net/SSL.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/SSL.o.d" -o ${OBJECTDIR}/net/SSL.o net/SSL.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/StackTsk.o: net/StackTsk.c  .generated_files/flags/default/1624acb3924a2bda959278c1e9337524dc28c740 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/StackTsk.o: net/StackTsk.c  .generated_files/flags/default/2e8c0bc3edb5b5bb6197cdadbd1b5b4c15203e4a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/StackTsk.o.d 
 	@${RM} ${OBJECTDIR}/net/StackTsk.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/StackTsk.o.d" -o ${OBJECTDIR}/net/StackTsk.o net/StackTsk.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/StackTsk.o.d" -o ${OBJECTDIR}/net/StackTsk.o net/StackTsk.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/TCP.o: net/TCP.c  .generated_files/flags/default/1b98acd69062724ab499655b329b362e1c871975 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/TCP.o: net/TCP.c  .generated_files/flags/default/d7be00161399004ad40f5daf8b3674e73e674afd .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/TCP.o.d 
 	@${RM} ${OBJECTDIR}/net/TCP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/TCP.o.d" -o ${OBJECTDIR}/net/TCP.o net/TCP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/TCP.o.d" -o ${OBJECTDIR}/net/TCP.o net/TCP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Telnet.o: net/Telnet.c  .generated_files/flags/default/3f8b6aa752b0d73e5e8e68d615167f2585fc5fe5 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Telnet.o: net/Telnet.c  .generated_files/flags/default/d6594270429b6ddbc3609b18abb4d0e61cb10cd7 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Telnet.o.d 
 	@${RM} ${OBJECTDIR}/net/Telnet.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Telnet.o.d" -o ${OBJECTDIR}/net/Telnet.o net/Telnet.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Telnet.o.d" -o ${OBJECTDIR}/net/Telnet.o net/Telnet.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/Tick.o: net/Tick.c  .generated_files/flags/default/5b5249c8ebec5f8e771be550999fdee0ab1f3d7a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/Tick.o: net/Tick.c  .generated_files/flags/default/e3c319c01e6b1471560fc63a2e8cbca92a487537 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/Tick.o.d 
 	@${RM} ${OBJECTDIR}/net/Tick.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Tick.o.d" -o ${OBJECTDIR}/net/Tick.o net/Tick.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/Tick.o.d" -o ${OBJECTDIR}/net/Tick.o net/Tick.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/UDP.o: net/UDP.c  .generated_files/flags/default/5bdeea7cfd6ff70c9498e6a5971da06427bd8da5 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/UDP.o: net/UDP.c  .generated_files/flags/default/4840f7f9a5d6e2b980e9d0f0c76f81b06766f3e1 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/UDP.o.d 
 	@${RM} ${OBJECTDIR}/net/UDP.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/UDP.o.d" -o ${OBJECTDIR}/net/UDP.o net/UDP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/UDP.o.d" -o ${OBJECTDIR}/net/UDP.o net/UDP.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ZeroconfHelper.o: net/ZeroconfHelper.c  .generated_files/flags/default/2d589592b469d4da45d9b16f504c59f7e67af92f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ZeroconfHelper.o: net/ZeroconfHelper.c  .generated_files/flags/default/c19c18230707f7fecefaeda80112b99b94dad74a .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ZeroconfHelper.o.d 
 	@${RM} ${OBJECTDIR}/net/ZeroconfHelper.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfHelper.o.d" -o ${OBJECTDIR}/net/ZeroconfHelper.o net/ZeroconfHelper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfHelper.o.d" -o ${OBJECTDIR}/net/ZeroconfHelper.o net/ZeroconfHelper.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ZeroconfLinkLocal.o: net/ZeroconfLinkLocal.c  .generated_files/flags/default/8efe444cc6a412fd48538cc22786a6ad8b57d6fd .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ZeroconfLinkLocal.o: net/ZeroconfLinkLocal.c  .generated_files/flags/default/9c8102130bbe993c276a0332ec2956a284403bf9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ZeroconfLinkLocal.o.d 
 	@${RM} ${OBJECTDIR}/net/ZeroconfLinkLocal.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfLinkLocal.o.d" -o ${OBJECTDIR}/net/ZeroconfLinkLocal.o net/ZeroconfLinkLocal.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfLinkLocal.o.d" -o ${OBJECTDIR}/net/ZeroconfLinkLocal.o net/ZeroconfLinkLocal.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ZeroconfMulticastDNS.o: net/ZeroconfMulticastDNS.c  .generated_files/flags/default/5e6519f299609c447e772301645a8daf74ba8058 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ZeroconfMulticastDNS.o: net/ZeroconfMulticastDNS.c  .generated_files/flags/default/c168bc30c4d7449f827c33d68b0d38046a128454 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ZeroconfMulticastDNS.o.d 
 	@${RM} ${OBJECTDIR}/net/ZeroconfMulticastDNS.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfMulticastDNS.o.d" -o ${OBJECTDIR}/net/ZeroconfMulticastDNS.o net/ZeroconfMulticastDNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ZeroconfMulticastDNS.o.d" -o ${OBJECTDIR}/net/ZeroconfMulticastDNS.o net/ZeroconfMulticastDNS.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ETHPIC32ExtPhy.o: net/ETHPIC32ExtPhy.c  .generated_files/flags/default/156fbf8a46131650feb021bd7dabdae4ab3b777f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ETHPIC32ExtPhy.o: net/ETHPIC32ExtPhy.c  .generated_files/flags/default/efb481a45a7682172002ea9bd2073628695d11f2 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32ExtPhy.o.d 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32ExtPhy.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32ExtPhy.o.d" -o ${OBJECTDIR}/net/ETHPIC32ExtPhy.o net/ETHPIC32ExtPhy.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32ExtPhy.o.d" -o ${OBJECTDIR}/net/ETHPIC32ExtPhy.o net/ETHPIC32ExtPhy.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o: net/ETHPIC32ExtPhyDP83848.c  .generated_files/flags/default/db0372982a79d7da447f40126197e16f24737d7d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o: net/ETHPIC32ExtPhyDP83848.c  .generated_files/flags/default/ba8ee568272c969f08e1ea5e61802a667a31f187 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o.d 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o.d" -o ${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o net/ETHPIC32ExtPhyDP83848.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o.d" -o ${OBJECTDIR}/net/ETHPIC32ExtPhyDP83848.o net/ETHPIC32ExtPhyDP83848.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/net/ETHPIC32IntMac.o: net/ETHPIC32IntMac.c  .generated_files/flags/default/22d1169bb67ad705372dde233c26fe6f8af6c347 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/net/ETHPIC32IntMac.o: net/ETHPIC32IntMac.c  .generated_files/flags/default/6218c47c1a0c59a8b66723427bf7a35be732348 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/net" 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32IntMac.o.d 
 	@${RM} ${OBJECTDIR}/net/ETHPIC32IntMac.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32IntMac.o.d" -o ${OBJECTDIR}/net/ETHPIC32IntMac.o net/ETHPIC32IntMac.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/net/ETHPIC32IntMac.o.d" -o ${OBJECTDIR}/net/ETHPIC32IntMac.o net/ETHPIC32IntMac.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/nvram/nvram.o: nvram/nvram.c  .generated_files/flags/default/1617a1dcf0c14cb4d27a932163133260bdd87fb3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/nvram/nvram.o: nvram/nvram.c  .generated_files/flags/default/7565021617b5cc89cd1e3c28c72b6213b88bec3d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/nvram" 
 	@${RM} ${OBJECTDIR}/nvram/nvram.o.d 
 	@${RM} ${OBJECTDIR}/nvram/nvram.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/nvram/nvram.o.d" -o ${OBJECTDIR}/nvram/nvram.o nvram/nvram.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/nvram/nvram.o.d" -o ${OBJECTDIR}/nvram/nvram.o nvram/nvram.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/rc5/rc5.o: rc5/rc5.c  .generated_files/flags/default/891cb867259a3dd75525635c71005c32fc9385cf .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/rc5/rc5.o: rc5/rc5.c  .generated_files/flags/default/7732a545049719cbe787432cb0f9ad1512a16c44 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/rc5" 
 	@${RM} ${OBJECTDIR}/rc5/rc5.o.d 
 	@${RM} ${OBJECTDIR}/rc5/rc5.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/rc5/rc5.o.d" -o ${OBJECTDIR}/rc5/rc5.o rc5/rc5.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/rc5/rc5.o.d" -o ${OBJECTDIR}/rc5/rc5.o rc5/rc5.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/time/time.o: time/time.c  .generated_files/flags/default/b4b6093947dfaacf11f6a2e7793ac511d07d32eb .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/time/time.o: time/time.c  .generated_files/flags/default/aa379372d80b89b392dbe190ed9bc379813cd8d3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/time" 
 	@${RM} ${OBJECTDIR}/time/time.o.d 
 	@${RM} ${OBJECTDIR}/time/time.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/time/time.o.d" -o ${OBJECTDIR}/time/time.o time/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/time/time.o.d" -o ${OBJECTDIR}/time/time.o time/time.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/uart/uart.o: uart/uart.c  .generated_files/flags/default/a40fdd43e575b80015ee2fad5cafd9ee86825473 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/uart/uart.o: uart/uart.c  .generated_files/flags/default/32b3e6a70c8f856aa8dd59f35d323f60bd26eaac .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/uart" 
 	@${RM} ${OBJECTDIR}/uart/uart.o.d 
 	@${RM} ${OBJECTDIR}/uart/uart.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/uart/uart.o.d" -o ${OBJECTDIR}/uart/uart.o uart/uart.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/uart/uart.o.d" -o ${OBJECTDIR}/uart/uart.o uart/uart.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/usb/event.o: usb/event.c  .generated_files/flags/default/a3d688199f9e04a242f134926f8c87a8aaf22877 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/usb/event.o: usb/event.c  .generated_files/flags/default/56b904f6db666ceee61767a626057055c246a8d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/usb" 
 	@${RM} ${OBJECTDIR}/usb/event.o.d 
 	@${RM} ${OBJECTDIR}/usb/event.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/event.o.d" -o ${OBJECTDIR}/usb/event.o usb/event.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/event.o.d" -o ${OBJECTDIR}/usb/event.o usb/event.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/usb/usb_config.o: usb/usb_config.c  .generated_files/flags/default/5492b21795d8b8c00e84c494264364ce8a7a2de2 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/usb/usb_config.o: usb/usb_config.c  .generated_files/flags/default/38c221a0c9bfc5e4197ae93a4d4fb9d72680853f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/usb" 
 	@${RM} ${OBJECTDIR}/usb/usb_config.o.d 
 	@${RM} ${OBJECTDIR}/usb/usb_config.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_config.o.d" -o ${OBJECTDIR}/usb/usb_config.o usb/usb_config.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_config.o.d" -o ${OBJECTDIR}/usb/usb_config.o usb/usb_config.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/usb/usb_host.o: usb/usb_host.c  .generated_files/flags/default/e93587000dc4ace537a6968cdc10d744e806949e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/usb/usb_host.o: usb/usb_host.c  .generated_files/flags/default/4bc8cb9010be1aea838a23cee1f2beec9f11e29d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/usb" 
 	@${RM} ${OBJECTDIR}/usb/usb_host.o.d 
 	@${RM} ${OBJECTDIR}/usb/usb_host.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host.o.d" -o ${OBJECTDIR}/usb/usb_host.o usb/usb_host.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host.o.d" -o ${OBJECTDIR}/usb/usb_host.o usb/usb_host.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/usb/usb_host_msd.o: usb/usb_host_msd.c  .generated_files/flags/default/9382e90de1a8e6a437dfa5cb0781f1c49b41923d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/usb/usb_host_msd.o: usb/usb_host_msd.c  .generated_files/flags/default/7023e1761c72f8d72205652897f72c7510786cb3 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/usb" 
 	@${RM} ${OBJECTDIR}/usb/usb_host_msd.o.d 
 	@${RM} ${OBJECTDIR}/usb/usb_host_msd.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host_msd.o.d" -o ${OBJECTDIR}/usb/usb_host_msd.o usb/usb_host_msd.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host_msd.o.d" -o ${OBJECTDIR}/usb/usb_host_msd.o usb/usb_host_msd.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/usb/usb_host_msd_scsi.o: usb/usb_host_msd_scsi.c  .generated_files/flags/default/8204e052554c426c415f860743c74fdf0cbb745e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/usb/usb_host_msd_scsi.o: usb/usb_host_msd_scsi.c  .generated_files/flags/default/1ad7197727cd3ab1b87d355742ec55f4d24e7c26 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/usb" 
 	@${RM} ${OBJECTDIR}/usb/usb_host_msd_scsi.o.d 
 	@${RM} ${OBJECTDIR}/usb/usb_host_msd_scsi.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host_msd_scsi.o.d" -o ${OBJECTDIR}/usb/usb_host_msd_scsi.o usb/usb_host_msd_scsi.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/usb/usb_host_msd_scsi.o.d" -o ${OBJECTDIR}/usb/usb_host_msd_scsi.o usb/usb_host_msd_scsi.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/vs1003/vs1003.o: vs1003/vs1003.c  .generated_files/flags/default/8304789e7f46e1f5236b0366d5f5ae7fcc0aaa1d .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/vs1003/vs1003.o: vs1003/vs1003.c  .generated_files/flags/default/2812048032f06e8efa249a1421417f7941d4111f .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}/vs1003" 
 	@${RM} ${OBJECTDIR}/vs1003/vs1003.o.d 
 	@${RM} ${OBJECTDIR}/vs1003/vs1003.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/vs1003/vs1003.o.d" -o ${OBJECTDIR}/vs1003/vs1003.o vs1003/vs1003.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/vs1003/vs1003.o.d" -o ${OBJECTDIR}/vs1003/vs1003.o vs1003/vs1003.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/898cf5415939dea8bd47dff733feb7747d8e879c .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/main.o: main.c  .generated_files/flags/default/859fa438484bf9fc2186d3fc536e2b239b8f1884 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/main.o.d 
 	@${RM} ${OBJECTDIR}/main.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/main.o.d" -o ${OBJECTDIR}/main.o main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/main.o.d" -o ${OBJECTDIR}/main.o main.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
-${OBJECTDIR}/common.o: common.c  .generated_files/flags/default/2569f97e78ae39bd9c5961d3c1b262f9445eca2e .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
+${OBJECTDIR}/common.o: common.c  .generated_files/flags/default/bc6e008a2807a643cd9b5fcfcc51cd3a57b950e9 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/common.o.d 
 	@${RM} ${OBJECTDIR}/common.o 
-	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG   -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/common.o.d" -o ${OBJECTDIR}/common.o common.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
+	${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -O1 -D_SUPPRESS_PLIB_WARNING -DSYSCLK=80000000L -D_DISABLE_OPENADC10_CONFIGPORT_WARNING -MP -MMD -MF "${OBJECTDIR}/common.o.d" -o ${OBJECTDIR}/common.o common.c    -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)    
 	
 else
 ${OBJECTDIR}/btn/buttons.o: btn/buttons.c  .generated_files/flags/default/d154dd2692c3c5de2a9e1c324fa1784c68403706 .generated_files/flags/default/3a7ff55a6cb9e565cc82ee7521042155d62a01fd
@@ -841,7 +841,7 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${DISTDIR}/code.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} ${DISTDIR} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -g   -mprocessor=$(MP_PROCESSOR_OPTION)  -o ${DISTDIR}/code.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)      -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,-D=__DEBUG_D,--defsym=_min_heap_size=2048,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,${DISTDIR}/memoryfile.xml 
+	${MP_CC} $(MP_EXTRA_LD_PRE) -g -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o ${DISTDIR}/code.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -no-legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC02000:0x1FC02FEF -mreserve=boot@0x1FC02000:0x1FC024FF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,-D=__DEBUG_D,--defsym=__MPLAB_DEBUGGER_PK3=1,--defsym=_min_heap_size=2048,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,${DISTDIR}/memoryfile.xml 
 	
 else
 ${DISTDIR}/code.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
