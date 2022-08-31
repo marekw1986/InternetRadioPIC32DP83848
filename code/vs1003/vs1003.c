@@ -263,7 +263,8 @@ void handle_internet_radio(void)
 	{
 		SM_HOME = 0,
 		SM_SOCKET_OBTAINED,
-		SM_PROCESS_RESPONSE,
+		SM_PROCESS_HEADER,
+        SM_GET_DATA,
 		SM_CLOSE,
         SM_RECONNECT,
         SM_RECONNECT_WAIT        
@@ -325,10 +326,44 @@ void handle_internet_radio(void)
 			// Send the packet
 			TCPFlush(MySocket);
             Timer = TickGet();
-			GenericTCPExampleState = SM_PROCESS_RESPONSE;
+            shift = 0;
+            memset(vsBuffer, 0x00, sizeof(vsBuffer));
+			GenericTCPExampleState = SM_PROCESS_HEADER;
 			break;
+            
+        case SM_PROCESS_HEADER:
+			if(TCPWasReset(MySocket))
+			{
+				GenericTCPExampleState = SM_CLOSE;
+                printf("Internet radio: socket disconnected - reseting\r\n");
+				break;
+			}
+            
+            to_load = TCPIsGetReady(MySocket);
+            w = TCPGetArray(MySocket, &vsBuffer[0][shift], (((VS_BUFFER_SIZE - shift) >= to_load) ? to_load : (VS_BUFFER_SIZE-shift)));
+            shift += w;
+            if (shift >= VS_BUFFER_SIZE) {
+                shift = 0;
+            }
+            vsBuffer[0][shift] = '\0';
+            char* tok = strstr(vsBuffer[0], "\r\n\r\n");
+            if (tok) {
+                printf("Header detected:\r\n");
+                tok[2] = '\0';
+                tok[3] = '\0';
+                printf(vsBuffer[0]);
+                Timer = TickGet();
+                GenericTCPExampleState = SM_GET_DATA;
+            }
+            
+            if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
+                //There was no data in 5 seconds - reconnect
+                printf("Internet radio: no header timeout - reseting\r\n");
+                GenericTCPExampleState = SM_CLOSE;
+            }            
+            break;
 
-		case SM_PROCESS_RESPONSE:
+		case SM_GET_DATA:
 			// Check to see if the remote node has disconnected from us or sent us any application data
 			// If application data is available, write it to the UART
 			if(TCPWasReset(MySocket))
@@ -360,7 +395,8 @@ void handle_internet_radio(void)
                 }
                 //printf("New shjift is %d. There is %s need for new data\r\n", shift, new_data_needed ? "still a" : "no");
             }
-	
+            
+            VS1003_feed_from_buffer();
 			break;
 	
 		case SM_CLOSE:
@@ -391,7 +427,7 @@ void handle_internet_radio(void)
 
 void VS1003_handle (void) {
     handle_internet_radio();
-    VS1003_feed_from_buffer();
+    //VS1003_feed_from_buffer();
 }
 
 /****************************************************************************/
