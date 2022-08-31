@@ -122,7 +122,8 @@ int main(int argc, char** argv) {
     //rc5_init();
     button_init(&prev_btn, &PORTE, _PORTE_RE2_MASK, &prev_func, &prev_hold_func);
     button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, &next_hold_func);
-    button_init(&rot_btn, &PORTD, _PORTD_RD1_MASK, &rot_func, &rot_hold_func);
+    button_init(&rot_btn, &PORTA, _PORTA_RA1_MASK, &rot_func, &rot_hold_func);
+    //button_init(&rot_btn, &PORTD, _PORTD_RD1_MASK, &rot_func, &rot_hold_func);
     i2c_init();
     lcd_init();
     lcd_cls();
@@ -142,12 +143,11 @@ int main(int argc, char** argv) {
         
         StackTask();
         StackApplications();
-        UART_RX_STR_EVENT(buffer);
+        //UART_RX_STR_EVENT(buffer);
         USBTasks();
         disk_timerproc();
         VS1003_handle();
         lcd_handle();
-        //handle_internet_radio();
         
         button_handle(&prev_btn);
         button_handle(&next_btn);
