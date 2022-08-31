@@ -143,12 +143,11 @@ int main(int argc, char** argv) {
         
         StackTask();
         StackApplications();
-        UART_RX_STR_EVENT(buffer);
+        //UART_RX_STR_EVENT(buffer);
         USBTasks();
         disk_timerproc();
         VS1003_handle();
         lcd_handle();
-        //handle_internet_radio();
         
         button_handle(&prev_btn);
         button_handle(&next_btn);
