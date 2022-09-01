@@ -265,9 +265,6 @@ void handle_file_reading (void) {
 
 void handle_internet_radio(void)
 {   //http://n-15-22.dcs.redcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5
-    static BYTE ServerName[] =	"n-15-22.dcs.redcdn.pl";
-    static WORD ServerPort = 80;
-	ROM BYTE RemoteURL[] = "/sc/o2/Eurozet/live/antyradio.livx?audio=5";
     BYTE 				i;
 	WORD				w;
     WORD                to_load;
@@ -284,7 +281,7 @@ void handle_internet_radio(void)
         case SM_BEGIN:
 			// Connect a socket to the remote TCP server
 			//MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
-            MySocket = TCPOpen((DWORD)&uri.server[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
+            MySocket = TCPOpen((DWORD)&uri.server[0], TCP_OPEN_RAM_HOST, uri.port, TCP_PURPOSE_GENERIC_TCP_CLIENT);
 			
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
@@ -358,10 +355,8 @@ void handle_internet_radio(void)
             vsBuffer[0][shift] = '\0';
             char* tok = strstr(vsBuffer[0], "\r\n\r\n");
             if (tok) {
-                printf("Header detected:\r\n");
                 tok[2] = '\0';
                 tok[3] = '\0';
-                printf(vsBuffer[0]);
                 http_res_t http_result = parse_http_headers(vsBuffer[0], strlen(vsBuffer[0]), &uri);
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:

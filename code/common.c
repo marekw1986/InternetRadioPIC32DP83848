@@ -73,7 +73,6 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
 				tok = strstr(newurl, "\r\n");
 				if(!tok || (tok >= str+len)) return HTTP_HEADER_ERROR;
 				*tok = '\0';
-				printf("Nowy url: %s\r\n", newurl);
                 if (parse_url(newurl, strlen(newurl), uri)) {
                     return HTTP_HEADER_REDIRECTED;
                 }
