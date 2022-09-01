@@ -17,6 +17,7 @@
 #include "../fatfs/ff.h"
 #include "vs1003.h"
 #include "../net/TCPIP.h"
+#include "../common.h"
 
 #define vs1003_chunk_size 32
 
@@ -66,7 +67,7 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-#define VS_BUFFER_SIZE  1024
+#define VS_BUFFER_SIZE  4096
 
 static uint8_t vsBuffer[2][VS_BUFFER_SIZE];
 static uint8_t active_buffer = 0x01;
@@ -74,6 +75,20 @@ static uint8_t new_data_needed = 0;
 
 FIL fsrc;
 DIR vsdir;
+
+uri_t uri;
+
+static enum _GenericTCPExampleState
+{
+    SM_HOME = 0,
+    SM_BEGIN,
+    SM_SOCKET_OBTAINED,
+    SM_PROCESS_HEADER,
+    SM_GET_DATA,
+    SM_CLOSE,
+    SM_RECONNECT,
+    SM_RECONNECT_WAIT        
+} GenericTCPExampleState = SM_HOME;
 
 // Register names
 
@@ -259,22 +274,17 @@ void handle_internet_radio(void)
     static uint16_t shift = 0;
 	static DWORD		Timer;
 	static TCP_SOCKET	MySocket = INVALID_SOCKET;
-	static enum _GenericTCPExampleState
-	{
-		SM_HOME = 0,
-		SM_SOCKET_OBTAINED,
-		SM_PROCESS_HEADER,
-        SM_GET_DATA,
-		SM_CLOSE,
-        SM_RECONNECT,
-        SM_RECONNECT_WAIT        
-	} GenericTCPExampleState = SM_RECONNECT;
 
 	switch(GenericTCPExampleState)
 	{
 		case SM_HOME:
+            //nothing to do here, just wait
+            break;
+        
+        case SM_BEGIN:
 			// Connect a socket to the remote TCP server
-			MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
+			//MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
+            MySocket = TCPOpen((DWORD)&uri.server[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
 			
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
@@ -315,9 +325,9 @@ void handle_internet_radio(void)
 			
 			// Place the application protocol data into the transmit buffer.  For this example, we are connected to an HTTP server, so we'll send an HTTP GET request.
 			TCPPutROMString(MySocket, (ROM BYTE*)"GET ");
-			TCPPutROMString(MySocket, RemoteURL);
+			TCPPutROMString(MySocket, uri.file);
 			TCPPutROMString(MySocket, (ROM BYTE*)" HTTP/1.0\r\nHost: ");
-			TCPPutString(MySocket, ServerName);
+			TCPPutString(MySocket, uri.server);
 			TCPPutROMString(MySocket, (ROM BYTE*)"\r\nConnection: keep-alive\r\n\r\n");
 
             //printf("Sending headers\r\n");
@@ -352,8 +362,26 @@ void handle_internet_radio(void)
                 tok[2] = '\0';
                 tok[3] = '\0';
                 printf(vsBuffer[0]);
-                Timer = TickGet();
-                GenericTCPExampleState = SM_GET_DATA;
+                http_res_t http_result = parse_http_headers(vsBuffer[0], strlen(vsBuffer[0]), &uri);
+                switch (http_result) {
+                    case HTTP_HEADER_ERROR:
+                        printf("Parsing headers error\r\n");
+                        GenericTCPExampleState = SM_CLOSE;
+                        break;
+                    case HTTP_HEADER_OK:
+                        printf("It is 200 OK\r\n");
+                        Timer = TickGet();
+                        GenericTCPExampleState = SM_GET_DATA;
+                        break;
+                    case HTTP_HEADER_REDIRECTED:
+                        printf("Stream redirected");
+                        GenericTCPExampleState = SM_RECONNECT;
+                        break;
+                    default:
+                        break;
+                }
+                
+                
             }
             
             if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
@@ -418,7 +446,7 @@ void handle_internet_radio(void)
         case SM_RECONNECT_WAIT:
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 printf("Internet radio: reconnecting\r\n");
-                GenericTCPExampleState = SM_HOME;
+                GenericTCPExampleState = SM_BEGIN;
             }
             break;
 	}
@@ -653,4 +681,12 @@ void VS1003_play_next_audio_file_from_directory (void) {
     }
     
     return;
+}
+
+
+void VS1003_play_url(const char* url) {
+    char buff[256];
+    strncpy(buff, url, sizeof(buff)-1);
+    parse_url(buff, strlen(buff), &uri);
+    GenericTCPExampleState = SM_BEGIN;
 }

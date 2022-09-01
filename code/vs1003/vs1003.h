@@ -48,6 +48,7 @@ void VS1003_print_byte_register(uint8_t reg);
 void VS1003_printDetails(void);
 void VS1003_loadUserCode(const uint16_t* buf, size_t len);
 void VS1003_play_next_audio_file_from_directory (void);
+void VS1003_play_url(const char* url);
 
 
 #ifdef	__cplusplus
