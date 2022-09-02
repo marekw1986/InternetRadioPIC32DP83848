@@ -87,35 +87,34 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
 }
 
 
-uint8_t parse_url (char* str, size_t len, uri_t* uri) {
-	char* url = str;
-	char* tok;
-	char* rest;
-	char* port;
-	
+uint8_t parse_url (const char* url, size_t len, uri_t* uri) {
+	const char* tok;
+    const char* serverbegin = url;
+	const char* rest;
+	const char* port;
+	size_t serverlen = 0;
+    size_t filelen = 0;
+    
 	if (uri == NULL) return 0;
 	
 	tok = strstr(url, "://");
 	if (tok) {
-		if (tok >= str+len) return 0;
-		*tok = '\0';
-		if (strncasecmp(url, "https", 5) == 0) {
-			//printf("It is SSL\r\n");
+		if (tok >= url+len) return 0;
+		if (strncasecmp(url, "https", 5) == 0) {    //HTTPS
 			uri->https = 1;
 			uri->port = 443;
 		}
-		else if (strncasecmp(url, "http", 4) == 0) {
-			//printf("It is normal HTTP\r\n");
+		else if (strncasecmp(url, "http", 4) == 0) {    //plain old HTTP
 			uri->https = 0;
 			uri->port = 80;
 		}
 		else {
-			//printf("It is different protocol\r\n");
+			//It is different protocol
 			return 0;
 		}
 		rest = tok+3;
-		if (rest >= str+len) return 0;
-		url = rest;
+        serverbegin = rest;
+		if (rest >= url+len) return 0;
 	}
 	else {
 		//printf("No protocol specified - assuming HTTP\r\n");
@@ -125,20 +124,26 @@ uint8_t parse_url (char* str, size_t len, uri_t* uri) {
 	
 	//printf("%s\r\n", url);
 	
-	tok = strchr(url, ':');
+	tok = strchr(serverbegin, ':');
 	if (tok) {
-		if (tok >= str+len) return 0;
-		*tok = '\0';
+		if (tok >= url+len) return 0;
+        serverlen = tok-serverbegin;
 		rest = tok+1;
-		if (rest >= str+len) return 0;
+		if (rest >= url+len) return 0;
 		//printf("Wykryto dwukropek: %s\r\n", rest);
 		tok = strchr(rest, '/');
 		if (tok) {
-			if (tok >= str+len) return 0;
-			//printf("Wykryto znak /, wszystko ok\r\n");
-			//*tok = '\0';
+			if (tok >= url+len) return 0;
+			//printf("Wykryto znak /, wszystko ok. %s\r\n", tok);
 			port = rest;
-			uri->port = atoi(port);
+            size_t portlen = tok-port;
+            if (portlen > 5) {
+                return 0;
+            }
+            char tmp[6];
+            memcpy((char*)tmp, (const char*)port, portlen);
+            tmp[portlen] = '\0';
+			uri->port = atoi(tmp);
 			if (uri->port == 0) {
 				//printf("Nieprawid?owy port %d\r\n", uri->port);
 				return 0;
@@ -152,22 +157,24 @@ uint8_t parse_url (char* str, size_t len, uri_t* uri) {
 	}
 	else {
 		//printf("Nie wykryto dwukropka\r\n");
-		tok = strchr(url, '/');
+		tok = strchr(serverbegin, '/');
 		if (tok) {
-			if (tok >= str+len) return 0;
-			*tok = '\0';
-			rest = tok+1;
-			if (rest >= str+len) return 0;
+			if (tok >= url+len) { printf("Tu\r\n"); return 0; }
+            serverlen = tok-serverbegin;
+			rest = tok;
+			if (rest >= url+len) { printf("Tu2\r\n"); return 0; }
 		}
 		else {
 			//printf("Oczekiwano znaku /, cos jest nie tak\r\n");
 			return 0;
 		}
 	}
-	//printf("server: %s\r\n", url);
-	strncpy(uri->server, url, URI_SERVER_SIZE);
-	//printf("reszta: %s\r\n", rest);
-	strncpy((uri->file)+1, rest, URI_FILE_SIZE-1);
-	uri->file[0] = '/';
+    
+    if (serverlen > (sizeof(uri->server)-1)) { return 0; }
+	memcpy(uri->server, serverbegin, serverlen);
+    uri->server[serverlen] = '\0';
+	filelen = strlen(rest);
+    if (filelen > (sizeof(uri->file)+1)) { return 0; }
+	strncpy(uri->file, rest, filelen);
 	return 1;
 }

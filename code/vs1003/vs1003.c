@@ -680,8 +680,6 @@ void VS1003_play_next_audio_file_from_directory (void) {
 
 
 void VS1003_play_url(const char* url) {
-    char buff[256];
-    strncpy(buff, url, sizeof(buff)-1);
-    parse_url(buff, strlen(buff), &uri);
+    parse_url(url, strlen(url), &uri);
     GenericTCPExampleState = SM_BEGIN;
 }
