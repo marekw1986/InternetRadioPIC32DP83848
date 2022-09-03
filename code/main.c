@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
     VS1003_begin();
     VS1003_setVolume(0x00);
     //VS1003_play_dir("2:/");
-    VS1003_play_url("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
+    VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
     
     ClearWDT();
     EnableWDT();

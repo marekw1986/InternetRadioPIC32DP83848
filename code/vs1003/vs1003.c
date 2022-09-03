@@ -80,13 +80,14 @@ uri_t uri;
 
 typedef enum {
     STREAM_HOME = 0,
-    STREAM_BEGIN,
-    STREAM_SOCKET_OBTAINED,
-    STREAM_PROCESS_HEADER,
-    STREAM_GET_DATA,
-    STREAM_CLOSE,
-    STREAM_RECONNECT,
-    STREAM_RECONNECT_WAIT        
+    STREAM_HTTP_BEGIN,
+    STREAM_HTTP_SOCKET_OBTAINED,
+    STREAM_HTTP_PROCESS_HEADER,
+    STREAM_HTTP_GET_DATA,
+    STREAM_FILE_GET_DATA,
+    STREAM_HTTP_CLOSE,
+    STREAM_HTTP_RECONNECT,
+    STREAM_HTTP_RECONNECT_WAIT        
 } StreamState_t;
 
 static StreamState_t StreamState = STREAM_HOME;
@@ -232,6 +233,7 @@ uint8_t VS1003_feed_from_buffer (void) {
 
 /****************************************************************************/
 
+/*
 void handle_file_reading (void) {
     FRESULT res;
     unsigned int br;
@@ -262,15 +264,17 @@ void handle_file_reading (void) {
 
     }
 }
+*/
 
-
-void handle_internet_radio(void) {   
+void VS1003_handle(void) {   
     BYTE 				i;
 	WORD				w;
     WORD                to_load;
     static uint16_t     shift = 0;
 	static DWORD		Timer;
 	static TCP_SOCKET	MySocket = INVALID_SOCKET;
+    FRESULT res;
+    unsigned int br;
 
 	switch(StreamState)
 	{
@@ -278,7 +282,7 @@ void handle_internet_radio(void) {
             //nothing to do here, just wait
             break;
         
-        case STREAM_BEGIN:
+        case STREAM_HTTP_BEGIN:
 			// Connect a socket to the remote TCP server
 			//MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
             MySocket = TCPOpen((DWORD)&uri.server[0], TCP_OPEN_RAM_HOST, uri.port, TCP_PURPOSE_GENERIC_TCP_CLIENT);
@@ -286,7 +290,7 @@ void handle_internet_radio(void) {
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
 			if(MySocket == INVALID_SOCKET) {
-                StreamState=STREAM_RECONNECT;
+                StreamState=STREAM_HTTP_RECONNECT;
 				break;
             }
 
@@ -295,11 +299,11 @@ void handle_internet_radio(void) {
 			#endif
             //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
 
-			StreamState=STREAM_SOCKET_OBTAINED;
+			StreamState=STREAM_HTTP_SOCKET_OBTAINED;
 			Timer = TickGet();
 			break;
 
-		case STREAM_SOCKET_OBTAINED:
+		case STREAM_HTTP_SOCKET_OBTAINED:
 			// Wait for the remote server to accept our connection request
 			if(!TCPIsConnected(MySocket))
 			{
@@ -309,7 +313,7 @@ void handle_internet_radio(void) {
 					// Close the socket so it can be used by other modules
 					TCPDisconnect(MySocket);
 					MySocket = INVALID_SOCKET;
-					StreamState = STREAM_BEGIN;     //was StreamState--
+					StreamState = STREAM_HTTP_BEGIN;     //was StreamState--
 				}
 				break;
 			}
@@ -335,13 +339,13 @@ void handle_internet_radio(void) {
             Timer = TickGet();
             shift = 0;
             memset(vsBuffer, 0x00, sizeof(vsBuffer));
-			StreamState = STREAM_PROCESS_HEADER;
+			StreamState = STREAM_HTTP_PROCESS_HEADER;
 			break;
             
-        case STREAM_PROCESS_HEADER:
+        case STREAM_HTTP_PROCESS_HEADER:
 			if(TCPWasReset(MySocket))
 			{
-				StreamState = STREAM_CLOSE;
+				StreamState = STREAM_HTTP_CLOSE;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				break;
 			}
@@ -361,16 +365,16 @@ void handle_internet_radio(void) {
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         printf("Parsing headers error\r\n");
-                        StreamState = STREAM_CLOSE;
+                        StreamState = STREAM_HTTP_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
                         printf("It is 200 OK\r\n");
                         Timer = TickGet();
-                        StreamState = STREAM_GET_DATA;
+                        StreamState = STREAM_HTTP_GET_DATA;
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         printf("Stream redirected");
-                        StreamState = STREAM_RECONNECT;
+                        StreamState = STREAM_HTTP_RECONNECT;
                         break;
                     default:
                         break;
@@ -382,16 +386,16 @@ void handle_internet_radio(void) {
             if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no header timeout - reseting\r\n");
-                StreamState = STREAM_CLOSE;
+                StreamState = STREAM_HTTP_CLOSE;
             }            
             break;
 
-		case STREAM_GET_DATA:
+		case STREAM_HTTP_GET_DATA:
 			// Check to see if the remote node has disconnected from us or sent us any application data
 			// If application data is available, write it to the UART
 			if(TCPWasReset(MySocket))
 			{
-				StreamState = STREAM_CLOSE;
+				StreamState = STREAM_HTTP_CLOSE;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
 			}
@@ -399,7 +403,7 @@ void handle_internet_radio(void) {
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no new data timeout - reseting\r\n");
-                StreamState = STREAM_CLOSE;
+                StreamState = STREAM_HTTP_CLOSE;
             }
             
             if (new_data_needed) {
@@ -421,68 +425,56 @@ void handle_internet_radio(void) {
             
             VS1003_feed_from_buffer();
 			break;
+            
+        case STREAM_FILE_GET_DATA:
+            if (new_data_needed) {
+                //new_data_needed = 0;
+                res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][shift], 512, &br);
+                if (res == FR_OK) {
+                    printf("%d bytes of data loaded. Buffer %d. Shift %d\r\n", br, (active_buffer ^ 0x01), shift);
+                    shift += 512;
+                    if (shift >= VS_BUFFER_SIZE) {
+                        shift = 0;
+                        new_data_needed = 0;
+                    }
+
+                    if (br < 512) {
+                        VS1003_stopSong();
+                        //VS1003_startSong();
+                        //res = f_lseek(&fsrc, 0);
+                        //if (res != FR_OK) printf("f_lseek ERROR\r\n");
+                        //else printf("f_lseek OK\r\n");
+                        VS1003_play_next_audio_file_from_directory();
+                    }
+                }
+            }            
+            break;
 	
-		case STREAM_CLOSE:
+		case STREAM_HTTP_CLOSE:
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			TCPDisconnect(MySocket);
 			MySocket = INVALID_SOCKET;
-			StreamState = STREAM_RECONNECT;
+			StreamState = STREAM_HTTP_RECONNECT;
 			break;
 	
-		case STREAM_RECONNECT:
+		case STREAM_HTTP_RECONNECT:
 			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
 			//if(BUTTON1_IO == 0u)
             Timer = TickGet();
             VS1003_stopSong();
-            StreamState = STREAM_RECONNECT_WAIT;
+            StreamState = STREAM_HTTP_RECONNECT_WAIT;
 			break;
             
-        case STREAM_RECONNECT_WAIT:
+        case STREAM_HTTP_RECONNECT_WAIT:
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 printf("Internet radio: reconnecting\r\n");
-                StreamState = STREAM_BEGIN;
+                StreamState = STREAM_HTTP_BEGIN;
             }
             break;
 	}
 }
 
-
-void VS1003_handle (void) {
-    handle_internet_radio();
-    //VS1003_feed_from_buffer();
-}
-
-/****************************************************************************/
-
-void VS1003_play (char* url) {
-    FRESULT res;
-    
-    f_close(&fsrc);
-    
-    VS1003_stopSong();          //Stop song that is already playing
-    
-    res = f_open(&fsrc, url, FA_READ);
-    if (res != FR_OK) {
-        printf("f_open error code: %i\r\n", res);
-        return;
-    }
-    
-    VS1003_startSong();         //Start playing song
-}
-
-/****************************************************************************/
-
-void VS1003_play_dir (const char* url) {
-    FRESULT res;
-    
-    res = f_opendir(&vsdir, url);
-    if (res != FR_OK) {
-        printf("f_opendir error code: %i\r\n", res);
-        return;
-    }
-    VS1003_play_next_audio_file_from_directory();
-}
 
 /****************************************************************************/
 
@@ -669,7 +661,7 @@ void VS1003_play_next_audio_file_from_directory (void) {
                 //f_close(file);
                 //f_open(file, info.fname, FA_READ);
                 snprintf(buf, sizeof(buf)-1, "2:/%s", info.fname);
-                VS1003_play(buf);
+                VS1003_play_file(buf);
                 return;
             }
         }
@@ -679,7 +671,36 @@ void VS1003_play_next_audio_file_from_directory (void) {
 }
 
 
-void VS1003_play_url(const char* url) {
+void VS1003_play_http_stream(const char* url) {
     parse_url(url, strlen(url), &uri);
-    StreamState = STREAM_BEGIN;
+    StreamState = STREAM_HTTP_BEGIN;
+}
+
+
+void VS1003_play_file (char* url) {
+    FRESULT res;
+    
+    f_close(&fsrc);
+    
+    VS1003_stopSong();          //Stop song that is already playing
+    
+    res = f_open(&fsrc, url, FA_READ);
+    if (res != FR_OK) {
+        printf("f_open error code: %i\r\n", res);
+        return;
+    }
+    
+    VS1003_startSong();         //Start playing song
+}
+
+
+void VS1003_play_dir (const char* url) {
+    FRESULT res;
+    
+    res = f_opendir(&vsdir, url);
+    if (res != FR_OK) {
+        printf("f_opendir error code: %i\r\n", res);
+        return;
+    }
+    VS1003_play_next_audio_file_from_directory();
 }
