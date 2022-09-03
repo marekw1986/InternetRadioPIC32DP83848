@@ -78,17 +78,18 @@ DIR vsdir;
 
 uri_t uri;
 
-static enum _GenericTCPExampleState
-{
-    SM_HOME = 0,
-    SM_BEGIN,
-    SM_SOCKET_OBTAINED,
-    SM_PROCESS_HEADER,
-    SM_GET_DATA,
-    SM_CLOSE,
-    SM_RECONNECT,
-    SM_RECONNECT_WAIT        
-} GenericTCPExampleState = SM_HOME;
+typedef enum {
+    STREAM_HOME = 0,
+    STREAM_BEGIN,
+    STREAM_SOCKET_OBTAINED,
+    STREAM_PROCESS_HEADER,
+    STREAM_GET_DATA,
+    STREAM_CLOSE,
+    STREAM_RECONNECT,
+    STREAM_RECONNECT_WAIT        
+} StreamState_t;
+
+static StreamState_t StreamState = STREAM_HOME;
 
 // Register names
 
@@ -263,22 +264,21 @@ void handle_file_reading (void) {
 }
 
 
-void handle_internet_radio(void)
-{   //http://n-15-22.dcs.redcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5
+void handle_internet_radio(void) {   
     BYTE 				i;
 	WORD				w;
     WORD                to_load;
-    static uint16_t shift = 0;
+    static uint16_t     shift = 0;
 	static DWORD		Timer;
 	static TCP_SOCKET	MySocket = INVALID_SOCKET;
 
-	switch(GenericTCPExampleState)
+	switch(StreamState)
 	{
-		case SM_HOME:
+		case STREAM_HOME:
             //nothing to do here, just wait
             break;
         
-        case SM_BEGIN:
+        case STREAM_BEGIN:
 			// Connect a socket to the remote TCP server
 			//MySocket = TCPOpen((DWORD)&ServerName[0], TCP_OPEN_RAM_HOST, ServerPort, TCP_PURPOSE_GENERIC_TCP_CLIENT);
             MySocket = TCPOpen((DWORD)&uri.server[0], TCP_OPEN_RAM_HOST, uri.port, TCP_PURPOSE_GENERIC_TCP_CLIENT);
@@ -286,7 +286,7 @@ void handle_internet_radio(void)
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
 			if(MySocket == INVALID_SOCKET) {
-                GenericTCPExampleState=SM_RECONNECT;
+                StreamState=STREAM_RECONNECT;
 				break;
             }
 
@@ -295,11 +295,11 @@ void handle_internet_radio(void)
 			#endif
             //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
 
-			GenericTCPExampleState=SM_SOCKET_OBTAINED;
+			StreamState=STREAM_SOCKET_OBTAINED;
 			Timer = TickGet();
 			break;
 
-		case SM_SOCKET_OBTAINED:
+		case STREAM_SOCKET_OBTAINED:
 			// Wait for the remote server to accept our connection request
 			if(!TCPIsConnected(MySocket))
 			{
@@ -309,7 +309,7 @@ void handle_internet_radio(void)
 					// Close the socket so it can be used by other modules
 					TCPDisconnect(MySocket);
 					MySocket = INVALID_SOCKET;
-					GenericTCPExampleState--;
+					StreamState = STREAM_BEGIN;     //was StreamState--
 				}
 				break;
 			}
@@ -335,13 +335,13 @@ void handle_internet_radio(void)
             Timer = TickGet();
             shift = 0;
             memset(vsBuffer, 0x00, sizeof(vsBuffer));
-			GenericTCPExampleState = SM_PROCESS_HEADER;
+			StreamState = STREAM_PROCESS_HEADER;
 			break;
             
-        case SM_PROCESS_HEADER:
+        case STREAM_PROCESS_HEADER:
 			if(TCPWasReset(MySocket))
 			{
-				GenericTCPExampleState = SM_CLOSE;
+				StreamState = STREAM_CLOSE;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				break;
 			}
@@ -361,16 +361,16 @@ void handle_internet_radio(void)
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         printf("Parsing headers error\r\n");
-                        GenericTCPExampleState = SM_CLOSE;
+                        StreamState = STREAM_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
                         printf("It is 200 OK\r\n");
                         Timer = TickGet();
-                        GenericTCPExampleState = SM_GET_DATA;
+                        StreamState = STREAM_GET_DATA;
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         printf("Stream redirected");
-                        GenericTCPExampleState = SM_RECONNECT;
+                        StreamState = STREAM_RECONNECT;
                         break;
                     default:
                         break;
@@ -382,16 +382,16 @@ void handle_internet_radio(void)
             if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no header timeout - reseting\r\n");
-                GenericTCPExampleState = SM_CLOSE;
+                StreamState = STREAM_CLOSE;
             }            
             break;
 
-		case SM_GET_DATA:
+		case STREAM_GET_DATA:
 			// Check to see if the remote node has disconnected from us or sent us any application data
 			// If application data is available, write it to the UART
 			if(TCPWasReset(MySocket))
 			{
-				GenericTCPExampleState = SM_CLOSE;
+				StreamState = STREAM_CLOSE;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
 			}
@@ -399,7 +399,7 @@ void handle_internet_radio(void)
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no new data timeout - reseting\r\n");
-                GenericTCPExampleState = SM_CLOSE;
+                StreamState = STREAM_CLOSE;
             }
             
             if (new_data_needed) {
@@ -422,26 +422,26 @@ void handle_internet_radio(void)
             VS1003_feed_from_buffer();
 			break;
 	
-		case SM_CLOSE:
+		case STREAM_CLOSE:
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			TCPDisconnect(MySocket);
 			MySocket = INVALID_SOCKET;
-			GenericTCPExampleState = SM_RECONNECT;
+			StreamState = STREAM_RECONNECT;
 			break;
 	
-		case SM_RECONNECT:
+		case STREAM_RECONNECT:
 			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
 			//if(BUTTON1_IO == 0u)
             Timer = TickGet();
             VS1003_stopSong();
-            GenericTCPExampleState = SM_RECONNECT_WAIT;
+            StreamState = STREAM_RECONNECT_WAIT;
 			break;
             
-        case SM_RECONNECT_WAIT:
+        case STREAM_RECONNECT_WAIT:
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 printf("Internet radio: reconnecting\r\n");
-                GenericTCPExampleState = SM_BEGIN;
+                StreamState = STREAM_BEGIN;
             }
             break;
 	}
@@ -681,5 +681,5 @@ void VS1003_play_next_audio_file_from_directory (void) {
 
 void VS1003_play_url(const char* url) {
     parse_url(url, strlen(url), &uri);
-    GenericTCPExampleState = SM_BEGIN;
+    StreamState = STREAM_BEGIN;
 }
