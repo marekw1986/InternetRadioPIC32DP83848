@@ -99,11 +99,19 @@ typedef enum {
     STREAM_HTTP_GET_DATA,
     STREAM_FILE_GET_DATA,
     STREAM_HTTP_CLOSE,
-    STREAM_HTTP_RECONNECT,
     STREAM_HTTP_RECONNECT_WAIT        
 } StreamState_t;
 
 static StreamState_t StreamState = STREAM_HOME;
+
+typedef enum {
+    DO_NOT_RECONNECT = 0,
+    RECONNECT_IMMEDIATELY,
+    RECONNECT_WAIT_LONG,
+    RECONNECT_WAIT_SHORT
+} ReconnectStrategy_t;
+
+static ReconnectStrategy_t ReconnectStrategy = DO_NOT_RECONNECT;
 
 // Register names
 
@@ -281,7 +289,6 @@ void handle_file_reading (void) {
 
 void VS1003_handle(void) {   
 	static DWORD		Timer;
-    static BYTE         reconnect_immediately = 0;
 
 	switch(StreamState)
 	{
@@ -297,14 +304,14 @@ void VS1003_handle(void) {
 			// Abort operation if no TCP socket of type TCP_PURPOSE_GENERIC_TCP_CLIENT is available
 			// If this ever happens, you need to go add one to TCPIPConfig.h
 			if(VS_Socket == INVALID_SOCKET) {
-                StreamState=STREAM_HTTP_RECONNECT;
+                StreamState=STREAM_HTTP_RECONNECT_WAIT;
+                ReconnectStrategy = RECONNECT_WAIT_SHORT;
 				break;
             }
 
 			#if defined(STACK_USE_UART)
 			putrsUART((ROM char*)"\r\n\r\nConnecting using Microchip TCP API...\r\n");
 			#endif
-            //printf("\r\n\r\nConnecting using Microchip TCP API...\r\n");
 
 			StreamState=STREAM_HTTP_SOCKET_OBTAINED;
 			Timer = TickGet();
@@ -321,6 +328,7 @@ void VS1003_handle(void) {
 					TCPDisconnect(VS_Socket);
 					VS_Socket = INVALID_SOCKET;
 					StreamState = STREAM_HTTP_BEGIN;     //was StreamState--
+                    ReconnectStrategy = DO_NOT_RECONNECT;
 				}
 				break;
 			}
@@ -345,15 +353,15 @@ void VS1003_handle(void) {
 			TCPFlush(VS_Socket);
             Timer = TickGet();
             vsBuffer_shift = 0;
-            reconnect_immediately = 0;
-            memset(vsBuffer, 0x00, sizeof(vsBuffer));
 			StreamState = STREAM_HTTP_PROCESS_HEADER;
+            memset(vsBuffer, 0x00, sizeof(vsBuffer));
 			break;
             
         case STREAM_HTTP_PROCESS_HEADER:
 			if(TCPWasReset(VS_Socket))
 			{
 				StreamState = STREAM_HTTP_CLOSE;
+                ReconnectStrategy = RECONNECT_WAIT_LONG;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				break;
 			}
@@ -374,6 +382,7 @@ void VS1003_handle(void) {
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         printf("Parsing headers error\r\n");
+                        ReconnectStrategy = RECONNECT_WAIT_LONG;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
@@ -383,7 +392,7 @@ void VS1003_handle(void) {
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         printf("Stream redirected");
-                        reconnect_immediately = 1;
+                        ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
                     default:
@@ -396,6 +405,7 @@ void VS1003_handle(void) {
             if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no header timeout - reseting\r\n");
+                ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
             }            
             break;
@@ -406,6 +416,7 @@ void VS1003_handle(void) {
 			if(TCPWasReset(VS_Socket))
 			{
 				StreamState = STREAM_HTTP_CLOSE;
+                ReconnectStrategy = RECONNECT_WAIT_LONG;
                 printf("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
 			}
@@ -413,6 +424,7 @@ void VS1003_handle(void) {
             if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
                 //There was no data in 5 seconds - reconnect
                 printf("Internet radio: no new data timeout - reseting\r\n");
+                ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
             }
             
@@ -466,19 +478,27 @@ void VS1003_handle(void) {
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			TCPDisconnect(VS_Socket);
 			VS_Socket = INVALID_SOCKET;
-			StreamState = STREAM_HTTP_RECONNECT;
-			break;
-	
-		case STREAM_HTTP_RECONNECT:
-			// Do nothing unless the user pushes BUTTON1 and wants to restart the whole connection/download process
-			//if(BUTTON1_IO == 0u)
-            Timer = TickGet();
             VS1003_stopSong();
-            StreamState = reconnect_immediately ? STREAM_HTTP_BEGIN : STREAM_HTTP_RECONNECT_WAIT;
+            switch(ReconnectStrategy) {
+                case DO_NOT_RECONNECT:
+                    StreamState = STREAM_HOME;
+                    break;
+                case RECONNECT_IMMEDIATELY:
+                    StreamState = STREAM_HTTP_BEGIN;
+                    break;
+                case RECONNECT_WAIT_LONG:
+                case RECONNECT_WAIT_SHORT:
+                    StreamState = STREAM_HTTP_RECONNECT_WAIT;
+                    break;
+                default:
+                    StreamState = STREAM_HOME;
+                    break;
+            }
+            Timer = TickGet();
 			break;
             
         case STREAM_HTTP_RECONNECT_WAIT:
-            if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND) {
+            if ( (DWORD)(TickGet()-Timer) > ((ReconnectStrategy == RECONNECT_WAIT_LONG) ? (5*TICK_SECOND) : (1*TICK_SECOND)) ) {
                 printf("Internet radio: reconnecting\r\n");
                 StreamState = STREAM_HTTP_BEGIN;
             }
@@ -690,10 +710,12 @@ void VS1003_play_http_stream(const char* url) {
     if (parse_url(url, strlen(url), &uri)) {
         printf("New URL parsed successfully.\r\n");
         StreamState = STREAM_HTTP_BEGIN;
+        ReconnectStrategy = RECONNECT_WAIT_SHORT;
     }
     else {
         printf("URL parsing error\r\n");
         StreamState = STREAM_HOME;
+        ReconnectStrategy = DO_NOT_RECONNECT;
     }
     printf("New URI. Server: %s, File: %s\r\n", uri.server, uri.file);
 }
