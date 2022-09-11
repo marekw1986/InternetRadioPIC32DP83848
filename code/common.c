@@ -55,7 +55,7 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
 	
 	if (str == NULL) { return HTTP_HEADER_ERROR; }
 	
-	if (strncmp(str, "HTTP/", 5) != 0) {
+	if ( (strncmp(str, "HTTP/", 5) != 0) && (strncmp(str, "ICY", 3) != 0) ) {
 		return HTTP_HEADER_ERROR;
 	}
 	tok = strchr(str, ' ');
@@ -159,10 +159,10 @@ uint8_t parse_url (const char* url, size_t len, uri_t* uri) {
 		//printf("Nie wykryto dwukropka\r\n");
 		tok = strchr(serverbegin, '/');
 		if (tok) {
-			if (tok >= url+len) { printf("Tu\r\n"); return 0; }
+			if (tok >= url+len) { return 0; }
             serverlen = tok-serverbegin;
 			rest = tok;
-			if (rest >= url+len) { printf("Tu2\r\n"); return 0; }
+			if (rest >= url+len) { return 0; }
 		}
 		else {
 			//printf("Oczekiwano znaku /, cos jest nie tak\r\n");
@@ -175,6 +175,7 @@ uint8_t parse_url (const char* url, size_t len, uri_t* uri) {
     uri->server[serverlen] = '\0';
 	filelen = strlen(rest);
     if (filelen > (sizeof(uri->file)+1)) { return 0; }
-	strncpy(uri->file, rest, filelen);
+	memcpy(uri->file, rest, filelen);
+    uri->file[filelen] = '\0';
 	return 1;
 }
