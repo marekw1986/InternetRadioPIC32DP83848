@@ -273,16 +273,27 @@ void next_func (void) {
 
 void rot_func (void) {
     printf("ROTARY DIAL pressed!\r\n");
+    //VS1003_play_file("2:/test.mp3");
+    VS1003_play_dir("2:/");
 }
 
 
 void prev_hold_func (void) {
     printf("PREV button HELD!\r\n");
+    //VS1003_play_file("2:/test.mp3");
+    VS1003_play_dir("2:/");
 }
 
 
 void next_hold_func (void) {
     printf("NEXT button HELD!\r\n");
+    if (VS1003_getLoop()) {
+        VS1003_setLoop(FALSE);
+    }
+    else {
+        VS1003_setLoop(TRUE);
+    }
+    printf("VS1003 loop is %s\r\n", VS1003_getLoop() ? "enabled" : "disabled");
 }
 
 

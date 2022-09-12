@@ -88,8 +88,9 @@ FIL fsrc;
 DIR vsdir;
 
 static TCP_SOCKET	VS_Socket = INVALID_SOCKET;
-
-uri_t uri;
+static uri_t uri;
+static BOOL loop_flag = FALSE;
+static BOOL dir_flag = FALSE;
 
 typedef enum {
     STREAM_HOME = 0,
@@ -457,23 +458,37 @@ void VS1003_handle(void) {
                 //new_data_needed = 0;
                 FRESULT res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][vsBuffer_shift], 512, &br);
                 if (res == FR_OK) {
-                    printf("%d bytes of data loaded. Buffer %d. Shift %d\r\n", br, (active_buffer ^ 0x01), vsBuffer_shift);
+                    //printf("%d bytes of data loaded. Buffer %d. Shift %d\r\n", br, (active_buffer ^ 0x01), vsBuffer_shift);
                     vsBuffer_shift += 512;
                     if (vsBuffer_shift >= VS_BUFFER_SIZE) {
                         vsBuffer_shift = 0;
                         new_data_needed = 0;
                     }
 
-                    if (br < 512) {
-                        VS1003_stopPlaying();
+                    if (br < 512) {     //end of file
+                        if (dir_flag) {
+                            VS1003_play_next_audio_file_from_directory();   //it handles loops
+                        }
+                        else {
+                            if (loop_flag) {
+                                res = f_lseek(&fsrc, 0);
+                                if (res != FR_OK) printf("f_lseek ERROR\r\n");
+                            }
+                            else {
+                                VS1003_stopPlaying();
+                                f_close(&fsrc);
+                                StreamState = STREAM_HOME;
+                            }
+                        }
                         //VS1003_startPlaying();
                         //res = f_lseek(&fsrc, 0);
                         //if (res != FR_OK) printf("f_lseek ERROR\r\n");
                         //else printf("f_lseek OK\r\n");
-                        VS1003_play_next_audio_file_from_directory();
+                        //VS1003_play_next_audio_file_from_directory();
                     }
                 }
-            }            
+            }
+            VS1003_feed_from_buffer();            
             break;
 	
 		case STREAM_HTTP_CLOSE:
@@ -681,16 +696,25 @@ static uint8_t is_audio_file (char* name) {
 void VS1003_play_next_audio_file_from_directory (void) {
     FILINFO info;
     char buf[257];
-            
+    
+    if(!dir_flag) return;       //currently we are not playing directory
+    
     while (f_readdir(&vsdir, &info) == FR_OK) {
         if (!info.fname[0]) {           //Empty string - end of directory
-            f_rewinddir(&vsdir);
+            if (loop_flag) {
+                f_rewinddir(&vsdir);
+            }
+            else {
+                f_closedir(&vsdir);
+                VS1003_stop();
+                dir_flag = FALSE;
+            }
         }
         else {
             if (is_audio_file(info.fname)) {
                 //f_close(file);
                 //f_open(file, info.fname, FA_READ);
-                snprintf(buf, sizeof(buf)-1, "2:/%s", info.fname);
+                snprintf(buf, sizeof(buf)-1, "2:/%s", info.fname);      //TODO: handle different drives
                 VS1003_play_file(buf);
                 return;
             }
@@ -702,13 +726,28 @@ void VS1003_play_next_audio_file_from_directory (void) {
 
 
 void VS1003_play_http_stream(const char* url) {
-    VS1003_stop();
-    if (StreamState != STREAM_HOME) return;
+    switch (StreamState) {
+        case STREAM_HTTP_GET_DATA:
+            if(VS_Socket != INVALID_SOCKET) {   //Just in case
+                TCPDisconnect(VS_Socket);
+                VS_Socket = INVALID_SOCKET;       
+            }
+            break;
+        case STREAM_FILE_GET_DATA:
+            f_close(&fsrc);
+            if (dir_flag) {
+                f_closedir(&vsdir);
+                dir_flag = FALSE;
+            }
+            break;
+        case STREAM_HOME:
+            break;
+        default:
+            return;
+            break;
+    }    
+    VS1003_stopPlaying();
     
-    if (VS_Socket != INVALID_SOCKET) {
-        TCPDisconnect(VS_Socket);
-        VS_Socket = INVALID_SOCKET;
-    } 
     if (parse_url(url, strlen(url), &uri)) {
         StreamState = STREAM_HTTP_BEGIN;
         ReconnectStrategy = RECONNECT_WAIT_SHORT;
@@ -717,6 +756,7 @@ void VS1003_play_http_stream(const char* url) {
         StreamState = STREAM_HOME;
         ReconnectStrategy = DO_NOT_RECONNECT;
     }
+    VS1003_startPlaying();
 }
 
 void VS1003_play_next_http_stream_from_list(void) {
@@ -728,15 +768,23 @@ void VS1003_play_next_http_stream_from_list(void) {
 }
 
 void VS1003_play_file (char* url) {
-    VS1003_stop();
-    if (StreamState != STREAM_HOME) return;
-    
-    if(VS_Socket != INVALID_SOCKET) {   //Just in case
-        TCPDisconnect(VS_Socket);
-        VS_Socket = INVALID_SOCKET;       
-    }
-    f_close(&fsrc);
-    VS1003_stopPlaying();          //Stop song that is already playing
+    switch (StreamState) {
+        case STREAM_HTTP_GET_DATA:
+            if(VS_Socket != INVALID_SOCKET) {   //Just in case
+                TCPDisconnect(VS_Socket);
+                VS_Socket = INVALID_SOCKET;       
+            }
+            break;
+        case STREAM_FILE_GET_DATA:
+            f_close(&fsrc);
+            break;
+        case STREAM_HOME:
+            break;
+        default:
+            return;
+            break;
+    }      
+    VS1003_stopPlaying();
     
     FRESULT res = f_open(&fsrc, url, FA_READ);
     if (res != FR_OK) {
@@ -758,6 +806,7 @@ void VS1003_play_dir (const char* url) {
         printf("f_opendir error code: %i\r\n", res);
         return;
     }
+    dir_flag = TRUE;
     VS1003_play_next_audio_file_from_directory();
 }
 
@@ -779,5 +828,14 @@ void VS1003_stop(void) {
             break;
     }
     VS1003_stopPlaying();
+    dir_flag = FALSE;
     StreamState = STREAM_HOME;
+}
+
+void VS1003_setLoop(BOOL val) {
+    loop_flag = val;
+}
+
+BOOL VS1003_getLoop(void) {
+    return loop_flag;
 }
