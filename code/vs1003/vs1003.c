@@ -154,6 +154,8 @@ const char * register_names[] =
   "AICTRL3",
 };
 
+static void VS1003_startPlaying(void);
+static void VS1003_stopPlaying(void);
 static inline void await_data_request(void);
 static inline void control_mode_on(void);
 static inline void control_mode_off(void);
@@ -273,8 +275,8 @@ void handle_file_reading (void) {
             }
             
             if (br < 512) {
-                VS1003_stopSong();
-                //VS1003_startSong();
+                VS1003_stopPlaying();
+                //VS1003_startPlaying();
                 //res = f_lseek(&fsrc, 0);
                 //if (res != FR_OK) printf("f_lseek ERROR\r\n");
                 //else printf("f_lseek OK\r\n");
@@ -377,7 +379,7 @@ void VS1003_handle(void) {
             if (tok) {
                 tok[2] = '\0';
                 tok[3] = '\0';
-                printf(vsBuffer[0]);
+                //printf(vsBuffer[0]);
                 http_res_t http_result = parse_http_headers(vsBuffer[0], strlen(vsBuffer[0]), &uri);
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
@@ -389,9 +391,10 @@ void VS1003_handle(void) {
                         printf("It is 200 OK\r\n");
                         Timer = TickGet();
                         StreamState = STREAM_HTTP_GET_DATA;
+                        VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
-                        printf("Stream redirected");
+                        printf("Stream redirected\r\n");
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
@@ -462,8 +465,8 @@ void VS1003_handle(void) {
                     }
 
                     if (br < 512) {
-                        VS1003_stopSong();
-                        //VS1003_startSong();
+                        VS1003_stopPlaying();
+                        //VS1003_startPlaying();
                         //res = f_lseek(&fsrc, 0);
                         //if (res != FR_OK) printf("f_lseek ERROR\r\n");
                         //else printf("f_lseek OK\r\n");
@@ -478,7 +481,7 @@ void VS1003_handle(void) {
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			TCPDisconnect(VS_Socket);
 			VS_Socket = INVALID_SOCKET;
-            VS1003_stopSong();
+            VS1003_stopPlaying();
             switch(ReconnectStrategy) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
@@ -584,21 +587,8 @@ void VS1003_setVolume(uint8_t vol) {
 
 /****************************************************************************/
 
-void VS1003_startSong(void) {
-  VS1003_sdi_send_zeroes(10);
-}
-
-/****************************************************************************/
-
 void VS1003_playChunk(const uint8_t* data, size_t len) {
   VS1003_sdi_send_buffer(data,len);
-}
-
-/****************************************************************************/
-
-void VS1003_stopSong(void) {
-  //VS1003_sdi_send_zeroes(2048);
-    memset(vsBuffer, 0x00, sizeof(vsBuffer));
 }
 
 /****************************************************************************/
@@ -641,29 +631,38 @@ void VS1003_loadUserCode(const uint16_t* buf, size_t len) {
 }
 
 
-  static inline void await_data_request(void) {
+static inline void await_data_request(void) {
     while ( !VS_DREQ_PIN );
-  }
+}
 
-  static inline void control_mode_on(void) {
+static inline void control_mode_on(void) {
     VS_DCS_PIN = 1;
     VS_CS_PIN = 0;
-  }
+}
 
-  static inline void control_mode_off(void) {
+static inline void control_mode_off(void) {
     VS_CS_PIN = 1;
-  }
+}
 
-  static inline void data_mode_on(void) {
+static inline void data_mode_on(void) {
     VS_CS_PIN = 1;
     VS_DCS_PIN = 0;
-  }
+}
 
-  static inline void data_mode_off(void) {
+static inline void data_mode_off(void) {
     VS_DCS_PIN = 1;
-  }
+}
   
-  static uint8_t VS1003_SPI_transfer(uint8_t outB) {
+static void VS1003_startPlaying(void) {
+  VS1003_sdi_send_zeroes(10);
+}
+  
+static void VS1003_stopPlaying(void) {
+    VS1003_sdi_send_zeroes(2048);
+    memset(vsBuffer, 0x00, sizeof(vsBuffer));
+}
+  
+static uint8_t VS1003_SPI_transfer(uint8_t outB) {
     SPI1BUF = outB;
     while (SPI1STATbits.SPITBF);
     while (!SPI1STATbits.SPIRBF);
@@ -703,21 +702,21 @@ void VS1003_play_next_audio_file_from_directory (void) {
 
 
 void VS1003_play_http_stream(const char* url) {
+    VS1003_stop();
+    if (StreamState != STREAM_HOME) return;
+    
     if (VS_Socket != INVALID_SOCKET) {
         TCPDisconnect(VS_Socket);
         VS_Socket = INVALID_SOCKET;
     } 
     if (parse_url(url, strlen(url), &uri)) {
-        printf("New URL parsed successfully.\r\n");
         StreamState = STREAM_HTTP_BEGIN;
         ReconnectStrategy = RECONNECT_WAIT_SHORT;
     }
     else {
-        printf("URL parsing error\r\n");
         StreamState = STREAM_HOME;
         ReconnectStrategy = DO_NOT_RECONNECT;
     }
-    printf("New URI. Server: %s, File: %s\r\n", uri.server, uri.file);
 }
 
 void VS1003_play_next_http_stream_from_list(void) {
@@ -729,19 +728,25 @@ void VS1003_play_next_http_stream_from_list(void) {
 }
 
 void VS1003_play_file (char* url) {
-    FRESULT res;
+    VS1003_stop();
+    if (StreamState != STREAM_HOME) return;
     
+    if(VS_Socket != INVALID_SOCKET) {   //Just in case
+        TCPDisconnect(VS_Socket);
+        VS_Socket = INVALID_SOCKET;       
+    }
     f_close(&fsrc);
+    VS1003_stopPlaying();          //Stop song that is already playing
     
-    VS1003_stopSong();          //Stop song that is already playing
-    
-    res = f_open(&fsrc, url, FA_READ);
+    FRESULT res = f_open(&fsrc, url, FA_READ);
     if (res != FR_OK) {
         printf("f_open error code: %i\r\n", res);
+        StreamState = STREAM_HOME;
         return;
     }
     
-    VS1003_startSong();         //Start playing song
+    StreamState = STREAM_FILE_GET_DATA;
+    VS1003_startPlaying();         //Start playing song
 }
 
 
@@ -754,4 +759,25 @@ void VS1003_play_dir (const char* url) {
         return;
     }
     VS1003_play_next_audio_file_from_directory();
+}
+
+
+void VS1003_stop(void) {
+    //Can be stopped only if it is actually playing
+    switch (StreamState) {
+        case STREAM_HTTP_GET_DATA:
+            if(VS_Socket != INVALID_SOCKET) {   //Just in case
+                TCPDisconnect(VS_Socket);
+                VS_Socket = INVALID_SOCKET;       
+            }
+            break;
+        case STREAM_FILE_GET_DATA:
+            f_close(&fsrc);
+            break;
+        default:
+            return;
+            break;
+    }
+    VS1003_stopPlaying();
+    StreamState = STREAM_HOME;
 }

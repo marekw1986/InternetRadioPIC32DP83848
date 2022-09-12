@@ -266,7 +266,8 @@ void prev_func (void) {
 void next_func (void) {
     printf("NEXT button pressed!\r\n");
     //VS1003_play_next_audio_file_from_directory();
-    VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
+    //VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
+    VS1003_stop();
 }
 
 
