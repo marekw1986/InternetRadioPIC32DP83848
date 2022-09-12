@@ -21,7 +21,7 @@ void button_handle(button_t *btn) {
         btn->timer = millis();
     }
     else if (btn->state) {
-        if(pressed && (btn->state)==DEBOUNCE && ((uint32_t)(millis()-(btn->timer)) >= 20)) {
+        if(pressed && (btn->state)==DEBOUNCE && ((uint32_t)(millis()-(btn->timer)) >= 100)) {
             btn->state = WAIT_LONG;
             btn->timer = millis();
         }
@@ -29,7 +29,7 @@ void button_handle(button_t *btn) {
             if (btn->push_proc) (btn->push_proc)();
             btn->state = IDLE;
         }
-        else if (pressed && (btn->state)==WAIT_LONG && ((uint32_t)(millis()-(btn->timer)) >= 2000)) {
+        else if (pressed && (btn->state)==WAIT_LONG && ((uint32_t)(millis()-(btn->timer)) >= 3000)) {
             if (btn->long_proc) (btn->long_proc)();
             btn->state = WAIT_RELEASE;
             btn->timer = 0;
