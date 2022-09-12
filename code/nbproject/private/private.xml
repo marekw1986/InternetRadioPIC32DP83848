@@ -10,10 +10,12 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/hd44780.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/common.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/config/config.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/GenericTypeDefs.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/net/TCP.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/net/TCP.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/common.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/buttons.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/i2c.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/diskio.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/main.c</file>

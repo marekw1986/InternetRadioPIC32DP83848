@@ -259,6 +259,7 @@ void usb_write (void) {
 
 void prev_func (void) {
     printf("PREV button pressed!\r\n");
+    VS1003_stop();
     VS1003_play_next_http_stream_from_list();
 }
 
@@ -274,6 +275,7 @@ void next_func (void) {
 void rot_func (void) {
     printf("ROTARY DIAL pressed!\r\n");
     //VS1003_play_file("2:/test.mp3");
+    VS1003_stop();
     VS1003_play_dir("2:/");
 }
 
@@ -281,6 +283,7 @@ void rot_func (void) {
 void prev_hold_func (void) {
     printf("PREV button HELD!\r\n");
     //VS1003_play_file("2:/test.mp3");
+    VS1003_stop();
     VS1003_play_dir("2:/");
 }
 
