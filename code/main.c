@@ -134,7 +134,8 @@ int main(int argc, char** argv) {
     
     VS1003_begin();
     VS1003_setVolume(0x00);
-    VS1003_play_dir("2:/");
+    //VS1003_play_dir("2:/");
+    VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
     
     ClearWDT();
     EnableWDT();
@@ -258,27 +259,41 @@ void usb_write (void) {
 
 void prev_func (void) {
     printf("PREV button pressed!\r\n");
+    VS1003_play_next_http_stream_from_list();
 }
 
 
 void next_func (void) {
     printf("NEXT button pressed!\r\n");
-    VS1003_play_next_audio_file_from_directory();
+    //VS1003_play_next_audio_file_from_directory();
+    //VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
+    VS1003_stop();
 }
 
 
 void rot_func (void) {
     printf("ROTARY DIAL pressed!\r\n");
+    //VS1003_play_file("2:/test.mp3");
+    VS1003_play_dir("2:/");
 }
 
 
 void prev_hold_func (void) {
     printf("PREV button HELD!\r\n");
+    //VS1003_play_file("2:/test.mp3");
+    VS1003_play_dir("2:/");
 }
 
 
 void next_hold_func (void) {
     printf("NEXT button HELD!\r\n");
+    if (VS1003_getLoop()) {
+        VS1003_setLoop(FALSE);
+    }
+    else {
+        VS1003_setLoop(TRUE);
+    }
+    printf("VS1003 loop is %s\r\n", VS1003_getLoop() ? "enabled" : "disabled");
 }
 
 
