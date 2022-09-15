@@ -79,7 +79,7 @@ uint8_t IsPlayable(char* File_Name);
 int main(int argc, char** argv) {
     
     int i;
-    int8_t counter = 0;
+    int8_t counter = 90;
     int8_t tmp;
     uint32_t upt = 0;
     FRESULT res;
@@ -133,7 +133,8 @@ int main(int argc, char** argv) {
     lcd_str("Rotary: ");
     
     VS1003_begin();
-    VS1003_setVolume(0x00);
+    VS1003_setVolume(map(counter, 0, 100, 0xFE, 0x00));
+    //VS1003_setVolume(0x00);
     //VS1003_play_dir("2:/");
     VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
     

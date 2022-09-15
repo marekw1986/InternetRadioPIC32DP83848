@@ -74,7 +74,11 @@ const char* internet_radios[] = {
     "http://stream3.polskieradio.pl:8904/",                                 //PR3
     "http://stream4.nadaje.com:9680/radiokrakow-s3",                        //Kraków
     "http://195.150.20.5/rmf_fm",                                           //RMF
-    "http://redir.atmcdn.pl/sc/o2/Eurozet/live/audio.livx?audio=5"          //Zet
+    "http://redir.atmcdn.pl/sc/o2/Eurozet/live/audio.livx?audio=5",         //Zet
+    "http://ckluradio.laurentian.ca:88/broadwave.mp3",                      //CKLU
+    "http://stream.rcs.revma.com/an1ugyygzk8uv",                            //Radio 357
+    "http://stream.rcs.revma.com/ypqt40u0x1zuv",                            //Radio Nowy Swiat
+    "http://51.255.8.139:8822/stream"                                       //Radio Pryzmat
 };
 
 #define VS_BUFFER_SIZE  8192
@@ -326,13 +330,15 @@ void VS1003_handle(void) {
 			if(!TCPIsConnected(VS_Socket))
 			{
 				// Time out if too much time is spent in this state
-				if(TickGet()-Timer > 5*TICK_SECOND)
+				if((DWORD)(TickGet()-Timer) > 5*TICK_SECOND)
 				{
 					// Close the socket so it can be used by other modules
 					TCPDisconnect(VS_Socket);
 					VS_Socket = INVALID_SOCKET;
 					StreamState = STREAM_HTTP_BEGIN;     //was StreamState--
                     ReconnectStrategy = DO_NOT_RECONNECT;
+                    //TODO limit number of reconnections or repair differently
+                    //If we stuck here, it breaks state machine!!!!!
 				}
 				break;
 			}
@@ -340,8 +346,9 @@ void VS1003_handle(void) {
 			Timer = TickGet();
 
 			// Make certain the socket can be written to
-			if( TCPIsPutReady(VS_Socket) < (49u + strlen(uri.file) + strlen(uri.server)) )
+			if( TCPIsPutReady(VS_Socket) < (49u + strlen(uri.file) + strlen(uri.server)) ) {
 				break;
+            }
 			
 			// Place the application protocol data into the transmit buffer.  For this example, we are connected to an HTTP server, so we'll send an HTTP GET request.
 			TCPPutROMString(VS_Socket, (ROM BYTE*)"GET ");
@@ -790,6 +797,9 @@ void VS1003_play_dir (const char* url) {
 void VS1003_stop(void) {
     //Can be stopped only if it is actually playing
     switch (StreamState) {
+        case STREAM_HTTP_BEGIN:
+        case STREAM_HTTP_SOCKET_OBTAINED:
+        case STREAM_HTTP_PROCESS_HEADER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {
                 TCPDisconnect(VS_Socket);
