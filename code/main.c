@@ -79,7 +79,7 @@ uint8_t IsPlayable(char* File_Name);
 int main(int argc, char** argv) {
     
     int i;
-    int8_t counter = 0;
+    int8_t counter = 90;
     int8_t tmp;
     uint32_t upt = 0;
     FRESULT res;
@@ -133,7 +133,8 @@ int main(int argc, char** argv) {
     lcd_str("Rotary: ");
     
     VS1003_begin();
-    VS1003_setVolume(0x00);
+    VS1003_setVolume(map(counter, 0, 100, 0xFE, 0x00));
+    //VS1003_setVolume(0x00);
     //VS1003_play_dir("2:/");
     VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
     
@@ -259,6 +260,7 @@ void usb_write (void) {
 
 void prev_func (void) {
     printf("PREV button pressed!\r\n");
+    VS1003_stop();
     VS1003_play_next_http_stream_from_list();
 }
 
@@ -274,6 +276,7 @@ void next_func (void) {
 void rot_func (void) {
     printf("ROTARY DIAL pressed!\r\n");
     //VS1003_play_file("2:/test.mp3");
+    VS1003_stop();
     VS1003_play_dir("2:/");
 }
 
@@ -281,6 +284,7 @@ void rot_func (void) {
 void prev_hold_func (void) {
     printf("PREV button HELD!\r\n");
     //VS1003_play_file("2:/test.mp3");
+    VS1003_stop();
     VS1003_play_dir("2:/");
 }
 

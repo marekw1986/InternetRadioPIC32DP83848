@@ -65,7 +65,7 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
 		if (strncmp(code, "200 OK", 6) == 0) {
 			return HTTP_HEADER_OK;
 		}
-		else if ( (strncmp(code, "301 Moved Permanently", 21) == 0) || (strncmp(code, "302 Moved Temporarily", 21) == 0) ) {
+		else if ( (strncmp(code, "301 Moved Permanently", 21) == 0) || (strncmp(code, "302 Moved Temporarily", 21) == 0) || (strncmp(code, "302 Found", 9) == 0) ) {
 			char* location = strstr(code, "Location: ");
 			if (location) {
 				char* newurl = location+10;
