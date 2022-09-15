@@ -100,6 +100,7 @@ typedef enum {
     STREAM_HOME = 0,
     STREAM_HTTP_BEGIN,
     STREAM_HTTP_SOCKET_OBTAINED,
+    STREAM_HTTP_SEND_REQUEST,
     STREAM_HTTP_PROCESS_HEADER,
     STREAM_HTTP_GET_DATA,
     STREAM_FILE_GET_DATA,
@@ -342,11 +343,17 @@ void VS1003_handle(void) {
 				}
 				break;
 			}
-
+            StreamState = STREAM_HTTP_SEND_REQUEST;
 			Timer = TickGet();
-
+            break;
+            
+        case STREAM_HTTP_SEND_REQUEST:
 			// Make certain the socket can be written to
 			if( TCPIsPutReady(VS_Socket) < (49u + strlen(uri.file) + strlen(uri.server)) ) {
+                if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND ) {
+                    StreamState = STREAM_HTTP_CLOSE;
+                    ReconnectStrategy = RECONNECT_WAIT_LONG;
+                }
 				break;
             }
 			
@@ -799,6 +806,7 @@ void VS1003_stop(void) {
     switch (StreamState) {
         case STREAM_HTTP_BEGIN:
         case STREAM_HTTP_SOCKET_OBTAINED:
+        case STREAM_HTTP_SEND_REQUEST:
         case STREAM_HTTP_PROCESS_HEADER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {
