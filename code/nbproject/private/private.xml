@@ -3,23 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/main.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/net/HTTP2.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/vs1003/vs1003.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/vs1003/vs1003.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/config/config.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/MPFSImg2.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/TCPIPConfig.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/diskio.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/hd44780.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/lcd/i2c.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/rotary.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/rotary.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/common.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/common.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/net/TCP.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/net/TCP.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/GenericTypeDefs.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/btn/buttons.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/vs1003/vs1003.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/HTTPPrint.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/main.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/uart/uart.c</file>
         </group>
     </open-files>
 </project-private>
