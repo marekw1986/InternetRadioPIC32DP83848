@@ -55,6 +55,7 @@
 #pragma config UPLLIDIV = DIV_2
 
 uint8_t buffer[512];
+FATFS SpiFS;
 FATFS FatFS;
 button_t prev_btn, next_btn, rot_btn;
 
@@ -112,6 +113,10 @@ int main(int argc, char** argv) {
     
     delay_ms(500);  //TEST
     
+    res = f_mount(&FatFS, "0:", 1);
+    if (res != FR_OK) {printf("SPI Flash f_mount error code: %i\r\n", res);}
+    else {printf("SPI Flash f_mount OK\r\n");}     
+    
     res = f_mount(&FatFS, "2:", 1);
     if (res != FR_OK) {printf("f_mount error code: %i\r\n", res);}
     else {printf("f_mount OK\r\n");}
@@ -136,7 +141,7 @@ int main(int argc, char** argv) {
     VS1003_setVolume(map(counter, 0, 100, 0xFE, 0x00));
     //VS1003_setVolume(0x00);
     //VS1003_play_dir("2:/");
-    VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
+    //VS1003_play_http_stream("http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5");
     
     ClearWDT();
     EnableWDT();
@@ -175,13 +180,13 @@ int main(int argc, char** argv) {
             ClearWDT();
         }
         
-        /*
-        if ((uint32_t)(millis()-usb_timer) >= 5000) {
-            usb_timer = millis();
-            usb_write();
-            printf("Test\r\n");
-        }
-        */
+        
+//        if ((uint32_t)(millis()-usb_timer) >= 5000) {
+//            usb_timer = millis();
+//            usb_write();
+//            printf("Test\r\n");
+//        }
+        
         
         
         if (uptime() != upt) {
