@@ -100,6 +100,7 @@ typedef enum {
     STREAM_HOME = 0,
     STREAM_HTTP_BEGIN,
     STREAM_HTTP_SOCKET_OBTAINED,
+    STREAM_HTTP_SEND_REQUEST,
     STREAM_HTTP_PROCESS_HEADER,
     STREAM_HTTP_GET_DATA,
     STREAM_FILE_GET_DATA,
@@ -342,11 +343,17 @@ void VS1003_handle(void) {
 				}
 				break;
 			}
-
+            StreamState = STREAM_HTTP_SEND_REQUEST;
 			Timer = TickGet();
-
+            break;
+            
+        case STREAM_HTTP_SEND_REQUEST:
 			// Make certain the socket can be written to
 			if( TCPIsPutReady(VS_Socket) < (49u + strlen(uri.file) + strlen(uri.server)) ) {
+                if ( (DWORD)(TickGet()-Timer) > 5*TICK_SECOND ) {
+                    StreamState = STREAM_HTTP_CLOSE;
+                    ReconnectStrategy = RECONNECT_WAIT_LONG;
+                }
 				break;
             }
 			
@@ -464,16 +471,16 @@ void VS1003_handle(void) {
             if (new_data_needed) {
                 unsigned int br;
                 //new_data_needed = 0;
-                FRESULT res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][vsBuffer_shift], 512, &br);
+                FRESULT res = f_read(&fsrc, &vsBuffer[active_buffer ^ 0x01][vsBuffer_shift], 32, &br);
                 if (res == FR_OK) {
                     //printf("%d bytes of data loaded. Buffer %d. Shift %d\r\n", br, (active_buffer ^ 0x01), vsBuffer_shift);
-                    vsBuffer_shift += 512;
+                    vsBuffer_shift += 32;
                     if (vsBuffer_shift >= VS_BUFFER_SIZE) {
                         vsBuffer_shift = 0;
                         new_data_needed = 0;
                     }
 
-                    if (br < 512) {     //end of file
+                    if (br < 32) {     //end of file
                         if (dir_flag) {
                             VS1003_play_next_audio_file_from_directory();   //it handles loops
                         }
@@ -591,7 +598,7 @@ void VS1003_begin(void) {
   //SPI.setClockDivider(SPI_CLOCK_DIV4); // Fastest available
   //SPI1 configuration     
   SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = (GetPeripheralClock()-1ul)/2ul/4000000;       //4MHz
+  SPI1BRG = (GetPeripheralClock()-1ul)/2ul/8000000;       //8MHz
 
   printf("VS1003 Set\r\n");
   VS1003_printDetails();
@@ -731,7 +738,7 @@ void VS1003_play_next_audio_file_from_directory (void) {
         }
         else {
             if (is_audio_file(info.fname)) {
-                snprintf(buf, sizeof(buf)-1, "2:/%s", info.fname);      //TODO: handle different drives
+                snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, info.fname);
                 VS1003_soft_stop();
                 VS1003_play_file(buf);
                 return;
@@ -791,6 +798,7 @@ void VS1003_play_dir (const char* url) {
         return;
     }
     dir_flag = TRUE;
+    strncpy(uri.server, url, sizeof(uri.server)-1);		//we use uri.server to store current directory path
     VS1003_play_next_audio_file_from_directory();
 }
 
@@ -799,6 +807,7 @@ void VS1003_stop(void) {
     switch (StreamState) {
         case STREAM_HTTP_BEGIN:
         case STREAM_HTTP_SOCKET_OBTAINED:
+        case STREAM_HTTP_SEND_REQUEST:
         case STREAM_HTTP_PROCESS_HEADER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {

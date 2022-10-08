@@ -48,6 +48,7 @@ void VS1003_play_next_audio_file_from_directory (void);
 void VS1003_play_http_stream(const char* url);
 void VS1003_play_next_http_stream_from_list(void);
 void VS1003_play_file (char* url);
+void VS1003_play_dir (const char* url);
 void VS1003_stop(void);
 void VS1003_setLoop(BOOL val);
 BOOL VS1003_getLoop(void);
