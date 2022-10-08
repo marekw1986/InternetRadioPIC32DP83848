@@ -55,8 +55,9 @@
 #pragma config UPLLIDIV = DIV_2
 
 uint8_t buffer[512];
-FATFS SpiFS;
-FATFS FatFS;
+static FATFS SpiFS;
+static FATFS UsbFS;
+static FATFS FatFS;
 button_t prev_btn, next_btn, rot_btn;
 
 
@@ -117,9 +118,13 @@ int main(int argc, char** argv) {
     if (res != FR_OK) {printf("SPI Flash f_mount error code: %i\r\n", res);}
     else {printf("SPI Flash f_mount OK\r\n");}     
     
-    res = f_mount(&FatFS, "2:", 1);
+    res = f_mount(&UsbFS, "1:", 0);
     if (res != FR_OK) {printf("f_mount error code: %i\r\n", res);}
     else {printf("f_mount OK\r\n");}
+    
+    res = f_mount(&FatFS, "2:", 1);
+    if (res != FR_OK) {printf("f_mount error code: %i\r\n", res);}
+    else {printf("f_mount OK\r\n");}    
     
     StackInit();
     
