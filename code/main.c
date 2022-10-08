@@ -54,7 +54,7 @@
 #pragma config UPLLEN   = ON
 #pragma config UPLLIDIV = DIV_2
 
-uint8_t buffer[512];
+static uint8_t buffer[512];
 static FATFS SpiFS;
 static FATFS UsbFS;
 static FATFS FatFS;
@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     uint32_t upt = 0;
     FRESULT res;
     
-    uint32_t wdt_timer, usb_timer, vs_timer;
+    uint32_t usb_timer;
     
     DisableWDT();
     SYSTEMConfigPerformance(SYSCLK);
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
     
     delay_ms(500);  //TEST
     
-    res = f_mount(&FatFS, "0:", 1);
+    res = f_mount(&SpiFS, "0:", 1);
     if (res != FR_OK) {printf("SPI Flash f_mount error code: %i\r\n", res);}
     else {printf("SPI Flash f_mount OK\r\n");}     
     
@@ -178,12 +178,7 @@ int main(int argc, char** argv) {
             VS1003_setVolume(map(counter, 0, 100, 0xFE, 0x00));
         }
         
-        
-        
-        if ((uint32_t)(millis()-wdt_timer) >= 300) {
-            wdt_timer = millis();
-            ClearWDT();
-        }
+		ClearWDT();
         
         
 //        if ((uint32_t)(millis()-usb_timer) >= 5000) {
