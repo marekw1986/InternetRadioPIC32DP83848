@@ -451,10 +451,10 @@ void VS1003_handle(void) {
         case STREAM_FILE_GET_DATA:
             if (get_remaining_space_in_ringbuffer() > 1024) {
                 for (i=0; i<64; i++) {
-                    fres = f_read(&fsrc, data, 32, &br);
+                    fres = f_read(&fsrc, &data[0], 1, &br);
                     if ( fres == FR_OK ) {
-                        if (br) { write_array_to_ringbuffer(data, br); }
-                        if (br < 32) {     //end of file
+                        if (br) { write_byte_to_ringbuffer(data[0]); }
+                        else {     //end of file
                             VS1003_handle_end_of_file();
                         }
                     }
