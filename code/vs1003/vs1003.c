@@ -298,7 +298,9 @@ void handle_file_reading (void) {
 
 void VS1003_handle(void) {   
 	static DWORD		Timer;
-
+    WORD i, w, to_load;
+    uint8_t data[32];
+    
 	switch(StreamState)
 	{
 		case STREAM_HOME:
@@ -372,7 +374,7 @@ void VS1003_handle(void) {
             Timer = TickGet();
             vsBuffer_shift = 0;
 			StreamState = STREAM_HTTP_PROCESS_HEADER;
-            memset(vsBuffer, 0x00, sizeof(vsBuffer));
+            prepare_http_parser();
 			break;
             
         case STREAM_HTTP_PROCESS_HEADER:
@@ -384,19 +386,9 @@ void VS1003_handle(void) {
 				break;
 			}
             
-            WORD to_load = TCPIsGetReady(VS_Socket);
-            WORD w = TCPGetArray(VS_Socket, &vsBuffer[0][vsBuffer_shift], (((VS_BUFFER_SIZE - vsBuffer_shift) >= to_load) ? to_load : (VS_BUFFER_SIZE-vsBuffer_shift)));
-            vsBuffer_shift += w;
-            if (vsBuffer_shift >= VS_BUFFER_SIZE) {
-                vsBuffer_shift = 0;
-            }
-            vsBuffer[0][vsBuffer_shift] = '\0';
-            char* tok = strstr(vsBuffer[0], "\r\n\r\n");
-            if (tok) {
-                tok[2] = '\0';
-                tok[3] = '\0';
-                //printf(vsBuffer[0]);
-                http_res_t http_result = parse_http_headers(vsBuffer[0], strlen(vsBuffer[0]), &uri);
+            w = TCPGetArray(VS_Socket, data, 32);
+            if (w) {
+                http_res_t http_result = parse_http_headers((char*)data, w, &uri);
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         printf("Parsing headers error\r\n");
@@ -406,7 +398,7 @@ void VS1003_handle(void) {
                     case HTTP_HEADER_OK:
                         printf("It is 200 OK\r\n");
                         Timer = TickGet();
-                        StreamState = STREAM_HTTP_GET_DATA;
+                        StreamState = STREAM_HTTP_GET_DATA;     //STREAM_HTTP_GET_DATA
                         VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
@@ -414,11 +406,11 @@ void VS1003_handle(void) {
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
+                    case HTTP_HEADER_IN_PROGRESS:
+                        break;
                     default:
                         break;
                 }
-                
-                
             }
             
             if ( (DWORD)(TickGet()-Timer) > 1*TICK_SECOND) {
