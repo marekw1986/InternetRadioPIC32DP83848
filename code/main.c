@@ -243,7 +243,7 @@ void usb_write (void) {
     FRESULT res;
     FIL file;
 
-    res = f_open(&file, "2:/test.txt", (FA_OPEN_ALWAYS | FA_WRITE));
+    res = f_open(&file, "0:/test.txt", (FA_OPEN_ALWAYS | FA_WRITE));
     if (res != FR_OK) {
         printf("f_open error code: %i\r\n", res);
         return;
