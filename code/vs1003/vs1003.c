@@ -97,6 +97,7 @@ typedef enum {
     STREAM_HTTP_PROCESS_HEADER,
     STREAM_HTTP_FILL_BUFFER,
     STREAM_HTTP_GET_DATA,
+    STREAM_FILE_FILL_BUFFER,            
     STREAM_FILE_GET_DATA,
     STREAM_HTTP_CLOSE,
     STREAM_HTTP_RECONNECT_WAIT        
@@ -448,6 +449,21 @@ void VS1003_handle(void) {
             }
 			break;
             
+         case STREAM_FILE_FILL_BUFFER:
+            if (get_remaining_space_in_ringbuffer() > 128) {
+                fres = f_read(&fsrc, data, 32, &br);
+                if (fres == FR_OK) {
+                    if (br) { write_array_to_ringbuffer(data, br); }
+                    if (br < 32) {  //enn of file
+                        VS1003_handle_end_of_file();
+                    }
+                }
+            }
+            else {
+                StreamState = STREAM_FILE_GET_DATA;
+            }
+            break;
+            
         case STREAM_FILE_GET_DATA:
             if (get_remaining_space_in_ringbuffer() > 1024) {
                 for (i=0; i<64; i++) {
@@ -469,17 +485,8 @@ void VS1003_handle(void) {
             }
             if (VS1003_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
-                while (get_remaining_space_in_ringbuffer() > 128) {
-                    fres = f_read(&fsrc, data, 32, &br);
-                    if (fres == FR_OK) {
-                        if (br) { write_array_to_ringbuffer(data, br); }
-                        if (br < 32) {  //enn of file
-                            VS1003_handle_end_of_file();
-                        }
-                    }
-                    else { break; }
-                }
-            }          
+                StreamState = STREAM_FILE_FILL_BUFFER;
+            }            
             break;
 	
 		case STREAM_HTTP_CLOSE:
@@ -779,7 +786,7 @@ void VS1003_play_file (char* url) {
         return;
     }
     
-    StreamState = STREAM_FILE_GET_DATA;
+    StreamState = STREAM_FILE_FILL_BUFFER;
     VS1003_startPlaying();         //Start playing song
 }
 
@@ -811,6 +818,7 @@ void VS1003_stop(void) {
                 VS_Socket = INVALID_SOCKET;       
             }
             break;
+        case STREAM_FILE_FILL_BUFFER:    
         case STREAM_FILE_GET_DATA:
             f_close(&fsrc);
             if (dir_flag) {
