@@ -18,6 +18,8 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/usb/usb.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/diskio.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/usb/usb_host_msd_scsi.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/fatfs/SPIFlash.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/HardwareProfile.h</file>
         </group>
     </open-files>
 </project-private>
