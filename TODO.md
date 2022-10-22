@@ -4,7 +4,6 @@ Internet radio based on PIC32
 ### Tasks
 - [ ] Create WebUI
 - [ ] Create HD44780 UI
-- [ ] Determine why SPI Flash is so slow
 
 ### Completed Column ✓
 - [x] Debug SD card
@@ -13,3 +12,4 @@ Internet radio based on PIC32
 - [x] Implement circular buffer for audio data
 - [x] Implement memory friendly HTTP header parser
 - [x] Update FatFS library to the newest version
+- [x] Determine why SPI Flash is so slow
