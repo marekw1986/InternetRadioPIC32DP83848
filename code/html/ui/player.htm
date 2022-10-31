@@ -125,10 +125,12 @@ function showDir(path) {
     });
 }
 
-function playFile(path) {
+function play(path, type="file") {
 	var token = document.getElementById('token');
 	var result = document.getElementById('result');
-	var playsrc = "file"
+	var playsrc = type;
+	
+	if (playsrc !== "file" && playsrc !== "dir" && playsrc !== "stream") return;
 
 	var http_request;
 	try {
@@ -172,22 +174,39 @@ function fileAction() {
 	var option = select[select.selectedIndex];
 	var type = option.dataset.type;
 	
-	if (type == "dir") {
+	if (type === "dir") {
 		showDir(option.value);
 	}
-	else if (type == "file") {
-		playFile(option.value);
+	else if (type === "file") {
+		play(option.value);
+	}
+	else if (type === "stream") {
+		play(option.value, "stream");
 	}
 }
+
+function playBtnAction() {
+	var select = document.getElementById('files');
+	var option = select[select.selectedIndex];
+	var type = option.dataset.type;
+	play(option.value, type);
+}
+
+function stopBtnAction() {
+	play("bzdura", "dir");
+}
+
 </script>
 </head>
-<body onload="showDir('1:/')">
+<body onload="showDir('1:')">
 <script src="/ui/menu.js"></script>
 <div id="main">
 <h1>Odtwarzanie</h1>
 <input type="hidden" name="token" id="token" value="~configToken~">
 <select name="files" id="files" size="15" ondblclick="fileAction()">
 </select><br>
+<input type="button" name="play_button" value="Odtwarzaj" onclick="playBtnAction()">
+<input type="button" name="stop_button" value="Stop" onclick="stopBtnAction()"><br>
 <label for="url">URL:</label>
 <input type="text" name="url" id="url" value=""><br>
 <label for="http_stream">Stream HTTP</label>
