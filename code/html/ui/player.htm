@@ -96,28 +96,49 @@ function showDir(path) {
         var select = document.getElementById('files');
         if (err === null) {
 			clearFiles();
-			var back = document.createElement('option');
-			var upperDir = data.parent.substr(0, data.parent.lastIndexOf("/"));
-			back.value = upperDir;
-			back.innerHTML = "..";
-			back.dataset.type = "dir";
-			select.appendChild(back);
+			if (data.parent !== "root") {
+				var back = document.createElement('option');
+				if (data.parent === "streams") {
+					back.value = "root";
+				}
+				else {
+					back.value = data.parent.substr(0, data.parent.lastIndexOf("/"));
+					if (back.value === "") back.value = "root";
+				}
+				back.innerHTML = "..";
+				back.dataset.type = "dir";
+				select.appendChild(back);
+			}
 			data.dirs.sort();
             for (i=0; i<data.dirs.length; i++) {
 				var opt = document.createElement('option');
-                opt.value = data.parent + "/" + data.dirs[i];
+				if (data.parent !== "root" && data.parent !== "streams") {
+					opt.value = data.parent + "/"
+				}
+                opt.value += data.dirs[i];
                 opt.innerHTML = "&#128193 " + data.dirs[i];
                 opt.dataset.type = "dir";
                 select.appendChild(opt);
             }
             data.files.sort();
-            for (i=0; i<data.files.length; i++) {
-				var opt = document.createElement('option');
-                opt.value = data.parent + "/" + data.files[i];
-                opt.innerHTML = "&#9834 " + data.files[i];
-                opt.dataset.type = "file";
-                select.appendChild(opt);
-            }
+            if (data.parent === "streams") {
+				for (i=0; i<data.files.length; i++) {
+					var opt = document.createElement('option');
+					opt.value = data.files[i];
+					opt.innerHTML = "&#128225" + data.files[i];
+					opt.dataset.type = "stream";
+					select.appendChild(opt);
+				}
+			}
+			else {
+				for (i=0; i<data.files.length; i++) {
+					var opt = document.createElement('option');
+					opt.value = data.parent + "/" + data.files[i];
+					opt.innerHTML = "&#9834 " + data.files[i];
+					opt.dataset.type = "file";
+					select.appendChild(opt);
+				}
+			}
         }
         else {
 			
@@ -198,7 +219,7 @@ function stopBtnAction() {
 
 </script>
 </head>
-<body onload="showDir('1:')">
+<body onload="showDir('root')">
 <script src="/ui/menu.js"></script>
 <div id="main">
 <h1>Odtwarzanie</h1>

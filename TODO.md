@@ -3,6 +3,9 @@ Internet radio based on PIC32
 
 ### Tasks
 - [ ] Create WebUI
+  - [x] Write function writting audio files from given directory as json accessed by http server
+  - [ ] Add funcionality printing "root" folder
+  - [ ] Add funcionality of reporting list of available streams
 - [ ] Create HD44780 UI
 
 ### Completed Column ✓
