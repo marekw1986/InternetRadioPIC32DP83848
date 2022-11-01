@@ -67,18 +67,20 @@
 #define SM_ADCPM_HP         13
 #define SM_LINE_IN          14
 
-const char* internet_radios[] = {
-    "http://redir.atmcdn.pl/sc/o2/Eurozet/live/antyradio.livx?audio=5",     //Antyradio
-    "http://stream3.polskieradio.pl:8900/",                                 //PR1
-    "http://stream3.polskieradio.pl:8902/",                                 //PR2
-    "http://stream3.polskieradio.pl:8904/",                                 //PR3
-    "http://stream4.nadaje.com:9680/radiokrakow-s3",                        //Kraków
-    "http://195.150.20.5/rmf_fm",                                           //RMF
-    "http://redir.atmcdn.pl/sc/o2/Eurozet/live/audio.livx?audio=5",         //Zet
-    "http://ckluradio.laurentian.ca:88/broadwave.mp3",                      //CKLU
-    "http://stream.rcs.revma.com/an1ugyygzk8uv",                            //Radio 357
-    "http://stream.rcs.revma.com/ypqt40u0x1zuv",                            //Radio Nowy Swiat
-    "http://51.255.8.139:8822/stream"                                       //Radio Pryzmat
+const radio_t internet_radios[] = {  
+    {"Antyradio" ,"http://an01.cdn.eurozet.pl/ant-waw.mp3"},                            //Antyradio
+    {"PR1", "http://stream3.polskieradio.pl:8900/"},                                 //PR1
+    {"PR2", "http://stream3.polskieradio.pl:8902/"},                                 //PR2
+    {"PR3", "http://stream3.polskieradio.pl:8904/"},                                 //PR3
+    {"Krakow 32 kbps", "http://stream4.nadaje.com:9678/radiokrakow-s2"},                        //Kraków 32kbps
+    {"Krakow", "http://stream4.nadaje.com:9680/radiokrakow-s3"},                        //Kraków    
+    {"RMF FM", "http://195.150.20.5/rmf_fm"},                                           //RMF
+    {"Radio Zet", "http://redir.atmcdn.pl/sc/o2/Eurozet/live/audio.livx?audio=5"},         //Zet
+    {"Nazwa", "http://n-15-33.dcs.redcdn.pl/sc/o2/Eurozet/live/audio.livx?audio=5"},
+    {"CKLU", "http://ckluradio.laurentian.ca:88/broadwave.mp3"},                      //CKLU
+    {"Radio 357", "http://n04a-eu.rcs.revma.com/an1ugyygzk8uv?rj-ttl=5&rj-tok=AAABg5oesUYAUHfwuNORPlsNuw"},                            //Radio 357
+    {"Radio Nowy Swiat", "http://n06a-eu.rcs.revma.com/ypqt40u0x1zuv?rj-ttl=5&rj-tok=AAABg5ofm6cAQQeawgu2hHSrGw"},                            //Radio Nowy Swiat
+    {"Radio Pryzmat", "http://51.255.8.139:8822/stream"}                                       //Radio Pryzmat
 };
 
 FIL fsrc;
@@ -647,6 +649,24 @@ void VS1003_loadUserCode(const uint16_t* buf, size_t len) {
   }
 }
 
+void VS1003_play_next(void) {
+    switch (StreamState) {
+        case STREAM_FILE_FILL_BUFFER:
+        case STREAM_FILE_GET_DATA:
+            if (dir_flag) {
+                VS1003_play_next_audio_file_from_directory();
+            }
+            break;
+        case STREAM_HTTP_FILL_BUFFER:
+        case STREAM_HTTP_GET_DATA:
+            VS1003_stop();
+            VS1003_play_next_http_stream_from_list();
+            break;
+        default:
+            break;
+    }
+}
+
 
 static inline void await_data_request(void) {
     while ( !VS_DREQ_PIN );
@@ -776,7 +796,7 @@ void VS1003_play_next_http_stream_from_list(void) {
     ind++;
     if (ind >= sizeof(internet_radios)/sizeof(const char*)) ind=0;
     VS1003_stop();
-    VS1003_play_http_stream(internet_radios[ind]);
+    VS1003_play_http_stream(internet_radios[ind].url);
 }
 
 /*Always call VS1003_stop() or VS1003_soft_stop() before calling that function*/
