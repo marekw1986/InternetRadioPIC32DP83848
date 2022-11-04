@@ -265,8 +265,7 @@ void usb_write (void) {
 
 void prev_func (void) {
     printf("PREV button pressed!\r\n");
-    VS1003_stop();
-    VS1003_play_next_http_stream_from_list();
+    VS1003_play_next();
 }
 
 
