@@ -852,6 +852,8 @@ void HTTPPrint_files (void) {
     char line[512];
     char name[64];
     char url[256];
+    char buf[32];
+    int id;
     static uint8_t first_one = 1;
     FRESULT res;
     FILINFO info;
@@ -868,12 +870,17 @@ void HTTPPrint_files (void) {
                 }
             }
             if (f_gets(line, sizeof(line)-1, &file) != NULL) {
-                if (parse_stream_data_line(line, strlen(line), name, sizeof(name)-1, url, sizeof(url)-1))
+                if (line[strlen(line)-1] == '\n') {
+                    line[strlen(line)-1] = '\0';
+                }
+                if ( (id = parse_stream_data_line(line, strlen(line), name, sizeof(name)-1, url, sizeof(url)-1)) )
                     if (!first_one) { TCPPutROMString(sktHTTP, (ROM void*)", "); }
-                    TCPPutROMString(sktHTTP, (ROM void*)"{\"name\": \"");
-                    TCPPutROMString(sktHTTP, (ROM void*)name);
+                    TCPPutROMString(sktHTTP, (ROM void*)"{\"id\": \"");
+                    TCPPutString(sktHTTP, (BYTE*)itoa(buf, id, 10));
+                    TCPPutROMString(sktHTTP, (ROM void*)"\", \"name\": \"");
+                    TCPPutString(sktHTTP, (BYTE*)name);
                     TCPPutROMString(sktHTTP, (ROM void*)"\", \"url\":\"");
-                    TCPPutROMString(sktHTTP, (ROM void*)url);
+                    TCPPutString(sktHTTP, (BYTE*)url);
                     TCPPutROMString(sktHTTP, (ROM void*)"\"}");
                     first_one = 0;
             }

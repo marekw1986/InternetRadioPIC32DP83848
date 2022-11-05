@@ -20,3 +20,4 @@ Internet radio based on PIC32
 - [x] Implement memory friendly HTTP header parser
 - [x] Update FatFS library to the newest version
 - [x] Determine why SPI Flash is so slow
+- [x] Move list of streams to file
