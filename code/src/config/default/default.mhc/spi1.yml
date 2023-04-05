@@ -1,0 +1,15 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: spi1}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: SPI_BRG_VALUE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: spi1, value: '39'}
+- type: ElementPosition
+  attributes: {x: '563', y: '369', id: spi1}
