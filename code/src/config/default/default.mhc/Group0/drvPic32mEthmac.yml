@@ -1,0 +1,37 @@
+format_version: v1.0
+type: UniqueComponent
+attributes: {id: drvPic32mEthmac}
+children:
+- type: Symbols
+  children:
+  - type: Integer
+    attributes: {id: DRV_ETHMAC_HEAP_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drvPic32mEthmac, value: '6528'}
+  - type: String
+    attributes: {id: DRV_INTMAC_PHY_TYPE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: drvPic32mEthmac, value: DP83848}
+- type: Attachments
+  children:
+  - type: DirectDependency
+    attributes: {id: ETHMAC_PHY_Dependency}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: targetComponentID}
+        children:
+        - {type: Value, value: drvExtPhyDp83848}
+      - type: String
+        attributes: {id: targetAttachmentID}
+        children:
+        - {type: Value, value: libdrvExtPhyDp83848}
+- type: ElementPosition
+  attributes: {x: '178', y: '69', id: drvPic32mEthmac}
