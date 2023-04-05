@@ -775,6 +775,14 @@ void VS1003_play_http_stream(const char* url) {
     VS1003_startPlaying();
 }
 
+void VS1003_play_http_stream_by_id(uint16_t id) {
+	char* url = get_station_url_from_file(id, NULL, 0);
+	if (url) {
+		VS1003_stop();
+		VS1003_play_http_stream(url);
+	}
+}
+
 void VS1003_play_next_http_stream_from_list(void) {
     static int ind = 1;
     

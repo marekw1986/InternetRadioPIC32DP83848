@@ -435,7 +435,7 @@ static HTTP_IO_RESULT HTTPPostPass (void) {
 }
 
 static HTTP_IO_RESULT HTTPPostPlay (void) {
-    enum {PLAY_SRC_STREAM, PLAY_SRC_FILE, PLAY_SRC_DIR};
+    enum {PLAY_SRC_STREAM, PLAY_SRC_FILE, PLAY_SRC_DIR, PLAY_SRC_ID};
     
     WORD len;
     BYTE tokenValid = 0;
@@ -494,11 +494,22 @@ static HTTP_IO_RESULT HTTPPostPlay (void) {
         else if (memcmppgm2ram(curHTTP.data, (ROM void*)"src", 3) == 0) {
             if (memcmppgm2ram(&curHTTP.data[4], (ROM void*)"stream", 6) == 0) { playsrc = PLAY_SRC_STREAM; }
             else if (memcmppgm2ram(&curHTTP.data[4], (ROM void*)"file", 4) == 0) { playsrc = PLAY_SRC_FILE; }
-            else if (memcmppgm2ram(&curHTTP.data[4], (ROM void*)"dir", 4) == 0) { playsrc = PLAY_SRC_DIR; }
+            else if (memcmppgm2ram(&curHTTP.data[4], (ROM void*)"dir", 3) == 0) { playsrc = PLAY_SRC_DIR; }
+            else if (memcmppgm2ram(&curHTTP.data[4], (ROM void*)"id", 3) == 0) { playsrc = PLAY_SRC_ID; }
             else {
                 curHTTP.data[0] = PLAY_INVALID_SRC;
                 return HTTP_IO_DONE;
             }
+        }
+        else if (memcmppgm2ram(curHTTP.data, (ROM void*)"vol", 3) == 0) {
+            uint8_t volume = strtol(&curHTTP.data[4], NULL, 10);
+            if ( (volume >= 0) && (volume <= 100)) { VS1003_setVolume(volume); }
+            curHTTP.data[0] = PLAY_OK;
+        }
+        else if (memcmppgm2ram(curHTTP.data, (ROM void*)"id", 2) == 0) {
+            uint16_t streamid = strtol(&curHTTP.data[3], NULL, 10);
+            VS1003_play_http_stream_by_id(streamid);
+            curHTTP.data[0] = PLAY_OK;
         }
 	}
     
@@ -514,11 +525,18 @@ static HTTP_IO_RESULT HTTPPostPlay (void) {
             printf("Calling VS1003_play_dir()\r\n");
             VS1003_play_dir(newurl);            
             break;
+        case PLAY_SRC_ID:
+            printf("Calling VS1003_play_http_stream_by_id()\r\n");
+            uint16_t streamid = strtol(newurl, NULL, 10);
+            VS1003_play_http_stream_by_id(streamid);
+            break;
         default:
             printf("Calling VS1003_play_http_stream()\r\n");
             VS1003_play_http_stream(newurl);
             break;
     }
+    
+    curHTTP.data[0] = PLAY_OK;
     
 	return HTTP_IO_DONE;
 }

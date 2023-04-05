@@ -124,7 +124,7 @@ function showDir(path) {
             if (data.parent === "streams") {
 				for (i=0; i<data.files.length; i++) {
 					var opt = document.createElement('option');
-					opt.value = data.files[i].url;
+					opt.value = data.files[i].id;
 					opt.innerHTML = "&#128225" + data.files[i].name;
 					opt.dataset.type = "stream";
 					select.appendChild(opt);
@@ -151,7 +151,7 @@ function play(path, type="file") {
 	var result = document.getElementById('result');
 	var playsrc = type;
 	
-	if (playsrc !== "file" && playsrc !== "dir" && playsrc !== "stream") return;
+	if (playsrc !== "file" && playsrc !== "dir" && playsrc !== "stream" && playsrc !== "id") return;
 
 	var http_request;
 	try {
@@ -202,7 +202,7 @@ function fileAction() {
 		play(option.value);
 	}
 	else if (type === "stream") {
-		play(option.value, "stream");
+		play(option.value, "id");
 	}
 }
 

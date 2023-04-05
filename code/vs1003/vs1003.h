@@ -52,6 +52,7 @@ void VS1003_loadUserCode(const uint16_t* buf, size_t len);
 void VS1003_play_next(void);
 void VS1003_play_next_audio_file_from_directory (void);
 void VS1003_play_http_stream(const char* url);
+void VS1003_play_http_stream_by_id(uint16_t id);
 void VS1003_play_next_http_stream_from_list(void);
 void VS1003_play_file (char* url);
 void VS1003_play_dir (const char* url);

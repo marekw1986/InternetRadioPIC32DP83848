@@ -13,7 +13,7 @@ void loadDefaultSettings(void) {
     config.timeZone = -60;
     memcpypgm2ram((void*)&config.password, (char*)"s3cr3t", 7);
     memcpypgm2ram((void*)&config.AppConfig.MyMACAddr, (ROM void*)SerializedMACAddress, sizeof(AppConfig.MyMACAddr));
-    memcpypgm2ram((void*)&config.AppConfig.NetBIOSName, (char*)"board", 6);
+    memcpypgm2ram((void*)&config.AppConfig.NetBIOSName, (char*)"ETHERPLAYER", 12);
     memcpypgm2ram((void*)&config.AppConfig.NtpServer, (char*)"ntp1.tp.pl", 11);
     config.AppConfig.Flags.bIsDHCPEnabled = TRUE;
     config.AppConfig.MyIPAddr.Val = MY_DEFAULT_IP_ADDR_BYTE1 | MY_DEFAULT_IP_ADDR_BYTE2<<8ul | MY_DEFAULT_IP_ADDR_BYTE3<<16ul | MY_DEFAULT_IP_ADDR_BYTE4<<24ul;
