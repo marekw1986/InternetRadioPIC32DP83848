@@ -33,7 +33,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipHttpNet, value: '4944'}
+        attributes: {id: tcpipHttpNet, value: '12736'}
+  - type: Integer
+    attributes: {id: TCPIP_HTTP_NET_MAX_DATA_LEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2048'}
   - type: String
     attributes: {id: TCPIP_HTTP_NET_WEBPAGE_DIRECTORY_PATH}
     children:
