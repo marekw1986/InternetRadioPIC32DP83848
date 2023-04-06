@@ -1109,7 +1109,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_cpufreq(TCPIP_HTTP_NET_CONN_HANDLE con
     {   // failed to get a buffer; retry
         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
     }
-    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%d MHz", SYS_TIME_CPU_CLOCK_FREQUENCY/1000000);
+    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%d MHz", CPU_CLOCK_FREQUENCY/1000000);
     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
 }

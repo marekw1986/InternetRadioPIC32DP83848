@@ -5,11 +5,32 @@ children:
 - type: Symbols
   children:
   - type: Integer
+    attributes: {id: SPI_BAUD_RATE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '250000'}
+  - type: Integer
     attributes: {id: SPI_BRG_VALUE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: spi1, value: '39'}
+        attributes: {id: spi1, value: '159'}
+  - type: Boolean
+    attributes: {id: SPI_INTERRUPT_MODE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: KeyValueSet
+    attributes: {id: SPI_SPICON_MSSEN}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '1'}
 - type: ElementPosition
   attributes: {x: '563', y: '369', id: spi1}

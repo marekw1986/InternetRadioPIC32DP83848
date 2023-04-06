@@ -19,7 +19,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core_timer, value: '100000000'}
+        attributes: {id: core_timer, value: '40000000'}
   - type: Comment
     attributes: {id: CORE_TIMER_FREQUENCY_COMMENT}
     children:
@@ -28,7 +28,7 @@ children:
       - type: String
         attributes: {id: text}
         children:
-        - {type: Value, value: '*** Core Timer Clock Frequency 100000000 Hz ***'}
+        - {type: Value, value: '*** Core Timer Clock Frequency 40000000 Hz ***'}
   - type: Boolean
     attributes: {id: CORE_TIMER_INTERRUPT_MODE}
     children:
@@ -57,7 +57,7 @@ children:
       - type: Float
         attributes: {id: max}
         children:
-        - {type: Value, value: '42949.67'}
+        - {type: Value, value: '107374.18'}
   - type: Integer
     attributes: {id: CORE_TIMER_PERIOD_US}
     children:
@@ -71,7 +71,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core_timer, value: '0x186a0'}
+        attributes: {id: core_timer, value: '0x9c40'}
 - type: Attachments
   children:
   - type: DirectCapability

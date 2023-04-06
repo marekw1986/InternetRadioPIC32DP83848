@@ -85,7 +85,7 @@ extern "C" {
 #define SYS_TIME_HW_COUNTER_WIDTH                   (32)
 #define SYS_TIME_HW_COUNTER_PERIOD                  (4294967295U)
 #define SYS_TIME_HW_COUNTER_HALF_PERIOD             (SYS_TIME_HW_COUNTER_PERIOD>>1)
-#define SYS_TIME_CPU_CLOCK_FREQUENCY                (200000000)
+#define SYS_TIME_CPU_CLOCK_FREQUENCY                (80000000)
 #define SYS_TIME_COMPARE_UPDATE_EXECUTION_CYCLES    (460)
 
 #define SYS_CONSOLE_INDEX_0                       0
@@ -314,7 +314,7 @@ extern "C" {
                                                     0
 
 #define TCPIP_INTMAC_MODULE_ID		    			_ETH_BASE_ADDRESS
-#define TCPIP_INTMAC_PERIPHERAL_CLK  				200000000
+#define TCPIP_INTMAC_PERIPHERAL_CLK  				80000000
 
 #define DRV_ETHMAC_INTERRUPT_SOURCE				_ETHERNET_IRQ
 
@@ -353,7 +353,7 @@ extern "C" {
 /*** TCP Configuration ***/
 #define TCPIP_TCP_MAX_SEG_SIZE_TX		        	1460
 #define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE			512
-#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			512
+#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			4096
 #define TCPIP_TCP_DYNAMIC_OPTIONS             			true
 #define TCPIP_TCP_START_TIMEOUT_VAL		        	1000
 #define TCPIP_TCP_DELAYED_ACK_TIMEOUT		    		100

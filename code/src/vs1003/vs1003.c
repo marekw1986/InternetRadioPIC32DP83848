@@ -300,10 +300,13 @@ void VS1003_sdi_send_zeroes(int len) {
 static feed_ret_t VS1003_feed_from_buffer (void) {
     uint8_t data[32];
 
-    if (!VS_DREQ_PIN) return FEED_RET_NO_DATA_NEEDED;
+    if (!VS_DREQ_PIN) {
+        return FEED_RET_NO_DATA_NEEDED;
+    }
+    
     do {
         if (get_num_of_bytes_in_ringbuffer() < 32) return FEED_RET_BUFFER_EMPTY;
-
+        
         uint16_t w = read_array_from_ringbuffer(data, 32);
         if (w == 32) VS1003_sdi_send_chunk(data, 32);
         asm("nop");
@@ -632,7 +635,7 @@ void VS1003_handle(void) {
 	}
     
 	if (xQueueReceive(vsQueueHandle, &rcv, 5) == pdTRUE) {
-		printf("Received command %d from queque\r\n", rcv.cmd);
+		SYS_CONSOLE_PRINT("Received command %d from queque\r\n", rcv.cmd);
 		switch(rcv.cmd) {
 			case VS_MSG_NEXT:
 				VS1003_play_next();
@@ -691,7 +694,7 @@ void VS1003_begin(void) {
   // init SPI slow mode
   //SPI4 configuration     
   SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 199; //(GetPeripheralClock()-1ul)/2ul/250000;       //250 kHz  
+  SPI1BRG = 159; //(GetPeripheralClock()-1ul)/2ul/250000;       //250 kHz  
 
   // release from reset
   VS_RESET_PIN = 1;
@@ -723,7 +726,7 @@ void VS1003_begin(void) {
 
   // Now you can set high speed SPI clock   
   SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 5; //8MHz
+  SPI1BRG = 4; //8MHz
 
   SYS_CONSOLE_PRINT("VS1003 Set\r\n");
   VS1003_printDetails();
@@ -742,7 +745,7 @@ void VS1003_begin(void) {
 
 void VS1003_setVolume(uint8_t vol) {
   if ((vol < 1) || (vol > 100)) return;
-  int x = 1; //log10(vol)*1000;
+  int x = log10f(vol)*1000;
   uint8_t new_reg_value = map(x, 0, 2000, 0xFE, 0x00);//vol;
   last_volume = vol;
   uint16_t value = new_reg_value;

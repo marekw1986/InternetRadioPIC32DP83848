@@ -10,6 +10,13 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipTcp, value: '16360'}
+        attributes: {id: tcpipTcp, value: '37864'}
+  - type: Integer
+    attributes: {id: TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '4096'}
 - type: ElementPosition
   attributes: {x: '634', y: '235', id: tcpipTcp}

@@ -83,37 +83,6 @@ _CORE_TIMER_Handler:
     nop
     portRESTORE_CONTEXT
     .end    _CORE_TIMER_Handler
-   .extern  SPI_1_Handler
-
-   .section .vector_23,code, keep
-   .equ     __vector_dispatch_23, IntVectorSPI_1_Handler
-   .global  __vector_dispatch_23
-   .set     nomicromips
-   .set     noreorder
-   .set     nomips16
-   .set     noat
-   .ent  IntVectorSPI_1_Handler
-
-IntVectorSPI_1_Handler:
-    la    $26,  _SPI_1_Handler
-    jr    $26
-    nop
-    .end    IntVectorSPI_1_Handler
-
-   .section .SPI_1_Handler_vector_text, code, keep
-   .set     nomicromips
-   .set     noreorder
-   .set     nomips16
-   .set     noat
-   .ent  _SPI_1_Handler
-
-_SPI_1_Handler:
-    portSAVE_CONTEXT
-    la    s6,  SPI_1_Handler
-    jalr  s6
-    nop
-    portRESTORE_CONTEXT
-    .end    _SPI_1_Handler
    .extern  SPI_4_Handler
 
    .section .vector_32,code, keep

@@ -600,7 +600,7 @@ files:
   physicalPath: library/tcpip/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: F6F21E9FEB3B4820A5DBC1683FBDD675
+  userChecksum: 69A8A095E4AAC289585B61BFABDB4C1F
 - generatedChecksum: B033BB618AC38AD5DF1FB450E77C8918
   logicalPath: config/default/library/tcpip/src
   name: icmp.c
@@ -643,13 +643,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: B68410FA195BDE150AF71287FE63656A
-- generatedChecksum: 6F58C96B39313D0567E47AC648D3D6E1
+- generatedChecksum: 19E591F5C10E374E8113D8E3E0DEE5E5
   logicalPath: config/default
   name: initialization.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 726CE8283A8D2EC2B28FCEBCAF0B8EE4
+  userChecksum: B12D8868D6889F4659F0EE85B17B056B
 - generatedChecksum: 479A727027F5AD9CBBDC717FD86D8B5E
   logicalPath: wolfcrypt
   name: integer.c
@@ -664,20 +664,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 220A2225F19A59FAAA55DA070644B444
-- generatedChecksum: ED18FA4BBE08FA905DAFA78F540FB349
+- generatedChecksum: DADC78ADAF53B616DB8803BB25C626D7
   logicalPath: config/default
   name: interrupts.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: ED18FA4BBE08FA905DAFA78F540FB349
-- generatedChecksum: 07FDAD0DE56D271AB19E203463290CB9
+  userChecksum: DADC78ADAF53B616DB8803BB25C626D7
+- generatedChecksum: ADAA4299337CE965374EDD67C17087D8
   logicalPath: config/default
   name: interrupts_a.S
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 07FDAD0DE56D271AB19E203463290CB9
+  userChecksum: ADAA4299337CE965374EDD67C17087D8
 - generatedChecksum: F553FDEED94D440487B2050507235456
   logicalPath: config/default/library/tcpip/src
   name: ipv4.c
@@ -783,6 +783,167 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 6694E3C4C6D7826F9546713775119B84
+- generatedChecksum: 24A6418F1F0204FC5D16FBBAA51B8EC6
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/auth.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 24A6418F1F0204FC5D16FBBAA51B8EC6
+- generatedChecksum: 2DF6E8B58D442C26AF22A8728E6D3757
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/cookies.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 2DF6E8B58D442C26AF22A8728E6D3757
+- generatedChecksum: 53228E0208C7119283B2EFA61E066C15
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/dyndns
+  name: opt/microchip/Harmony3/net//web_pages/dyndns/index.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 53228E0208C7119283B2EFA61E066C15
+- generatedChecksum: 9A0CBE13D19A98A3B6B7F3BF7908C05E
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/dynvars.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 9A0CBE13D19A98A3B6B7F3BF7908C05E
+- generatedChecksum: 30FEBB4379CD80BE4928CAD37087F37D
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/email
+  name: opt/microchip/Harmony3/net//web_pages/email/index.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 30FEBB4379CD80BE4928CAD37087F37D
+- generatedChecksum: 34B5EC3D6AFF76D534C2533264F70746
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/footer.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 34B5EC3D6AFF76D534C2533264F70746
+- generatedChecksum: 44037F48DC158F4D6DE8A1AD327579B9
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/forms.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 44037F48DC158F4D6DE8A1AD327579B9
+- generatedChecksum: BE650686B2E37535FD6DA67DC866F9C7
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/harmony.gif
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: BE650686B2E37535FD6DA67DC866F9C7
+- generatedChecksum: 2A4F8860F9D4657B5BFCF62A6F2E1B72
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/header.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 2A4F8860F9D4657B5BFCF62A6F2E1B72
+- generatedChecksum: E1C11C9FEFFE008A939BAEE929D54A1D
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/index.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: E1C11C9FEFFE008A939BAEE929D54A1D
+- generatedChecksum: B61CF49D1130D701766F9517ED8F5909
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/leds.cgi
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: B61CF49D1130D701766F9517ED8F5909
+- generatedChecksum: A0FC91949846137F6B96ED4E0ADE7985
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/mchp.css
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: A0FC91949846137F6B96ED4E0ADE7985
+- generatedChecksum: DF6CD46C7A96EBB3036608345EE12C90
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/mchp.gif
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: DF6CD46C7A96EBB3036608345EE12C90
+- generatedChecksum: FDEB5DD0CA25886B19520748BF15833A
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/mchp.js
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: FDEB5DD0CA25886B19520748BF15833A
+- generatedChecksum: 94BD9ECAE121628FFE573BE70F884DA0
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/protect
+  name: opt/microchip/Harmony3/net//web_pages/protect/config.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 94BD9ECAE121628FFE573BE70F884DA0
+- generatedChecksum: A704005B08138C056487580ECE8FF2E5
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/protect
+  name: opt/microchip/Harmony3/net//web_pages/protect/index.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: A704005B08138C056487580ECE8FF2E5
+- generatedChecksum: 7302474C63C9A8C7D813D2AA26D15152
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/protect
+  name: opt/microchip/Harmony3/net//web_pages/protect/reboot.cgi
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 7302474C63C9A8C7D813D2AA26D15152
+- generatedChecksum: D070BA177FFF082BF3E9D8A44E05413E
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/protect
+  name: opt/microchip/Harmony3/net//web_pages/protect/reboot.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: D070BA177FFF082BF3E9D8A44E05413E
+- generatedChecksum: 03E1F13C1FEC2238F8531C0CEDEEA85F
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/snmp.bib
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 03E1F13C1FEC2238F8531C0CEDEEA85F
+- generatedChecksum: 45C66E36F53F0DE7BC010A1D44E9AA9D
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages/snmp
+  name: opt/microchip/Harmony3/net//web_pages/snmp/snmpconfig.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 45C66E36F53F0DE7BC010A1D44E9AA9D
+- generatedChecksum: FB8095760E268C6A33643987995D571D
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/ssi.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: FB8095760E268C6A33643987995D571D
+- generatedChecksum: 3DB6E195EBADDBB75B68E55FE5DF5294
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/status.xml
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 3DB6E195EBADDBB75B68E55FE5DF5294
+- generatedChecksum: 4E25492D0D2E6A77AA829DE55FF00BF5
+  logicalPath: web_pages/opt/microchip/Harmony3/net/web_pages
+  name: opt/microchip/Harmony3/net//web_pages/upload.htm
+  physicalPath: ../../web_pages
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 4E25492D0D2E6A77AA829DE55FF00BF5
 - generatedChecksum: 8FDD6248506F28B32C4F5FD9AA0D9C6F
   logicalPath: config/default/osal
   name: osal_freertos.c
@@ -825,13 +986,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 2FEFEA0D4E94F5A5F3D76BAEC3D602E5
-- generatedChecksum: 9A35A36B062ED21EDC48D0C3E27153E3
+- generatedChecksum: C66120978975FBCEEC543566D7C0EFD1
   logicalPath: config/default/peripheral/evic
   name: plib_evic.c
   physicalPath: peripheral/evic
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 9A35A36B062ED21EDC48D0C3E27153E3
+  userChecksum: C66120978975FBCEEC543566D7C0EFD1
 - generatedChecksum: C9385943BF03D901AA5BDFD1E8B84A4E
   logicalPath: config/default/peripheral/gpio
   name: plib_gpio.c
@@ -846,13 +1007,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: C2136D25396D86649CB2D3C8821CBDF7
-- generatedChecksum: 4A410061D13829E2C9FAB7EAAD9C19F3
+- generatedChecksum: 74CD9DB3DB2BAF00AB5B1F9F5F8E317A
   logicalPath: config/default/peripheral/spi/spi_master
   name: plib_spi1_master.c
   physicalPath: peripheral/spi/spi_master
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 4A410061D13829E2C9FAB7EAAD9C19F3
+  userChecksum: 74CD9DB3DB2BAF00AB5B1F9F5F8E317A
 - generatedChecksum: 345EB0436862068F4E5359DE3431D530
   logicalPath: config/default/peripheral/spi/spi_master
   name: plib_spi4_master.c
@@ -1196,13 +1357,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: F849420C740D2B32346B4B4D9F46C136
-- generatedChecksum: 2839744A5D7EDEE4AFFC66F37E2379EA
+- generatedChecksum: FDF1BB07F50C26C4D00B6298EE0C66EF
   logicalPath: config/default
   name: tasks.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 2839744A5D7EDEE4AFFC66F37E2379EA
+  userChecksum: FDF1BB07F50C26C4D00B6298EE0C66EF
 - generatedChecksum: 8C638F091801B67BAF72C03A3E007853
   logicalPath: config/default/library/tcpip/src
   name: tcp.c
@@ -1847,13 +2008,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: 770DD9ECB27E259853F8674F2C359199
+- generatedChecksum: 933BB2A48F4DF175D0C4FAB679BD33EC
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 4EB9F779FCD8C178F1FD5E447DC0D824
+  userChecksum: 0809F1783C210EE1F6D0EEED79376824
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -2085,13 +2246,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 7959E2B94CEE186632B984636D40C252
-- generatedChecksum: 10DB68F1E83D9C3D681AEB705BD969FB
+- generatedChecksum: 853CA70BD041F7BF5535637D6ACDB40E
   logicalPath: config/default
   name: definitions.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 10DB68F1E83D9C3D681AEB705BD969FB
+  userChecksum: 853CA70BD041F7BF5535637D6ACDB40E
 - generatedChecksum: B99354C34DA476BAE8670DEEEE3A61D2
   logicalPath: zlib
   name: deflate.h
@@ -2637,7 +2798,7 @@ files:
   physicalPath: library/tcpip/src
   security: NON_SECURE
   type: HEADER
-  userChecksum: 55AC0A9384E7D93C65D0CA9C4E3A2497
+  userChecksum: D497FD929FBB50933EA18340C37AB2CC
 - generatedChecksum: F1FC0858028996C745F3DDA19CB3428F
   logicalPath: config/default/library/tcpip/src
   name: http_private.h
@@ -3093,13 +3254,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 7066CC390335CF75126E2A50C46E3BDD
-- generatedChecksum: 49EF1C56EBDEE25C8E46F029F020AB21
+- generatedChecksum: 2712EE363EC8AC102002609F5B5F3DCF
   logicalPath: config/default/peripheral/coretimer
   name: plib_coretimer.h
   physicalPath: peripheral/coretimer
   security: NON_SECURE
   type: HEADER
-  userChecksum: 49EF1C56EBDEE25C8E46F029F020AB21
+  userChecksum: 2712EE363EC8AC102002609F5B5F3DCF
 - generatedChecksum: 37436424B3DFA2A4948662880FFD2E29
   logicalPath: config/default/peripheral/evic
   name: plib_evic.h
@@ -3121,13 +3282,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 3499C9E490F6FD905560BC9FC706492F
-- generatedChecksum: A9C21E81CB403E638EEB811A7780088B
+- generatedChecksum: 27EFFF00EA5DD882C446A714F0D9CE9E
   logicalPath: config/default/peripheral/spi/spi_master
   name: plib_spi1_master.h
   physicalPath: peripheral/spi/spi_master
   security: NON_SECURE
   type: HEADER
-  userChecksum: A9C21E81CB403E638EEB811A7780088B
+  userChecksum: 27EFFF00EA5DD882C446A714F0D9CE9E
 - generatedChecksum: 313B7DAD62CC03B8E819E8DA3675EC88
   logicalPath: config/default/peripheral/spi/spi_master
   name: plib_spi4_master.h
@@ -5056,7 +5217,7 @@ settings:
   delimiter: ''
   key: heap-size
   security: NON_SECURE
-  value: '65536'
+  value: '73728'
 - append: false
   category: C32-LD
   delimiter: ''
