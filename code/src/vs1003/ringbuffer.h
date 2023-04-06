@@ -9,7 +9,7 @@
 #ifndef INC_RINGBUFFER_H_
 #define INC_RINGBUFFER_H_
 
-#define RING_BUFFER_SIZE 16384
+#define RING_BUFFER_SIZE 8192
 
 void ringbuffer_clear(void);
 void write_byte_to_ringbuffer(uint8_t data);

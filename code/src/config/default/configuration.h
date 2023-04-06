@@ -132,7 +132,7 @@ extern "C" {
 
 #define SYS_FS_FAT_VERSION                "v0.14b"
 #define SYS_FS_FAT_READONLY               false
-#define SYS_FS_FAT_CODE_PAGE              437
+#define SYS_FS_FAT_CODE_PAGE              852
 #define SYS_FS_FAT_MAX_SS                 SYS_FS_MEDIA_MAX_BLOCK_SIZE
 
 
@@ -253,6 +253,7 @@ extern "C" {
 #define TCPIP_HTTP_NET_SKT_RX_BUFF_SIZE		    		1024
 #define TCPIP_HTTP_NET_LISTEN_PORT		    		    80
 #define TCPIP_HTTP_NET_CONFIG_FLAGS                       \
+                                                        TCPIP_HTTP_NET_MODULE_FLAG_NON_PERSISTENT |\
                                                         TCPIP_HTTP_NET_MODULE_FLAG_SECURE_DEFAULT |\
                                                         TCPIP_HTTP_NET_MODULE_FLAG_DEFAULT
 #define TCPIP_HTTP_NET_TASK_RATE					    33
@@ -353,7 +354,7 @@ extern "C" {
 /*** TCP Configuration ***/
 #define TCPIP_TCP_MAX_SEG_SIZE_TX		        	1460
 #define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE			512
-#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			4096
+#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			2048
 #define TCPIP_TCP_DYNAMIC_OPTIONS             			true
 #define TCPIP_TCP_START_TIMEOUT_VAL		        	1000
 #define TCPIP_TCP_DELAYED_ACK_TIMEOUT		    		100

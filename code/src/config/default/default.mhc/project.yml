@@ -2008,13 +2008,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: B476019086FADEEF3DF01C77C2004881
+- generatedChecksum: 31620FDC97F5BD3330800B1BE20B64D6
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: A4674DD60B5BABBA1564053F0A687070
+  userChecksum: 3F1B49086FAD928D49F11D1483638B78
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -2652,13 +2652,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 187EFA39553617C34D670BFA3AA15C5F
-- generatedChecksum: DFF829D3762F9EB503F58AB49246D5A3
+- generatedChecksum: 70886927234FA759611E8164EE8BC7F5
   logicalPath: config/default/system/fs/fat_fs/file_system
   name: ffconf.h
   physicalPath: system/fs/fat_fs/file_system
   security: NON_SECURE
   type: HEADER
-  userChecksum: DFF829D3762F9EB503F58AB49246D5A3
+  userChecksum: 70886927234FA759611E8164EE8BC7F5
 - generatedChecksum: 8016A8BEE5B269941D8362B249B001FC
   logicalPath: wolfcrypt
   name: fips_test.h
@@ -5217,7 +5217,7 @@ settings:
   delimiter: ''
   key: heap-size
   security: NON_SECURE
-  value: '73728'
+  value: '81920'
 - append: false
   category: C32-LD
   delimiter: ''

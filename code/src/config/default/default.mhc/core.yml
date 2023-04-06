@@ -12,6 +12,13 @@ children:
       - type: Dynamic
         attributes: {id: core, value: '0'}
   - type: String
+    attributes: {id: APP_START_ADDRESS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 1d000000}
+  - type: String
     attributes: {id: BSP_PIN_0_MODE}
     children:
     - type: Values
@@ -2419,7 +2426,7 @@ children:
       - type: String
         attributes: {id: value}
         children:
-        - {type: Value, value: '73728'}
+        - {type: Value, value: '81920'}
   - type: Integer
     attributes: {id: XC32_HEAP_SIZE}
     children:
@@ -2428,6 +2435,6 @@ children:
       - type: Dynamic
         attributes: {id: core, value: '1024'}
       - type: User
-        attributes: {value: '73728'}
+        attributes: {value: '81920'}
 - type: ElementPosition
   attributes: {x: '240', y: '20', id: core}
