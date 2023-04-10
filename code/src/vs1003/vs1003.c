@@ -341,6 +341,7 @@ void VS1003_handle(void) {
             
             // Obtain the IP address associated with the radio server
             if(strlen(uri.server)) {
+                TCPIP_DNS_RemoveAll();  //Just to be sure
                 TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
             }
             else {
@@ -694,7 +695,7 @@ void VS1003_begin(void) {
   // init SPI slow mode
   //SPI4 configuration     
   SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 159; //(GetPeripheralClock()-1ul)/2ul/250000;       //250 kHz  
+  SPI1BRG = 79; //(GetPeripheralClock()-1ul)/2ul/250000;       //250 kHz  
 
   // release from reset
   VS_RESET_PIN = 1;
@@ -726,7 +727,7 @@ void VS1003_begin(void) {
 
   // Now you can set high speed SPI clock   
   SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 4; //8MHz
+  SPI1BRG = 2; //8MHz
 
   SYS_CONSOLE_PRINT("VS1003 Set\r\n");
   VS1003_printDetails();

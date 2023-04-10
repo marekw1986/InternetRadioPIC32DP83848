@@ -347,6 +347,10 @@
                 <itemPath>../src/config/default/peripheral/spi/spi_master/plib_spi4_master.h</itemPath>
               </logicalFolder>
             </logicalFolder>
+            <logicalFolder name="f8" displayName="tmr" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/tmr/plib_tmr_common.h</itemPath>
+              <itemPath>../src/config/default/peripheral/tmr/plib_tmr2.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="f2" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart_common.h</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart4.h</itemPath>
@@ -469,6 +473,8 @@
       </logicalFolder>
       <logicalFolder name="f7" displayName="IO" projectFiles="true">
         <itemPath>../src/io/buttons.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f8" displayName="LCD" projectFiles="true">
       </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.h</itemPath>
@@ -723,8 +729,8 @@
                 <itemPath>../src/config/default/library/tcpip/src/tcpip_packet.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/sntp.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/udp.c</itemPath>
-                <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_external.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/http_net.c</itemPath>
+                <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_external.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
@@ -761,6 +767,9 @@
                 <itemPath>../src/config/default/peripheral/spi/spi_master/plib_spi1_master.c</itemPath>
                 <itemPath>../src/config/default/peripheral/spi/spi_master/plib_spi4_master.c</itemPath>
               </logicalFolder>
+            </logicalFolder>
+            <logicalFolder name="f8" displayName="tmr" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/tmr/plib_tmr2.c</itemPath>
             </logicalFolder>
             <logicalFolder name="f2" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart4.c</itemPath>
@@ -853,6 +862,8 @@
       </logicalFolder>
       <logicalFolder name="f7" displayName="IO" projectFiles="true">
         <itemPath>../src/io/buttons.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f9" displayName="LCD" projectFiles="true">
       </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.c</itemPath>
@@ -1063,6 +1074,7 @@
           <itemPath>../src/config/default/default.mhc/Group1/usb_host_msd.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/drv_sdspi.yml</itemPath>
         </logicalFolder>
+        <itemPath>../src/config/default/default.mhc/tmr2.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/usb_host.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/core.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/settings.yml</itemPath>
@@ -1214,7 +1226,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="81920"/>
+        <property key="heap-size" value="83968"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>
@@ -1328,6 +1340,7 @@
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

@@ -57,6 +57,7 @@
 #include "usb/usb_host.h"
 #include "peripheral/coretimer/plib_coretimer.h"
 #include "peripheral/uart/plib_uart4.h"
+#include "peripheral/tmr/plib_tmr2.h"
 #include "driver/usb/usbfs/drv_usbfs.h"
 #include "peripheral/spi/spi_master/plib_spi1_master.h"
 #include "library/tcpip/tcpip.h"

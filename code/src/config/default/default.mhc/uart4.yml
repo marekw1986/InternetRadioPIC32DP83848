@@ -10,7 +10,16 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: uart4, value: '173'}
+        attributes: {id: uart4, value: '86'}
+  - type: Comment
+    attributes: {id: UART_BAUD_PER_ERROR_COMMENT}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: text}
+        children:
+        - {type: Value, value: '*** Baud Error = -0.2240 % ***'}
   - type: KeyValueSet
     attributes: {id: UART_BRGH}
     children:
@@ -24,7 +33,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: uart4, value: '80000000'}
+        attributes: {id: uart4, value: '40000000'}
   - type: File
     attributes: {id: UART_HEADER}
     children:

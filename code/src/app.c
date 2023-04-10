@@ -44,6 +44,7 @@
 #include "tcpip/tcpip.h"
 #include "tcpip/http_net.h"
 #include "http_net_print.h"
+#include "lcd/hd44780.h"
 #include "common.h"
 
 // *****************************************************************************
@@ -242,7 +243,6 @@ void APP_SYSFSEventHandler(SYS_FS_EVENT event, void *mountName, uintptr_t contex
 
 void APP_Tasks ( void )
 {
-    static uint8_t play = 0;
     static uint32_t timer = 0;
     SYS_STATUS tcpipStat;
     SYS_STATUS usbHostStat;
@@ -332,14 +332,8 @@ void APP_Tasks ( void )
 
         case APP_STATE_SERVICE_TASKS:
         {
-            if (play == 0) {
-                //VS1003_play_file("/mnt/myDrive0/test.mp3");
-                VS1003_setLoop(true);
-                VS1003_play_dir("/mnt/myDrive0");
-                play = 1;
-            }
             
-            if ((uint32_t)(millis()-timer) > 30000) {
+            if ((uint32_t)(millis()-timer) > 1000) {
                 //usb_write();
                 //VS1003_stop();
                 //VS1003_play_next_http_stream_from_list();

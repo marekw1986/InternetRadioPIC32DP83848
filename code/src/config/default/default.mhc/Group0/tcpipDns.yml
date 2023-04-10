@@ -5,11 +5,18 @@ children:
 - type: Symbols
   children:
   - type: Integer
+    attributes: {id: TCPIP_DNS_CLIENT_CACHE_ENTRIES}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
+  - type: Integer
     attributes: {id: TCPIP_DNS_CLIENT_HEAP_SIZE}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipDns, value: '504'}
+        attributes: {id: tcpipDns, value: '264'}
 - type: ElementPosition
   attributes: {x: '30', y: '180', id: tcpipDns}

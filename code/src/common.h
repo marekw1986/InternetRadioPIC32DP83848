@@ -13,7 +13,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define millis() xTaskGetTickCount()
+//#define millis() xTaskGetTickCount()
 
 typedef struct {
 	uint16_t year;	/* 2000..2099 */
@@ -52,7 +52,8 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri);
 uint8_t parse_url (const char* str, size_t len, uri_t* uri);
 char* get_station_url_from_file(uint16_t number, char* stream_name, size_t stream_name_len);
 uint8_t parse_stream_data_line(char* line, size_t line_len, char* stream_name, size_t stream_name_len, char* stream_url, size_t stream_url_len);
-
+uint32_t millis(void);
+uint32_t uptime(void);
 #ifdef	__cplusplus
 }
 #endif

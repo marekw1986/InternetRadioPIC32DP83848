@@ -27,6 +27,8 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 
+extern void timer_callback(uint32_t status, uintptr_t context);
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -38,6 +40,8 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
+    TMR2_CallbackRegister(timer_callback, (uintptr_t)NULL);
+    TMR2_Start();    
 
     while ( true )
     {

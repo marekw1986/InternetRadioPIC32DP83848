@@ -4,13 +4,6 @@ attributes: {id: drvMiim}
 children:
 - type: Symbols
   children:
-  - type: Boolean
-    attributes: {id: DRV_MIIM_COMMANDS}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'true'}
   - type: Integer
     attributes: {id: DRV_MIIM_INSTANCES_NUMBER}
     children:

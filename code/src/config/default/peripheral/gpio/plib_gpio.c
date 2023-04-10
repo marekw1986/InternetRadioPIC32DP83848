@@ -82,7 +82,7 @@ void GPIO_Initialize ( void )
     /* PORTG Initialization */
 
 
-    CNPUESET = 0x1a0c02; /* Pull-Up Enable */
+    CNPUESET = 0x1b6ffe; /* Pull-Up Enable */
 }
 
 // *****************************************************************************

@@ -1085,8 +1085,25 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_uptime(TCPIP_HTTP_NET_CONN_HANDLE conn
     if(pDynBuffer == 0)
     {   // failed to get a buffer; retry
         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
-    }    
-    strncpy(pDynBuffer->data, "testowy uptime", HTTP_APP_DYNVAR_BUFFER_SIZE);
+    }
+
+    uint16_t days, hours, minutes;
+    uint32_t seconds;
+    char support_buff[16];
+    
+    seconds = uptime();
+    days = seconds / 86400;
+    seconds -= days * 86400;
+    hours = seconds / 3600;
+    seconds -= hours * 3600;
+    minutes = seconds / 60;
+    seconds -= minutes * 60;
+
+    if (days) {
+        snprintf(support_buff, sizeof(support_buff)-1, "%d dni, ", days);
+    }
+    
+    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s%02d:%02d:%02d", days ? support_buff : "", hours, minutes, seconds);
     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
 }

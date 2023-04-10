@@ -332,6 +332,24 @@
 #define GPIO_RF3_Get()               ((PORTF >> 3) & 0x1)
 #define GPIO_RF3_PIN                  GPIO_PIN_RF3
 
+/*** Macros for SOFT_SDA pin ***/
+#define SOFT_SDA_Set()               (LATFSET = (1<<2))
+#define SOFT_SDA_Clear()             (LATFCLR = (1<<2))
+#define SOFT_SDA_Toggle()            (LATFINV= (1<<2))
+#define SOFT_SDA_OutputEnable()      (TRISFCLR = (1<<2))
+#define SOFT_SDA_InputEnable()       (TRISFSET = (1<<2))
+#define SOFT_SDA_Get()               ((PORTF >> 2) & 0x1)
+#define SOFT_SDA_PIN                  GPIO_PIN_RF2
+
+/*** Macros for SOFT_SCL pin ***/
+#define SOFT_SCL_Set()               (LATFSET = (1<<8))
+#define SOFT_SCL_Clear()             (LATFCLR = (1<<8))
+#define SOFT_SCL_Toggle()            (LATFINV= (1<<8))
+#define SOFT_SCL_OutputEnable()      (TRISFCLR = (1<<8))
+#define SOFT_SCL_InputEnable()       (TRISFSET = (1<<8))
+#define SOFT_SCL_Get()               ((PORTF >> 8) & 0x1)
+#define SOFT_SCL_PIN                  GPIO_PIN_RF8
+
 /*** Macros for GPIO_RA2 pin ***/
 //#define GPIO_RA2_Set()               (LATASET = (1<<2))
 //#define GPIO_RA2_Clear()             (LATACLR = (1<<2))

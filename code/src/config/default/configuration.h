@@ -188,7 +188,7 @@ extern "C" {
 #define DRV_MIIM_INSTANCE_OPERATIONS        4
 #define DRV_MIIM_INSTANCE_CLIENTS           2
 #define DRV_MIIM_CLIENT_OP_PROTECTION   false
-#define DRV_MIIM_COMMANDS   true
+#define DRV_MIIM_COMMANDS   false
 #define DRV_MIIM_DRIVER_OBJECT              DRV_MIIM_OBJECT_BASE_Default            
 
 /* MIIM RTOS Configurations*/
@@ -209,7 +209,7 @@ extern "C" {
 #define TCPIP_STACK_USE_DNS
 #define TCPIP_DNS_CLIENT_SERVER_TMO					60
 #define TCPIP_DNS_CLIENT_TASK_PROCESS_RATE			200
-#define TCPIP_DNS_CLIENT_CACHE_ENTRIES				5
+#define TCPIP_DNS_CLIENT_CACHE_ENTRIES				2
 #define TCPIP_DNS_CLIENT_CACHE_ENTRY_TMO			0
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV4_ADDRESS		5
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS		1
@@ -226,7 +226,7 @@ extern "C" {
 
 /*** ICMPv4 Server Configuration ***/
 #define TCPIP_STACK_USE_ICMP_SERVER
-#define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    true
+#define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
 
 
 
@@ -241,7 +241,7 @@ extern "C" {
 #define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15
 #define TCPIP_HTTP_NET_CACHE_LEN		        		"600"
 #define TCPIP_HTTP_NET_TIMEOUT		            		45
-#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		4
+#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		2
 #define TCPIP_HTTP_NET_DEFAULT_FILE		        		"index.htm"
 #define TCPIP_HTTP_NET_FILENAME_MAX_LEN			        25
 #define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive0/www/"
@@ -253,7 +253,6 @@ extern "C" {
 #define TCPIP_HTTP_NET_SKT_RX_BUFF_SIZE		    		1024
 #define TCPIP_HTTP_NET_LISTEN_PORT		    		    80
 #define TCPIP_HTTP_NET_CONFIG_FLAGS                       \
-                                                        TCPIP_HTTP_NET_MODULE_FLAG_NON_PERSISTENT |\
                                                         TCPIP_HTTP_NET_MODULE_FLAG_SECURE_DEFAULT |\
                                                         TCPIP_HTTP_NET_MODULE_FLAG_DEFAULT
 #define TCPIP_HTTP_NET_TASK_RATE					    33
@@ -282,7 +281,7 @@ extern "C" {
 #define TCPIP_HTTP_NET_CONNECTION_TIMEOUT          	0
 #define TCPIP_HTTP_NET_MALLOC_FUNC                  malloc
 #define TCPIP_HTTP_NET_FREE_FUNC                    free
-#define TCPIP_HTTP_NET_CONSOLE_CMD           		true
+#define TCPIP_HTTP_NET_CONSOLE_CMD           		false
 
 
 /*** TCPIP MAC Configuration ***/
@@ -298,8 +297,6 @@ extern "C" {
 #define TCPIP_EMAC_RX_FRAGMENTS		    			1
 
 #define TCPIP_EMAC_RX_FILTERS                       \
-                                                    TCPIP_MAC_RX_FILTER_TYPE_BCAST_ACCEPT |\
-                                                    TCPIP_MAC_RX_FILTER_TYPE_MCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_UCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_RUNT_REJECT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_CRC_ERROR_REJECT |\
@@ -354,7 +351,7 @@ extern "C" {
 /*** TCP Configuration ***/
 #define TCPIP_TCP_MAX_SEG_SIZE_TX		        	1460
 #define TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE			512
-#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			2048
+#define TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE			4096
 #define TCPIP_TCP_DYNAMIC_OPTIONS             			true
 #define TCPIP_TCP_START_TIMEOUT_VAL		        	1000
 #define TCPIP_TCP_DELAYED_ACK_TIMEOUT		    		100
@@ -366,7 +363,7 @@ extern "C" {
 #define TCPIP_TCP_MAX_SYN_RETRIES		        	3
 #define TCPIP_TCP_AUTO_TRANSMIT_TIMEOUT_VAL			40
 #define TCPIP_TCP_WINDOW_UPDATE_TIMEOUT_VAL			200
-#define TCPIP_TCP_MAX_SOCKETS		                10
+#define TCPIP_TCP_MAX_SOCKETS		                5
 #define TCPIP_TCP_TASK_TICK_RATE		        	5
 #define TCPIP_TCP_MSL_TIMEOUT		        	    0
 #define TCPIP_TCP_QUIET_TIME		        	    0

@@ -17,7 +17,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: spi1, value: '159'}
+        attributes: {id: spi1, value: '79'}
   - type: Boolean
     attributes: {id: SPI_INTERRUPT_MODE}
     children:
@@ -33,4 +33,4 @@ children:
       - type: User
         attributes: {value: '1'}
 - type: ElementPosition
-  attributes: {x: '563', y: '369', id: spi1}
+  attributes: {x: '560', y: '297', id: spi1}
