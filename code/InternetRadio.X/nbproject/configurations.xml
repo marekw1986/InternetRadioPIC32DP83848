@@ -473,6 +473,7 @@
       </logicalFolder>
       <logicalFolder name="f7" displayName="IO" projectFiles="true">
         <itemPath>../src/io/buttons.h</itemPath>
+        <itemPath>../src/io/rotary.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f8" displayName="LCD" projectFiles="true">
       </logicalFolder>
@@ -862,6 +863,7 @@
       </logicalFolder>
       <logicalFolder name="f7" displayName="IO" projectFiles="true">
         <itemPath>../src/io/buttons.c</itemPath>
+        <itemPath>../src/io/rotary.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f9" displayName="LCD" projectFiles="true">
       </logicalFolder>

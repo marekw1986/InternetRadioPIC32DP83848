@@ -40,6 +40,7 @@
 //#include "driver/usb/usbhs/src/usbhs_registers.h"
 #include "vs1003/vs1003.h"
 #include "io/buttons.h"
+#include "io/rotary.h"
 #include "system/fs/sys_fs.h"
 #include "tcpip/tcpip.h"
 #include "tcpip/http_net.h"
@@ -255,6 +256,7 @@ void APP_Tasks ( void )
         {
             SYS_CONSOLE_PRINT("Initializing user app\r\n");
             
+            rotary_init();
             button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, NULL);
             
             VS1003_begin();
@@ -343,6 +345,21 @@ void APP_Tasks ( void )
             //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "Print from user task %d\r\n", i++);
             VS1003_handle();
             button_handle(&next_btn);
+            
+            int8_t tmp;
+            if ( (tmp = rotary_handle()) ) {
+                int8_t volume = VS1003_getVolume();
+                volume += tmp;
+                if (volume > 100) volume = 100;
+                if (volume < 0) volume = 0;
+                //lcd_locate(1, 8);
+                //lcd_str("            ");
+                //lcd_locate(1, 8);
+                //sprintf(buffer, "%d", counter);
+                //lcd_str(buffer);
+                VS1003_setVolume(volume);                
+            }
+            
             break;
         }
 

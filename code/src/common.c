@@ -326,16 +326,16 @@ uint32_t uptime(void) {
 }
 
 uint32_t get_fattime (void) {
-    struct tm current_time;
+    time_t rawtime;
+    struct tm* current_time;
     
-    RTCC_TimeGet(&current_time);
-    //rawtime = rtccGetTimestamp();
-    //current_time = localtime(&rawtime);
-    return ((DWORD)(current_time.tm_year - 80) << 25)
-         | ((DWORD)(current_time.tm_mon + 1) << 21)
-         | ((DWORD)current_time.tm_mday << 16)
-         | ((DWORD)current_time.tm_hour << 11)
-         | ((DWORD)current_time.tm_min << 5)
-         | ((DWORD)current_time.tm_sec >> 1);
+    rawtime = time(NULL);
+    current_time = localtime(&rawtime);
+    return ((DWORD)(current_time->tm_year - 80) << 25)
+         | ((DWORD)(current_time->tm_mon + 1) << 21)
+         | ((DWORD)current_time->tm_mday << 16)
+         | ((DWORD)current_time->tm_hour << 11)
+         | ((DWORD)current_time->tm_min << 5)
+         | ((DWORD)current_time->tm_sec >> 1);
 //    return 0xFFFFFFFF;
 }
