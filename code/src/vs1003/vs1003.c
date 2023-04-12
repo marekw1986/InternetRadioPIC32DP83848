@@ -127,8 +127,8 @@ char *genres[GENRES] = {
 
 QueueHandle_t vsQueueHandle;
 
-SYS_FS_HANDLE fsrc;
-SYS_FS_HANDLE vsdir;
+static SYS_FS_HANDLE fsrc;
+static SYS_FS_HANDLE vsdir;
 
 static TCP_SOCKET	VS_Socket = INVALID_SOCKET;
 static uri_t uri;
@@ -664,6 +664,10 @@ void VS1003_handle(void) {
                     VS1003_setVolume(rcv.param);
 				}
 				break;
+            case VS_MSG_LOOP:
+                if (rcv.param) { VS1003_setLoop(true); }
+                else { VS1003_setLoop(false); }
+                break;
 			default:
 				break;
 		}
@@ -891,12 +895,16 @@ static void VS1003_handle_end_of_file (void) {
     }
     else {
         if (loop_flag) {
+            SYS_CONSOLE_PRINT("Loop flag set - rewinding\r\n");
             res = SYS_FS_FileSeek(fsrc, 0, SYS_FS_SEEK_SET);
             if (res == -1) SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "f_lseek ERROR\r\n");
+            StreamState = STREAM_FILE_FILL_BUFFER;
         }
         else {
-            VS1003_stopPlaying();
+            SYS_CONSOLE_PRINT("Loop flag cleared - closing file\r\n");
             SYS_FS_FileClose(fsrc);
+            VS1003_stopPlaying();
+            mediainfo_clean();
             StreamState = STREAM_HOME;
         }
     }    
@@ -913,13 +921,18 @@ void VS1003_play_next_audio_file_from_directory (void) {
     info.lfname = lfn_buf;
     info.lfsize = sizeof(lfn_buf);
     
+    uint32_t timeout = millis();
+    
     while (SYS_FS_DirRead(vsdir, &info) == SYS_FS_RES_SUCCESS) {
         if (!info.fname[0]) {           //Empty string - end of directory
             if (loop_flag) {
+                SYS_CONSOLE_PRINT("Loop flag set - rewinding dir\r\n");
                 SYS_FS_DirRewind(vsdir);
             }
             else {
+                SYS_CONSOLE_PRINT("Loop flag cleared - stop playback\r\n");
                 VS1003_stop();          //It handles closing dir and resetting dir_flag
+                return;
             }
         }
         else {
@@ -929,6 +942,11 @@ void VS1003_play_next_audio_file_from_directory (void) {
                 VS1003_play_file(buf);
                 return;
             }
+        }
+        
+        if ((uint32_t)(millis()-timeout) > 500) {
+            //This is needed in case of empty directory
+            break;
         }
     }
     

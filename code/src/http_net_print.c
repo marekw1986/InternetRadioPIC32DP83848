@@ -339,7 +339,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostConfig(TCPIP_HTTP_NET_CONN
 
 TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_HANDLE connHandle) {
     enum {SM_INIT = 0, SM_READ_NAME, SM_READ_VALUE, SM_DONE};
-    typedef enum {NAME_UNKNOWN = 0, NAME_TOKEN, NAME_SRC, NAME_URL, NAME_VOL} varname_t;
+    typedef enum {NAME_UNKNOWN = 0, NAME_TOKEN, NAME_SRC, NAME_URL, NAME_VOL, NAME_LOOP} varname_t;
     typedef enum {PLAY_SRC_INVALID = 0, PLAY_SRC_STREAM, PLAY_SRC_FILE, PLAY_SRC_DIR, PLAY_SRC_ID} playsrc_t;
     
     uint8_t *httpDataBuff;
@@ -350,6 +350,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
     static char newtoken[9];
     static char newurl[1024];
     static uint8_t newVol = 0;
+    static int8_t newLoop = -1;
     
     httpDataBuff = TCPIP_HTTP_NET_ConnectionDataBufferGet(connHandle);
     httpBuffSize = TCPIP_HTTP_NET_ConnectionDataBufferSizeGet(connHandle);
@@ -359,6 +360,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
             varname = NAME_UNKNOWN;
             playsrc = PLAY_SRC_INVALID;
             newVol = 0;
+            newLoop = -1;
             memset(newtoken, 0x00, sizeof(newtoken));
             memset(newurl, 0x00, sizeof(newurl));
             TCPIP_HTTP_NET_ConnectionPostSmSet(connHandle, SM_READ_NAME);
@@ -385,6 +387,9 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
             else if (strncmp((const char*)httpDataBuff, "vol", 4) == 0) {
                 varname = NAME_VOL;
             }
+            else if (strncmp((const char*)httpDataBuff, "loop", 4) == 0) {
+                varname = NAME_LOOP;
+            }            
             else {
                 varname = NAME_UNKNOWN;
             }
@@ -415,6 +420,12 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                     SYS_CONSOLE_PRINT("POSTPlay vol, value: %s\r\n", (char *)httpDataBuff);
                     newVol = strtol((char *)httpDataBuff, NULL, 10);
                     break;
+                case NAME_LOOP:
+                    SYS_CONSOLE_PRINT("POSTPlay loop, value: %s\r\n", (char *)httpDataBuff);
+                    if (strncmp((char*)httpDataBuff, "true", 5) == 0) { newLoop = 1; }
+                    else if (strncmp((char*)httpDataBuff, "false", 6) == 0) { newLoop = 0; }
+                    else { newLoop = -1; }
+                    break;
                 default:
                     SYS_CONSOLE_PRINT("POSTPlay unknown parameter, value: %s\r\n", (char *)httpDataBuff);
                     break;
@@ -432,6 +443,9 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
             SYS_CONSOLE_PRINT("POSTPlay: token ok\r\n");
             if (newVol) {
                 VS1003_send_cmd_thread_safe(VS_MSG_SET_VOL, (uint32_t)newVol);
+            }
+            if (newLoop >= 0) {
+                VS1003_send_cmd_thread_safe(VS_MSG_LOOP, newLoop);
             }
             if (strlen(newurl)) {
                 if (strncmp(newurl, "stop", 5) == 0) {
