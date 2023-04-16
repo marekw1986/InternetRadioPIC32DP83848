@@ -643,13 +643,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: B68410FA195BDE150AF71287FE63656A
-- generatedChecksum: 66C208EC7D34D85CCDF374C4A06E847A
+- generatedChecksum: FB934EE6E2285E42E56924860A72D686
   logicalPath: config/default
   name: initialization.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 55684FAB21ED76048D1E69415D3AA987
+  userChecksum: 28F27F5C237C9E4AEFE43AE4700F0383
 - generatedChecksum: 479A727027F5AD9CBBDC717FD86D8B5E
   logicalPath: wolfcrypt
   name: integer.c
@@ -1035,6 +1035,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: C5BE5378BFA055C9B4D35E62332AD9C3
+- generatedChecksum: 2C41DCC0C9B1824703ACDC4CDEB5E359
+  logicalPath: config/default/peripheral/wdt
+  name: plib_wdt.c
+  physicalPath: peripheral/wdt
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 2C41DCC0C9B1824703ACDC4CDEB5E359
 - generatedChecksum: BE4CB7367E5A5B3DDA671207F469CA45
   logicalPath: wolfcrypt
   name: poly1305.c
@@ -2015,13 +2022,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: CEDCBC88079C2989CE9CF787B410253C
+- generatedChecksum: D486B6421940DA60BD1061FDF79FFAF2
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 987FAF77E58EDFCBC4BDFE5B62345FEF
+  userChecksum: 72B1AB57E52C407B80F184349DDAB472
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -2253,13 +2260,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 7959E2B94CEE186632B984636D40C252
-- generatedChecksum: 7BE910437585B5F795053D91F3B14115
+- generatedChecksum: F42E12DCBEC8E70DD95D063E5DA578BE
   logicalPath: config/default
   name: definitions.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 7BE910437585B5F795053D91F3B14115
+  userChecksum: F42E12DCBEC8E70DD95D063E5DA578BE
 - generatedChecksum: B99354C34DA476BAE8670DEEEE3A61D2
   logicalPath: zlib
   name: deflate.h
@@ -2665,7 +2672,7 @@ files:
   physicalPath: system/fs/fat_fs/file_system
   security: NON_SECURE
   type: HEADER
-  userChecksum: BE4C2DA81CE76ABB7AD7CB6A0B360A09
+  userChecksum: 59CE0223FBEACBEA070B57984E2DDB0A
 - generatedChecksum: 8016A8BEE5B269941D8362B249B001FC
   logicalPath: wolfcrypt
   name: fips_test.h
@@ -3352,6 +3359,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 9B4B2B2E7722D50697564E6D6E4F9E04
+- generatedChecksum: 98626E177D4D71A23295E51F40944F69
+  logicalPath: config/default/peripheral/wdt
+  name: plib_wdt.h
+  physicalPath: peripheral/wdt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 98626E177D4D71A23295E51F40944F69
 - generatedChecksum: 5D0C040C975701D3CDA4BBA6A6BA630D
   logicalPath: wolfcrypt
   name: poly1305.h
@@ -5238,7 +5252,7 @@ settings:
   delimiter: ''
   key: heap-size
   security: NON_SECURE
-  value: '83968'
+  value: '86016'
 - append: false
   category: C32-LD
   delimiter: ''

@@ -285,21 +285,7 @@ void APP_Tasks ( void )
         
         case APP_STATE_MOUNT_DRIVES:
         {   
-//            vTaskDelay(3000);
-//            if(SYS_FS_Mount("/dev/mmcblka1", "/mnt/myDrive0", FAT, 0, NULL) != SYS_FS_RES_SUCCESS) {
-//                SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SD card mount error\r\n");
-//            }
-//            else {
-//                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "SD card mount ok\r\n");
-//            }
-//            
-//            if(SYS_FS_Mount("/dev/sda1", "/mnt/myDrive1", FAT, 0, NULL) != SYS_FS_RES_SUCCESS) {
-//                SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "USB drive mount error\r\n");
-//            }
-//            else {
-//                SYS_DEBUG_PRINT(SYS_ERROR_INFO, "USB drive mount ok\r\n");
-//            }
-            if ( appData.sdCardConnected && appData.usbDriveConnected) {
+            if ( /*appData.sdCardConnected &&*/ appData.usbDriveConnected) {
                 appData.state = APP_STATE_TCPIP_WAIT_INIT;
             }
             
@@ -373,6 +359,7 @@ void APP_Tasks ( void )
             break;
         }
     }
+    WDT_Clear();
 }
 
 

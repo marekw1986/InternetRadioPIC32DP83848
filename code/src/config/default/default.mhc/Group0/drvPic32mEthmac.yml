@@ -18,20 +18,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: drvPic32mEthmac, value: DP83848}
-  - type: Boolean
-    attributes: {id: TCPIP_EMAC_ETH_FILTER_BCAST_ACCEPT}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
-  - type: Boolean
-    attributes: {id: TCPIP_EMAC_ETH_FILTER_MCAST_ACCEPT}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_BUFF_SIZE}
     children:
@@ -74,13 +60,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: drvPic32mEthmac, value: '1'}
-  - type: Combo
-    attributes: {id: TCPIP_EMAC_TRAFFIC}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: Medium}
   - type: Integer
     attributes: {id: TCPIP_EMAC_TX_DESCRIPTORS}
     children:

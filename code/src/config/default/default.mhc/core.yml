@@ -1515,7 +1515,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: 'OFF'}
+        attributes: {value: 'ON'}
   - type: Combo
     attributes: {id: CONFIG_POSCMOD}
     children:
@@ -2978,9 +2978,51 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: '40000000'}
+  - type: Comment
+    attributes: {id: WDT_CONFIG_COMMENT}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: WDT_HEADER}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: WDT_SOURCE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: WDT_SYS_DEF}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
   - type: String
     attributes: {id: WDT_TIMEOUT_PERIOD}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -2988,10 +3030,16 @@ children:
   - type: Boolean
     attributes: {id: WDT_USE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: 'false'}
+        attributes: {id: core, value: 'true'}
   - type: Setting
     attributes: {id: XC32_HEAP}
     children:
@@ -3000,7 +3048,7 @@ children:
       - type: String
         attributes: {id: value}
         children:
-        - {type: Value, value: '83968'}
+        - {type: Value, value: '86016'}
   - type: Integer
     attributes: {id: XC32_HEAP_SIZE}
     children:
@@ -3009,6 +3057,6 @@ children:
       - type: Dynamic
         attributes: {id: core, value: '1024'}
       - type: User
-        attributes: {value: '83968'}
+        attributes: {value: '86016'}
 - type: ElementPosition
   attributes: {x: '240', y: '20', id: core}

@@ -5,6 +5,13 @@ children:
 - type: Symbols
   children:
   - type: Integer
+    attributes: {id: TCPIP_RTOS_TASK_STACK_SIZE}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '8192'}
+  - type: Integer
     attributes: {id: TCPIP_STACK_DRAM_RUN_LIMIT}
     children:
     - type: Attributes
@@ -32,7 +39,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipStack, value: '49'}
+        attributes: {id: tcpipStack, value: '73'}
   - type: Boolean
     attributes: {id: TCPIP_STACK_INTERFACE_CHANGE_SIGNALING}
     children:

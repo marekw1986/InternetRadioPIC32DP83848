@@ -14,7 +14,14 @@ function loadInfo() {
     getJSON("/ui/plinf.json", function(err, data) {
         var vol = document.getElementById('volume');
         var loop = document.getElementById('loop');
+        var playInf = document.getElementById('plinf');
         if (err === null) {
+			if (data.type === "stream") {
+				playInf.value = data.title;
+			}
+			else if (data.type = "file") {
+				playInf.value = data.artist + " - " + data.title;
+			}
 			if ( (data.volume >= 1) && (data.volume <= 100) ) {
 				volume.value = data.volume;
 			}
@@ -262,7 +269,8 @@ function setLoop() {
 <input type="button" name="play_button" value="Odtwarzaj" onclick="playBtnAction()">
 <input type="button" name="stop_button" value="Stop" onclick="stopBtnAction()">
 <input type="button" name="next_button" value="Następny" onclick="nextBtnAction()"><br>
-<label for="volume">Pętla:</label>
+<label for="plinf">Odtwarzanie:</label><input type="text" id="plinf" value="" disabled><br>
+<label for="loop">Pętla:</label>
 <input type="checkbox" id="loop" name="loop" value="" onchange="setLoop()"><br>
 <label for="volume">Głośność:</label>
 <input type="range" min="1" max="100" value="50" class="slider" id="volume" onchange="setVolume()"><br>

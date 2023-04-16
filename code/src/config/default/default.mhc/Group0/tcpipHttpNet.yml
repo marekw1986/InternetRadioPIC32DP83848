@@ -56,7 +56,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: /mnt/myDrive0/www/}
+        attributes: {value: /mnt/myDrive1/www/}
   - type: Comment
     attributes: {id: TCPIP_WEBPAGE_FILES_COUNT_COMMENT}
     children:

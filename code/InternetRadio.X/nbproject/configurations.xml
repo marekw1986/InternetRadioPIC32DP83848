@@ -355,6 +355,9 @@
               <itemPath>../src/config/default/peripheral/uart/plib_uart_common.h</itemPath>
               <itemPath>../src/config/default/peripheral/uart/plib_uart4.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="f9" displayName="wdt" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/wdt/plib_wdt.h</itemPath>
+            </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f2" displayName="system" projectFiles="true">
             <logicalFolder name="f7" displayName="command" projectFiles="true">
@@ -774,6 +777,9 @@
             </logicalFolder>
             <logicalFolder name="f2" displayName="uart" projectFiles="true">
               <itemPath>../src/config/default/peripheral/uart/plib_uart4.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f9" displayName="wdt" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/wdt/plib_wdt.c</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f6" displayName="stdio" projectFiles="true">
@@ -1228,7 +1234,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="83968"/>
+        <property key="heap-size" value="86016"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>
@@ -1342,6 +1348,7 @@
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

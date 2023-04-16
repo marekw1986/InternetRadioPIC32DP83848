@@ -80,5 +80,20 @@ children:
           children:
           - type: Dynamic
             attributes: {id: tcpipNetConfig_0, value: '0'}
+    - type: Attachments
+      children:
+      - type: DirectDependency
+        attributes: {id: NETCONFIG_MAC_Dependency}
+        children:
+        - type: Attributes
+          children:
+          - type: String
+            attributes: {id: targetComponentID}
+            children:
+            - {type: Value, value: drvPic32mEthmac}
+          - type: String
+            attributes: {id: targetAttachmentID}
+            children:
+            - {type: Value, value: libdrvPic32mEthmac}
 - type: ElementPosition
   attributes: {x: '296', y: '27', id: tcpipNetConfig}

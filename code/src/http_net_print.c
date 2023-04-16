@@ -164,7 +164,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionGetDirJson(TCPIP_HTTP_NET_CONN
     httpDataBuff = TCPIP_HTTP_NET_ConnectionDataBufferGet(connHandle);
     ptr = TCPIP_HTTP_NET_ArgGet(httpDataBuff, (const uint8_t *)"url");
     if (ptr) {
-        if (strncmp((const char*)ptr, "root", 5) == 0) {
+        if ( (strncmp((const char*)ptr, "root", 5) == 0) || (strncmp((const char*)ptr, "/mnt/myDrive1", 14) == 0) ) {
             //parent = NULL;
             httpDataBuff[0] = DIR_OK;
             httpDataBuff[1] = DIR_MODE_PRINT_ROOT;
@@ -187,7 +187,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionGetDirJson(TCPIP_HTTP_NET_CONN
                 strncpy(tmpbuf, "/mnt/myDrive0", sizeof(tmpbuf)-1);
             }
             else if (strncmp((const char*)ptr, "2:", 3) == 0) {
-                strncpy(tmpbuf, "/mnt/myDrive1", sizeof(tmpbuf)-1);
+                strncpy(tmpbuf, "/mnt/myDrive1/music", sizeof(tmpbuf)-1);
             }
             else {
                 strncpy(tmpbuf, (const char*)ptr, sizeof(tmpbuf)-1);

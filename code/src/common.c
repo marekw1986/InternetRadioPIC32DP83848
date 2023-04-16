@@ -39,28 +39,6 @@ unsigned char ByteToBcd(unsigned char i) {
     return ((i / 10) << 4) + (i % 10);
 }
 
-//unsigned char StringToMACAddress(BYTE* str, MAC_ADDR* MACAddress) {
-//    int values[6];
-//    unsigned char i;
-//    for (i=0; i<17; i++) {
-//        if (i % 3 != 2 && !isxdigit(str[i])) {
-//            return 0;
-//        }
-//        if (i % 3 == 2 && str[i] != ':') {
-//            return 0;
-//        }
-//    }
-//    if (str[17] != '\0') return 0;
-//    
-//    if (sscanf(str, "%x:%x:%x:%x:%x:%x", &values[0], &values[1], &values[2], &values[3], &values[4], &values[5]) == 6) {
-//        for (i=0; i<6; i++) {
-//            MACAddress->v[i] = (uint8_t)values[i];
-//        }
-//        return 1;
-//    }
-//    return 0;
-//}
-
 
 long map(long x, long in_min, long in_max, long out_min, long out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -255,7 +233,7 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
     SYS_FS_HANDLE file;
     char* result = NULL;
     
-    file = SYS_FS_FileOpen("/mnt/myDrive0/radio.txt", SYS_FS_FILE_OPEN_READ);
+    file = SYS_FS_FileOpen("/mnt/myDrive1/radio.txt", SYS_FS_FILE_OPEN_READ);
     if (file == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return NULL;

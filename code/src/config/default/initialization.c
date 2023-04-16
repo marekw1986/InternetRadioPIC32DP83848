@@ -72,7 +72,7 @@
 #pragma config OSCIOFNC =   OFF
 #pragma config FCKSM =      CSDCMD
 #pragma config WDTPS =      PS4096
-#pragma config FWDTEN =     OFF
+#pragma config FWDTEN =     ON
 
 
 /*** DEVCFG2 ***/

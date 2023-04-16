@@ -209,7 +209,7 @@ extern "C" {
 #define TCPIP_STACK_USE_DNS
 #define TCPIP_DNS_CLIENT_SERVER_TMO					60
 #define TCPIP_DNS_CLIENT_TASK_PROCESS_RATE			200
-#define TCPIP_DNS_CLIENT_CACHE_ENTRIES				2
+#define TCPIP_DNS_CLIENT_CACHE_ENTRIES				5
 #define TCPIP_DNS_CLIENT_CACHE_ENTRY_TMO			0
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV4_ADDRESS		5
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS		1
@@ -244,7 +244,7 @@ extern "C" {
 #define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		2
 #define TCPIP_HTTP_NET_DEFAULT_FILE		        		"index.htm"
 #define TCPIP_HTTP_NET_FILENAME_MAX_LEN			        25
-#define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive0/www/"
+#define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive1/www/"
 #define TCPIP_HTTP_NET_USE_POST
 #define TCPIP_HTTP_NET_USE_COOKIES
 #define TCPIP_HTTP_NET_USE_AUTHENTICATION
@@ -297,6 +297,8 @@ extern "C" {
 #define TCPIP_EMAC_RX_FRAGMENTS		    			1
 
 #define TCPIP_EMAC_RX_FILTERS                       \
+                                                    TCPIP_MAC_RX_FILTER_TYPE_BCAST_ACCEPT |\
+                                                    TCPIP_MAC_RX_FILTER_TYPE_MCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_UCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_RUNT_REJECT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_CRC_ERROR_REJECT |\
@@ -363,7 +365,7 @@ extern "C" {
 #define TCPIP_TCP_MAX_SYN_RETRIES		        	3
 #define TCPIP_TCP_AUTO_TRANSMIT_TIMEOUT_VAL			40
 #define TCPIP_TCP_WINDOW_UPDATE_TIMEOUT_VAL			200
-#define TCPIP_TCP_MAX_SOCKETS		                5
+#define TCPIP_TCP_MAX_SOCKETS		                10
 #define TCPIP_TCP_TASK_TICK_RATE		        	5
 #define TCPIP_TCP_MSL_TIMEOUT		        	    0
 #define TCPIP_TCP_QUIET_TIME		        	    0
@@ -557,7 +559,7 @@ extern "C" {
 
 
 /* TCP/IP RTOS Configurations*/
-#define TCPIP_RTOS_STACK_SIZE                1024
+#define TCPIP_RTOS_STACK_SIZE                2048
 #define TCPIP_RTOS_PRIORITY             1
 
 

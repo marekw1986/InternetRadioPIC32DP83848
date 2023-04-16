@@ -321,6 +321,7 @@ static feed_ret_t VS1003_feed_from_buffer (void) {
 void VS1003_handle(void) {   
 	static uint32_t	timer;
     static IP_MULTI_ADDRESS ServerAddress;
+    TCPIP_DNS_RESULT dnsres;
     static uri_t tempUri;
     int w; // to_load;
     uint8_t data[32];
@@ -334,57 +335,57 @@ void VS1003_handle(void) {
             //nothing to do here, just wait
             break;
         
-        case STREAM_HTTP_BEGIN:
-//            if(!TCPIP_DNS_UsageBegin()) {
-//				break;
-//            }
-            
+        case STREAM_HTTP_BEGIN:            
             // Obtain the IP address associated with the radio server
             if(strlen(uri.server)) {
-                TCPIP_DNS_RemoveAll();  //Just to be sure
-                TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
+                dnsres = TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
+                if (dnsres < 0) {
+                    StreamState = STREAM_HOME;
+                    SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve error %d\r\n", dnsres);
+                    break;
+                }
+                else if (dnsres == TCPIP_DNS_RES_NAME_IS_IPADDRESS) {
+                    //TODO
+                    TCPIP_Helper_StringToIPAddress(uri.server, &(ServerAddress.v4Add));
+                    StreamState = STREAM_HTTP_OBTAIN_SOCKET;
+                    break;
+                }
+                else {
+                    StreamState = STREAM_HTTP_NAME_RESOLVE;
+                    SYS_CONSOLE_PRINT("DNS begin: %s\r\n", uri.server);
+                    clear_ringbuffer();
+                    break;
+                }
             }
             else {
                 StreamState = STREAM_HOME;
                 SYS_CONSOLE_PRINT("DNS uri.server empty\r\n");
                 break;
             }
-
-			StreamState = STREAM_HTTP_NAME_RESOLVE;
-            SYS_CONSOLE_PRINT("DNS begin: %s\r\n", uri.server);
-			timer = millis();
-            clear_ringbuffer();
+            SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve: Something went wrong\r\n");
 			break;
             
-        case STREAM_HTTP_NAME_RESOLVE:
+        case STREAM_HTTP_NAME_RESOLVE:;
             // Wait for the DNS server to return the requested IP address
-            if(TCPIP_DNS_IsResolved(uri.server, &ServerAddress, TCPIP_DNS_TYPE_A) != TCPIP_DNS_RES_OK)	{
-                // Timeout after 6 seconds of unsuccessful DNS resolution
-                if(millis()-timer > 6000)	{
-                    StreamState = STREAM_HOME;
-                    TCPIP_DNS_RemoveAll();  //Just to be sure
-                    SYS_CONSOLE_PRINT("DNS timeout\r\n");
-                }
+            dnsres = TCPIP_DNS_IsResolved(uri.server, &ServerAddress, TCPIP_DNS_TYPE_A);
+            if (dnsres < 0) {
+                StreamState = STREAM_HOME;
+                SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved error: %d\r\n", dnsres);
                 break;
             }
-            
-            // Release the DNS module, we no longer need it
-//            if(!TCPIP_DNS_UsageEnd()) {
-//                // An invalid IP address was returned from the DNS
-//                // server.  Quit and fail permanently if host is not valid.
-//                StreamState = STREAM_HOME;
-//                SYS_CONSOLE_PRINT("DNS failed\r\n");
-//                break;
-//            }
-            
-            StreamState = STREAM_HTTP_OBTAIN_SOCKET;
-            SYS_CONSOLE_PRINT("DNS OK\r\n");
-            if (TCPIP_DNS_RemoveAll() == TCPIP_DNS_RES_OK) {
-                SYS_CONSOLE_PRINT("DNS cache cleared\r\n");
+            else if ( dnsres == TCPIP_DNS_RES_PENDING) {
+                break;
             }
-            TCPIP_Helper_IPAddressToString(&ServerAddress.v4Add, (char*)data, 32);        
-            SYS_CONSOLE_PRINT("IP address: %s\r\n", data);
-            SYS_CONSOLE_PRINT("Obtaining socket\r\n");
+            else if ( dnsres == TCPIP_DNS_RES_OK ) {
+                StreamState = STREAM_HTTP_OBTAIN_SOCKET;
+                SYS_CONSOLE_PRINT("DNS OK\r\n");
+                TCPIP_Helper_IPAddressToString(&ServerAddress.v4Add, (char*)data, 32);        
+                SYS_CONSOLE_PRINT("IP address: %s\r\n", data);
+                SYS_CONSOLE_PRINT("Obtaining socket\r\n");
+                TCPIP_DNS_RemoveEntry(uri.server);
+                break;
+            }
+            SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved: something went wrong\r\n");
             break;
             
         case STREAM_HTTP_OBTAIN_SOCKET:
@@ -468,6 +469,7 @@ void VS1003_handle(void) {
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         SYS_CONSOLE_PRINT("Parsing headers error\r\n");
+                        prepare_http_parser();
                         ReconnectStrategy = RECONNECT_WAIT_LONG;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
@@ -880,7 +882,7 @@ uint8_t is_audio_file (char* name) {
 
 static void VS1003_soft_stop (void) {
     //Can be used only if it is actually playing from file
-    if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST) { 
+    if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST || StreamState == STREAM_FILE_FILL_BUFFER) { 
         SYS_FS_FileClose(fsrc);
         VS1003_stopPlaying();
         StreamState = STREAM_HOME;        
