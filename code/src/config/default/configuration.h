@@ -181,6 +181,14 @@ extern "C" {
 /* SDSPI Driver Common Configuration Options */
 #define DRV_SDSPI_INSTANCES_NUMBER              1
 
+/* SPI Driver Common Configuration Options */
+#define DRV_SPI_INSTANCES_NUMBER              1
+
+/* SPI Driver Instance 0 Configuration Options */
+#define DRV_SPI_INDEX_0                       0
+#define DRV_SPI_CLIENTS_NUMBER_IDX0           1
+#define DRV_SPI_QUEUE_SIZE_IDX0               4
+
 /*** MIIM Driver Configuration ***/
 #define DRV_MIIM_ETH_MODULE_ID_0                _ETH_BASE_ADDRESS
 #define DRV_MIIM_DRIVER_INDEX_0                 0

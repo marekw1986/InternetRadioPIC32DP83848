@@ -1,23 +1,23 @@
 /*******************************************************************************
-  SD Card (SPI) Driver Definitions Header File
+  SST26 Driver Definitions Header File
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    drv_sdspi_definitions.h
+    drv_sst26_definitions.h
 
   Summary:
-    SD Card (SPI) Driver Definitions Header File
+    SST26 Driver Definitions Header File
 
   Description:
-    This file provides implementation-specific definitions for the SD Card (SPI)
-    driver's system interface.
+    This file provides implementation-specific definitions for the SST26
+	driver's system interface.
 *******************************************************************************/
 
-// DOM-IGNORE-BEGIN
+//DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -37,25 +37,25 @@
 * FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN
 * ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY,
 * THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *******************************************************************************/
-// DOM-IGNORE-END
+*******************************************************************************/
+//DOM-IGNORE-END
 
-#ifndef DRV_SDSPI_DEFINITIONS_H
-#define DRV_SDSPI_DEFINITIONS_H
+#ifndef DRV_SST26_DEFINITIONS_H
+#define DRV_SST26_DEFINITIONS_H
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Included Files
+// Section: File includes
 // *****************************************************************************
 // *****************************************************************************
 
+#include "system/system.h"
+#include "driver/driver.h"
 #include "system/ports/sys_ports.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
-
     extern "C" {
-
 #endif
 // DOM-IGNORE-END
 
@@ -64,51 +64,15 @@
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
-
-// *****************************************************************************
-/* SDSPI Driver Initialization Data
-
-  Summary:
-    Defines the data required to initialize the SDSPI driver
-
-  Description:
-    This data type defines the data required to initialize or the SDSPI driver.
-
-  Remarks:
-    None.
-*/
-
+/* SST26 Driver Initialization Data Declaration */
 typedef struct
 {
-    /* SPI Driver Instance used by the SDSPI driver */
-    uint32_t                        spiDrvIndex;
+    /* Chip Select pin to be used */
+    SYS_PORT_PIN    chipSelectPin;
+    
+    uint32_t        spiDrvIndex;
 
-    bool                            isFsEnabled;
-
-    /* Number of clients */
-    size_t                          numClients;
-
-    /* Memory Pool for Client Objects */
-    uintptr_t                       clientObjPool;
-
-    SYS_PORT_PIN                    chipSelectPin;
-
-    SYS_PORT_PIN                    writeProtectPin;
-
-    uint32_t                        blockStartAddress;
-
-    /* Speed at which SD card communication should happen */
-    uint32_t                        sdcardSpeedHz;
-
-    uint32_t                        pollingIntervalMs;
-
-    /* Size of buffer objects queue */
-    uint32_t                        bufferObjPoolSize;
-
-    /* Pointer to the buffer pool */
-    uintptr_t                       bufferObjPool;
-
-} DRV_SDSPI_INIT;
+} DRV_SST26_INIT;
 
 
 //DOM-IGNORE-BEGIN
@@ -117,8 +81,5 @@ typedef struct
 #endif
 //DOM-IGNORE-END
 
-#endif // #ifndef DRV_SDSPI_DEFINITIONS_H
 
-/*******************************************************************************
- End of File
-*/
+#endif // #ifndef DRV_SST26_DEFINITIONS_H

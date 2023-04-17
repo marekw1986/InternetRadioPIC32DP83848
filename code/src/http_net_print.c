@@ -69,6 +69,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostConfig(TCPIP_HTTP_NET_CONN
 TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_HANDLE connHandle);
 TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPass(TCPIP_HTTP_NET_CONN_HANDLE connHandle);
 
+static bool is_local_url_valid(const char* url);
 
 enum {PLAY_UNKNOWN, PLAY_OK, PLAY_INVALID_TOKEN, PLAY_INVALID_URL, PLAY_INVALID_SRC};
 enum {DIR_MODE_PRINT_FS, DIR_MODE_PRINT_ROOT, DIR_MODE_PRINT_STREAMS};
@@ -459,10 +460,18 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                 else {
                     switch(playsrc) {
                         case PLAY_SRC_FILE:
+                            if (!is_local_url_valid(newurl)) {
+                                httpDataBuff[0] = PLAY_INVALID_URL;
+                                break;
+                            }
                             SYS_CONSOLE_PRINT("POSTPlay: playing file %s\r\n", newurl);
                             VS1003_send_cmd_thread_safe(VS_MSG_PLAY_FILE, (uint32_t)newurl);
                             break;
                         case PLAY_SRC_DIR:
+                            if (!is_local_url_valid(newurl)) {
+                                httpDataBuff[0] = PLAY_INVALID_URL;
+                                break;
+                            }                            
                             SYS_CONSOLE_PRINT("POSTPlay: playing dir %s\r\n", newurl);
                             VS1003_send_cmd_thread_safe(VS_MSG_PLAY_DIR, (uint32_t)newurl);
                             break;
@@ -1013,6 +1022,9 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_playStatus(TCPIP_HTTP_NET_CONN_HANDLE 
         case PLAY_INVALID_TOKEN:
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, "invalid_token", false);
             break;
+        case PLAY_INVALID_URL:
+            TCPIP_HTTP_NET_DynamicWriteString(vDcpt, "invalid_url", false);
+            break;
         default:
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, "unknown_error", false);
             break;
@@ -1165,4 +1177,11 @@ void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj,
     DP_RST_Clear();
     CORETIMER_DelayUs(10);
     DP_RST_Set();
+}
+
+static bool is_local_url_valid(const char* url) {
+    if ( (strstr(url, "/mnt/myDrive0") == url) || (strstr(url, "/mnt/myDrive1/music") == url) ) {
+        return true;
+    }
+    return false;
 }

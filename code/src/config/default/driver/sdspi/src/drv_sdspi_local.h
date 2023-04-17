@@ -454,6 +454,8 @@ typedef enum
 
 typedef enum
 {
+    /* Open the SPI Driver instance */
+    DRV_SDSPI_TASK_OPEN_SPI,
 
     DRV_SDSPI_TASK_START_POLLING_TIMER,
 
@@ -1468,15 +1470,10 @@ typedef struct
     /* Linked list of buffer objects */
     uintptr_t                                       bufferObjList;
 
+    /* SPI Driver Instance used by the SDSPI driver */
+    uint32_t                                        spiDrvIndex;
 
-    /* PLIB API list that will be used by the driver to access the hardware */
-    const DRV_SDSPI_PLIB_INTERFACE*                 spiPlib;
-
-    const uint32_t*                                 remapDataBits;
-
-    const uint32_t*                                 remapClockPolarity;
-
-    const uint32_t*                                 remapClockPhase;
+    DRV_HANDLE                                      spiDrvHandle;
 
 
     SYS_PORT_PIN                                    chipSelectPin;

@@ -1691,6 +1691,8 @@ children:
     children:
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
       - type: User
         attributes: {value: 'false'}
   - type: Boolean
@@ -1707,11 +1709,20 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: '2'}
+  - type: Boolean
+    attributes: {id: DMAC_REQUEST_0_PERID_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
   - type: Combo
     attributes: {id: DMAC_REQUEST_0_SOURCE}
     children:
     - type: Values
       children:
+      - type: Dynamic
+        attributes: {id: core, value: SPI4_RX}
       - type: User
         attributes: {value: Software Trigger}
   - type: Integer
@@ -1791,6 +1802,20 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
+  - type: Integer
+    attributes: {id: DMA_CH_FOR_SPI4_Receive}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
+  - type: Integer
+    attributes: {id: DMA_CH_FOR_SPI4_Transmit}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: '0'}
   - type: Boolean
     attributes: {id: DMA_CH_NEEDED_FOR_SPI1_Receive}
     children:
@@ -3048,7 +3073,7 @@ children:
       - type: String
         attributes: {id: value}
         children:
-        - {type: Value, value: '86016'}
+        - {type: Value, value: '84992'}
   - type: Integer
     attributes: {id: XC32_HEAP_SIZE}
     children:
@@ -3057,6 +3082,6 @@ children:
       - type: Dynamic
         attributes: {id: core, value: '1024'}
       - type: User
-        attributes: {value: '86016'}
+        attributes: {value: '84992'}
 - type: ElementPosition
   attributes: {x: '240', y: '20', id: core}

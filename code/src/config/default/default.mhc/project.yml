@@ -391,13 +391,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 0E1B1E293A2B25711C143C917406BA0E
-- generatedChecksum: D23D50F5168D636B156C8616D62AB209
+- generatedChecksum: 427F039BA29DD24D1F86717825DDB529
   logicalPath: config/default/driver/sdspi
   name: drv_sdspi.c
   physicalPath: driver/sdspi/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: D23D50F5168D636B156C8616D62AB209
+  userChecksum: 427F039BA29DD24D1F86717825DDB529
+- generatedChecksum: 5AACCF15409118FEF340B66AB93688EC
+  logicalPath: config/default/driver/sdspi
+  name: drv_sdspi_driver_interface.c
+  physicalPath: driver/sdspi/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 5AACCF15409118FEF340B66AB93688EC
 - generatedChecksum: 997ACCDD95519138D9B4922484450937
   logicalPath: config/default/driver/sdspi
   name: drv_sdspi_file_system.c
@@ -405,13 +412,20 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 997ACCDD95519138D9B4922484450937
-- generatedChecksum: E2B55682069B9DC7BE9F6E87B4ACDEE3
-  logicalPath: config/default/driver/sdspi
-  name: drv_sdspi_plib_interface.c
-  physicalPath: driver/sdspi/src
+- generatedChecksum: 6B2BB2DA350060EEA524E05A745767CD
+  logicalPath: config/default/driver/spi
+  name: drv_spi.c
+  physicalPath: driver/spi/src
   security: NON_SECURE
   type: SOURCE
-  userChecksum: E2B55682069B9DC7BE9F6E87B4ACDEE3
+  userChecksum: 6B2BB2DA350060EEA524E05A745767CD
+- generatedChecksum: 8EE3C59DE773C498338576FD5853D4E6
+  logicalPath: config/default/driver/spi
+  name: drv_spi_local.h
+  physicalPath: driver/spi/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 8EE3C59DE773C498338576FD5853D4E6
 - generatedChecksum: E8A25523C8CDDC97F3FD108E97BF4A9F
   logicalPath: config/default/driver/usb/usbfs/src
   name: drv_usbfs.c
@@ -643,13 +657,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: B68410FA195BDE150AF71287FE63656A
-- generatedChecksum: FB934EE6E2285E42E56924860A72D686
+- generatedChecksum: 00373D9780A9D9C4E3FB7BC9314C30B5
   logicalPath: config/default
   name: initialization.c
   physicalPath: ''
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 28F27F5C237C9E4AEFE43AE4700F0383
+  userChecksum: D6C1B8CDC177880FDFC4C435828B4A98
 - generatedChecksum: 479A727027F5AD9CBBDC717FD86D8B5E
   logicalPath: wolfcrypt
   name: integer.c
@@ -2022,13 +2036,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: D486B6421940DA60BD1061FDF79FFAF2
+- generatedChecksum: 939525F6E6FE5CE868ED6368F90B5B59
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 72B1AB57E52C407B80F184349DDAB472
+  userChecksum: ED8425971A04E6A86F797C86F2F4AF6C
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -2260,13 +2274,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 7959E2B94CEE186632B984636D40C252
-- generatedChecksum: F42E12DCBEC8E70DD95D063E5DA578BE
+- generatedChecksum: 61BBE5E8805082CE8BEA9703FE846712
   logicalPath: config/default
   name: definitions.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: F42E12DCBEC8E70DD95D063E5DA578BE
+  userChecksum: 61BBE5E8805082CE8BEA9703FE846712
 - generatedChecksum: B99354C34DA476BAE8670DEEEE3A61D2
   logicalPath: zlib
   name: deflate.h
@@ -2540,27 +2554,41 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: C232A5631420DA00DA6D261F1B183B22
-- generatedChecksum: D9AADD16BD31DAD2FFDE8F5B5761F407
+- generatedChecksum: 27E9246E9A0D6C608C320B83A9F64F79
   logicalPath: config/default/driver/sdspi
   name: drv_sdspi_definitions.h
   physicalPath: driver/sdspi
   security: NON_SECURE
   type: HEADER
-  userChecksum: D9AADD16BD31DAD2FFDE8F5B5761F407
-- generatedChecksum: 201F6FE6245BB954615B746E45F27DF3
+  userChecksum: 27E9246E9A0D6C608C320B83A9F64F79
+- generatedChecksum: 422FCF4C83F4FB0C361176CDF23B18DB
+  logicalPath: config/default/driver/sdspi
+  name: drv_sdspi_driver_interface.h
+  physicalPath: driver/sdspi/src
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 422FCF4C83F4FB0C361176CDF23B18DB
+- generatedChecksum: E9227003057E6B6BA014B443419BD205
   logicalPath: config/default/driver/sdspi
   name: drv_sdspi_local.h
   physicalPath: driver/sdspi/src
   security: NON_SECURE
   type: HEADER
-  userChecksum: 201F6FE6245BB954615B746E45F27DF3
-- generatedChecksum: 5E207CAE2C7AD361284B04C40F28E26C
-  logicalPath: config/default/driver/sdspi
-  name: drv_sdspi_plib_interface.h
-  physicalPath: driver/sdspi/src
+  userChecksum: E9227003057E6B6BA014B443419BD205
+- generatedChecksum: 9F75B6689BFA73CB5D96A71849B200F5
+  logicalPath: config/default/driver/spi
+  name: drv_spi.h
+  physicalPath: driver/spi
   security: NON_SECURE
   type: HEADER
-  userChecksum: 5E207CAE2C7AD361284B04C40F28E26C
+  userChecksum: 9F75B6689BFA73CB5D96A71849B200F5
+- generatedChecksum: 05A15437D96080BB0A84D3102EB2137C
+  logicalPath: config/default/driver/spi
+  name: drv_spi_definitions.h
+  physicalPath: driver/spi
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 05A15437D96080BB0A84D3102EB2137C
 - generatedChecksum: DF147276AE56CA76E3E9BEB8447620AB
   logicalPath: config/default/driver/usb
   name: drv_usb.h
@@ -5252,7 +5280,7 @@ settings:
   delimiter: ''
   key: heap-size
   security: NON_SECURE
-  value: '86016'
+  value: '84992'
 - append: false
   category: C32-LD
   delimiter: ''

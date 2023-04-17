@@ -1,23 +1,23 @@
 /*******************************************************************************
-  SD Card (SPI) Driver Definitions Header File
+  SST26 Driver SPI Interface Implementation
 
   Company:
     Microchip Technology Inc.
 
   File Name:
-    drv_sdspi_definitions.h
+    drv_sst26_spi_interface.h
 
   Summary:
-    SD Card (SPI) Driver Definitions Header File
+    SST26 Driver PLIB Interface implementation
 
   Description:
-    This file provides implementation-specific definitions for the SD Card (SPI)
-    driver's system interface.
+    This interface file segregates the SST26 protocol from the underlying
+    hardware layer implementation.
 *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
 /*******************************************************************************
-* Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries.
+* Copyright (C) 2019 Microchip Technology Inc. and its subsidiaries.
 *
 * Subject to your compliance with these terms, you may use Microchip software
 * and any derivatives exclusively with Microchip products. It is your
@@ -40,8 +40,8 @@
  *******************************************************************************/
 // DOM-IGNORE-END
 
-#ifndef DRV_SDSPI_DEFINITIONS_H
-#define DRV_SDSPI_DEFINITIONS_H
+#ifndef _DRV_SST26_SPI_INTERFACE_H
+#define _DRV_SST26_SPI_INTERFACE_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -49,76 +49,26 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#include "system/ports/sys_ports.h"
+#include "drv_sst26_local.h"
 
-// DOM-IGNORE-BEGIN
-#ifdef __cplusplus  // Provide C++ Compatibility
-
-    extern "C" {
-
-#endif
-// DOM-IGNORE-END
+#include "driver/spi/drv_spi.h"
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Data Types
+// Section: Data Type Definitions
 // *****************************************************************************
 // *****************************************************************************
+void _DRV_SST26_SPIDriverEventHandler(
+    DRV_SPI_TRANSFER_EVENT event,
+    DRV_SPI_TRANSFER_HANDLE transferHandle,
+    uintptr_t context
+);
 
-// *****************************************************************************
-/* SDSPI Driver Initialization Data
+void _DRV_SST26_InterfaceInit(DRV_SST26_OBJECT* dObj, DRV_SST26_INIT* sst26Init);
 
-  Summary:
-    Defines the data required to initialize the SDSPI driver
+bool _DRV_SST26_SPIWriteRead(
+    DRV_SST26_OBJECT* dObj,
+    DRV_SST26_TRANSFER_OBJ* transferObj
+);
 
-  Description:
-    This data type defines the data required to initialize or the SDSPI driver.
-
-  Remarks:
-    None.
-*/
-
-typedef struct
-{
-    /* SPI Driver Instance used by the SDSPI driver */
-    uint32_t                        spiDrvIndex;
-
-    bool                            isFsEnabled;
-
-    /* Number of clients */
-    size_t                          numClients;
-
-    /* Memory Pool for Client Objects */
-    uintptr_t                       clientObjPool;
-
-    SYS_PORT_PIN                    chipSelectPin;
-
-    SYS_PORT_PIN                    writeProtectPin;
-
-    uint32_t                        blockStartAddress;
-
-    /* Speed at which SD card communication should happen */
-    uint32_t                        sdcardSpeedHz;
-
-    uint32_t                        pollingIntervalMs;
-
-    /* Size of buffer objects queue */
-    uint32_t                        bufferObjPoolSize;
-
-    /* Pointer to the buffer pool */
-    uintptr_t                       bufferObjPool;
-
-} DRV_SDSPI_INIT;
-
-
-//DOM-IGNORE-BEGIN
-#ifdef __cplusplus
-}
-#endif
-//DOM-IGNORE-END
-
-#endif // #ifndef DRV_SDSPI_DEFINITIONS_H
-
-/*******************************************************************************
- End of File
-*/
+#endif //#ifndef _DRV_SST26_SPI_INTERFACE_H

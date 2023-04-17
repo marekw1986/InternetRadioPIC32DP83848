@@ -43,8 +43,12 @@
             <logicalFolder name="f1" displayName="sdspi" projectFiles="true">
               <itemPath>../src/config/default/driver/sdspi/drv_sdspi_definitions.h</itemPath>
               <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_local.h</itemPath>
-              <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_plib_interface.h</itemPath>
               <itemPath>../src/config/default/driver/sdspi/drv_sdspi.h</itemPath>
+              <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_driver_interface.h</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f6" displayName="spi" projectFiles="true">
+              <itemPath>../src/config/default/driver/spi/drv_spi.h</itemPath>
+              <itemPath>../src/config/default/driver/spi/drv_spi_definitions.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f5" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbfs" projectFiles="true">
@@ -696,8 +700,12 @@
             </logicalFolder>
             <logicalFolder name="f1" displayName="sdspi" projectFiles="true">
               <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi.c</itemPath>
-              <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_plib_interface.c</itemPath>
               <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_file_system.c</itemPath>
+              <itemPath>../src/config/default/driver/sdspi/src/drv_sdspi_driver_interface.c</itemPath>
+            </logicalFolder>
+            <logicalFolder name="f6" displayName="spi" projectFiles="true">
+              <itemPath>../src/config/default/driver/spi/src/drv_spi.c</itemPath>
+              <itemPath>../src/config/default/driver/spi/src/drv_spi_local.h</itemPath>
             </logicalFolder>
             <logicalFolder name="f5" displayName="usb" projectFiles="true">
               <logicalFolder name="f1" displayName="usbfs" projectFiles="true">
@@ -1077,6 +1085,7 @@
         </logicalFolder>
         <logicalFolder name="f1" displayName="Group1" projectFiles="true">
           <itemPath>../src/config/default/default.mhc/Group1/Group1.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group1/drv_spi.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/sys_fs.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/spi4.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/usb_host_msd.yml</itemPath>
@@ -1234,7 +1243,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="86016"/>
+        <property key="heap-size" value="84992"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>
@@ -1348,7 +1357,6 @@
         <property key="debugoptions.debug-startup" value="Use system settings"/>
         <property key="debugoptions.reset-behaviour" value="Use system settings"/>
         <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="memories.aux" value="false"/>
         <property key="memories.bootflash" value="true"/>

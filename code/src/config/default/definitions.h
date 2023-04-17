@@ -60,6 +60,7 @@
 #include "peripheral/tmr/plib_tmr2.h"
 #include "driver/usb/usbfs/drv_usbfs.h"
 #include "peripheral/spi/spi_master/plib_spi1_master.h"
+#include "driver/spi/drv_spi.h"
 #include "library/tcpip/tcpip.h"
 #include "system/sys_time_h2_adapter.h"
 #include "system/sys_random_h2_adapter.h"
@@ -231,6 +232,9 @@ typedef struct
 
 
     SYS_MODULE_OBJ  tcpip;
+    /* SPI0 Driver Object */
+    SYS_MODULE_OBJ drvSPI0;
+
    SYS_MODULE_OBJ  drvMiim_0;
 
     SYS_MODULE_OBJ  sysDebug;

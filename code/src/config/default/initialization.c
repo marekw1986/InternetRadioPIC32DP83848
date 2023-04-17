@@ -108,43 +108,11 @@ static DRV_SDSPI_CLIENT_OBJ drvSDSPI0ClientObjPool[DRV_SDSPI_CLIENTS_NUMBER_IDX0
 /* SDSPI Transfer Objects Pool */
 static DRV_SDSPI_BUFFER_OBJ drvSDSPI0TransferObjPool[DRV_SDSPI_QUEUE_SIZE_IDX0];
 
-/* SPI PLIB Interface Initialization for SDSPI Driver */
-const DRV_SDSPI_PLIB_INTERFACE drvSDSPI0PlibAPI = {
-
-    /* SPI PLIB WriteRead function */
-    .writeRead = (DRV_SDSPI_PLIB_WRITEREAD)SPI4_WriteRead,
-
-    /* SPI PLIB Write function */
-    .write = (DRV_SDSPI_PLIB_WRITE)SPI4_Write,
-
-    /* SPI PLIB Read function */
-    .read = (DRV_SDSPI_PLIB_READ)SPI4_Read,
-
-    /* SPI PLIB Transfer Status function */
-    .isTransmitterBusy = (DRV_SPI_PLIB_TRANSMITTER_IS_BUSY)SPI4_IsTransmitterBusy,
-
-    .transferSetup = (DRV_SDSPI_PLIB_SETUP)SPI4_TransferSetup,
-
-    /* SPI PLIB Callback Register */
-    .callbackRegister = (DRV_SDSPI_PLIB_CALLBACK_REGISTER)SPI4_CallbackRegister,
-};
-
-const uint32_t drvSDSPI0remapDataBits[]= { 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000400 };
-const uint32_t drvSDSPI0remapClockPolarity[] = { 0x00000000, 0x00000040 };
-const uint32_t drvSDSPI0remapClockPhase[] = { 0x00000000, 0x00000100 };
 
 /* SDSPI Driver Initialization Data */
 const DRV_SDSPI_INIT drvSDSPI0InitData =
 {
-    /* SD Card SPI PLIB API interface*/
-    .spiPlib                = &drvSDSPI0PlibAPI,
-
-    .remapDataBits          = drvSDSPI0remapDataBits,
-
-    .remapClockPolarity     = drvSDSPI0remapClockPolarity,
-
-    .remapClockPhase        = drvSDSPI0remapClockPhase,
-
+    .spiDrvIndex            = 0,
 
     /* SDSPI Number of clients */
     .numClients             = DRV_SDSPI_CLIENTS_NUMBER_IDX0,
@@ -176,6 +144,75 @@ const DRV_SDSPI_INIT drvSDSPI0InitData =
 const TCPIP_MODULE_MAC_PIC32INT_CONFIG tcpipMACPIC32INTInitData;
 
 
+// <editor-fold defaultstate="collapsed" desc="DRV_SPI Instance 0 Initialization Data">
+
+/* SPI Client Objects Pool */
+static DRV_SPI_CLIENT_OBJ drvSPI0ClientObjPool[DRV_SPI_CLIENTS_NUMBER_IDX0];
+
+/* SPI Transfer Objects Pool */
+static DRV_SPI_TRANSFER_OBJ drvSPI0TransferObjPool[DRV_SPI_QUEUE_SIZE_IDX0];
+
+/* SPI PLIB Interface Initialization */
+const DRV_SPI_PLIB_INTERFACE drvSPI0PlibAPI = {
+
+    /* SPI PLIB Setup */
+    .setup = (DRV_SPI_PLIB_SETUP)SPI4_TransferSetup,
+
+    /* SPI PLIB WriteRead function */
+    .writeRead = (DRV_SPI_PLIB_WRITE_READ)SPI4_WriteRead,
+
+    /* SPI PLIB Transfer Status function */
+    .isTransmitterBusy = (DRV_SPI_PLIB_TRANSMITTER_IS_BUSY)SPI4_IsTransmitterBusy,
+
+    /* SPI PLIB Callback Register */
+    .callbackRegister = (DRV_SPI_PLIB_CALLBACK_REGISTER)SPI4_CallbackRegister,
+};
+
+const uint32_t drvSPI0remapDataBits[]= { 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000400, 0x00000800 };
+const uint32_t drvSPI0remapClockPolarity[] = { 0x00000000, 0x00000040 };
+const uint32_t drvSPI0remapClockPhase[] = { 0x00000000, 0x00000100 };
+
+const DRV_SPI_INTERRUPT_SOURCES drvSPI0InterruptSources =
+{
+    /* Peripheral has more than one interrupt vectors */
+    .isSingleIntSrc                        = false,
+
+    /* Peripheral interrupt lines */
+    .intSources.multi.spiTxReadyInt      = -1,
+    .intSources.multi.spiTxCompleteInt   = _SPI4_TX_IRQ,
+    .intSources.multi.spiRxInt           = _SPI4_RX_IRQ,
+};
+
+/* SPI Driver Initialization Data */
+const DRV_SPI_INIT drvSPI0InitData =
+{
+    /* SPI PLIB API */
+    .spiPlib = &drvSPI0PlibAPI,
+
+    .remapDataBits = drvSPI0remapDataBits,
+
+    .remapClockPolarity = drvSPI0remapClockPolarity,
+
+    .remapClockPhase = drvSPI0remapClockPhase,
+
+    /* SPI Number of clients */
+    .numClients = DRV_SPI_CLIENTS_NUMBER_IDX0,
+
+    /* SPI Client Objects Pool */
+    .clientObjPool = (uintptr_t)&drvSPI0ClientObjPool[0],
+
+
+    /* SPI Queue Size */
+    .transferObjPoolSize = DRV_SPI_QUEUE_SIZE_IDX0,
+
+    /* SPI Transfer Objects Pool */
+    .transferObjPool = (uintptr_t)&drvSPI0TransferObjPool[0],
+
+    /* SPI interrupt sources (SPI peripheral and DMA) */
+    .interruptSources = &drvSPI0InterruptSources,
+};
+
+// </editor-fold>
 /* Forward declaration of MIIM 0 initialization data */
 static const DRV_MIIM_INIT drvMiimInitData_0;
 
@@ -269,7 +306,7 @@ const DRV_USBFS_INIT drvUSBFSInit =
 	
 	/* USB Host Power Enable. USB Driver uses this function to Enable the VBUS */ 
 	.portPowerEnable = DRV_USB_VBUSPowerEnable,
-
+	
     /* Root hub available current in milliamperes */
     .rootHubAvailableCurrent = 500,
 
@@ -867,6 +904,8 @@ void SYS_Initialize ( void* data )
     /* Initialize SDSPI0 Driver Instance */
     sysObj.drvSDSPI0 = DRV_SDSPI_Initialize(DRV_SDSPI_INDEX_0, (SYS_MODULE_INIT *)&drvSDSPI0InitData);
 
+    /* Initialize SPI0 Driver Instance */
+    sysObj.drvSPI0 = DRV_SPI_Initialize(DRV_SPI_INDEX_0, (SYS_MODULE_INIT *)&drvSPI0InitData);
 
    /* Initialize the MIIM Driver Instance 0*/
    sysObj.drvMiim_0 = DRV_MIIM_Initialize(DRV_MIIM_DRIVER_INDEX_0, (const SYS_MODULE_INIT *) &drvMiimInitData_0); 
