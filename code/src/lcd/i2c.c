@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "peripheral/coretimer/plib_coretimer.h"
 #include "i2c.h"
+#include "plib.h"
 
 #define FIXLAT LATDbits.LATD2
 #define FIXTRIS TRISDbits.TRISD2
 
-int actualClock;
+//int actualClock;
 
 //void i2c_init (void) {
 //    TRISFbits.TRISF8 = 0; //SCL

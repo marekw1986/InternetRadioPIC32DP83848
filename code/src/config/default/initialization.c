@@ -899,6 +899,7 @@ void SYS_Initialize ( void* data )
 
 	SPI1_Initialize();
 
+    I2C3_Initialize();
     RTCC_Initialize();
 
     /* Initialize SDSPI0 Driver Instance */

@@ -40,11 +40,9 @@
 #define LCD_LINE4 0x50  	// adres 1 znaku 4 wiersza
 #endif
 
-//#define SEND_I2C 		i2c_send_byte(mpxLCD, PCF8574_LCD_ADDR)
-#define SEND_I2C 		I2C3_Write(PCF8574_LCD_ADDR, &mpxLCD, 1)
+#define SEND_I2C 		i2c_send_byte(mpxLCD, PCF8574_LCD_ADDR)
 
-//#define RECEIVE_I2C  	i2c_rcv_byte(PCF8574_LCD_ADDR)
-#define RECEIVE_I2C(data)  	I2C3_Read(PCF8574_LCD_ADDR, data, 1)
+#define RECEIVE_I2C  	i2c_rcv_byte(PCF8574_LCD_ADDR)
 
 #define LCDC_CLS					0x01
 #define LCDC_HOME					0x02

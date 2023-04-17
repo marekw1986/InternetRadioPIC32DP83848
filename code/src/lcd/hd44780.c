@@ -6,6 +6,7 @@
 
 #include "peripheral/coretimer/plib_coretimer.h"
 #include "hd44780.h"
+#include "i2c.h"
 
 #define LCD_BUF_SIZE 512
 #define LCD_BUF_MASK ( LCD_BUF_SIZE - 1)
@@ -148,7 +149,7 @@ static inline uint8_t lcd_readHalf(void)
 	uint8_t result=0;
     uint8_t res=0;
 
-    RECEIVE_I2C(&res);
+    res = RECEIVE_I2C;
     if(res&(1<<LCD_D4)) result |= (1<<0);
     if(res&(1<<LCD_D5)) result |= (1<<1);
     if(res&(1<<LCD_D6)) result |= (1<<2);

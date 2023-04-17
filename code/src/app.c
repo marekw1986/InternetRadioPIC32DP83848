@@ -46,6 +46,7 @@
 #include "tcpip/http_net.h"
 #include "http_net_print.h"
 #include "lcd/hd44780.h"
+#include "lcd/i2c.h"
 #include "common.h"
 
 // *****************************************************************************
@@ -245,6 +246,7 @@ void APP_SYSFSEventHandler(SYS_FS_EVENT event, void *mountName, uintptr_t contex
 void APP_Tasks ( void )
 {
     static uint32_t timer = 0;
+    static uint8_t lcd_light = 0;
     SYS_STATUS tcpipStat;
     SYS_STATUS usbHostStat;
     
@@ -258,6 +260,12 @@ void APP_Tasks ( void )
             
             rotary_init();
             button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, NULL);
+            
+            //i2c_init();
+            lcd_init();
+            lcd_cls();
+            lcd_locate(0, 0);
+            lcd_str("Volume: ");          
             
             VS1003_begin();
             VS1003_setVolume(100);
@@ -323,8 +331,12 @@ void APP_Tasks ( void )
             
             if ((uint32_t)(millis()-timer) > 1000) {
                 //usb_write();
-                //VS1003_stop();
-                //VS1003_play_next_http_stream_from_list();
+                if (lcd_light) {
+                    lcd_light = 0;
+                }
+                else {
+                    lcd_light = 1;
+                }
                 timer = millis();
             }
             //static uint16_t i = 0;
@@ -334,17 +346,18 @@ void APP_Tasks ( void )
             
             int8_t tmp;
             if ( (tmp = rotary_handle()) ) {
+                char supbuf[16];
                 int8_t volume = VS1003_getVolume();
                 volume += tmp;
                 if (volume > 100) volume = 100;
                 if (volume < 0) volume = 0;
-                //lcd_locate(1, 8);
-                //lcd_str("            ");
-                //lcd_locate(1, 8);
-                //sprintf(buffer, "%d", counter);
-                //lcd_str(buffer);
+                lcd_locate(0, 8);
+                snprintf(supbuf, sizeof(supbuf)-1, "%d%s", volume, (volume < 100) ? " " : "");
+                lcd_str(supbuf);
                 VS1003_setVolume(volume);                
             }
+            
+            lcd_handle();
             
             break;
         }
