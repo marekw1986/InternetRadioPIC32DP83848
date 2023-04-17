@@ -19932,13 +19932,6 @@ SOurce: www.abracon.com</description>
 <label x="345.44" y="246.38" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="LED" class="0">
-<segment>
-<pinref part="SV1" gate="G$1" pin="6"/>
-<wire x1="325.12" y1="248.92" x2="320.04" y2="248.92" width="0.1524" layer="91"/>
-<label x="320.04" y="248.92" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
 <net name="AN_3V" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="AVDD"/>
@@ -20827,6 +20820,11 @@ SOurce: www.abracon.com</description>
 <pinref part="IC3" gate="G$1" pin="RA15/INT4/SDA1/AETXEN"/>
 <wire x1="20.32" y1="406.4" x2="15.24" y2="406.4" width="0.1524" layer="91"/>
 <label x="15.24" y="406.4" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="SV1" gate="G$1" pin="6"/>
+<wire x1="325.12" y1="248.92" x2="320.04" y2="248.92" width="0.1524" layer="91"/>
+<label x="320.04" y="248.92" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>

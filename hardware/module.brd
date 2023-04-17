@@ -4099,16 +4099,6 @@ design rules under a new name.</description>
 <wire x1="63.373" y1="18.7198" x2="63.373" y2="14.351" width="0.2032" layer="1"/>
 <wire x1="63.373" y1="14.351" x2="65.659" y2="12.065" width="0.2032" layer="1"/>
 </signal>
-<signal name="LED">
-<wire x1="51.892" y1="24.7906" x2="56.3372" y2="20.3454" width="0.2032" layer="1"/>
-<contactref element="SV1" pad="6"/>
-<wire x1="56.3372" y1="20.3454" x2="61.0362" y2="20.3454" width="0.2032" layer="1"/>
-<wire x1="61.0362" y1="20.3454" x2="62.865" y2="18.5166" width="0.2032" layer="1"/>
-<wire x1="62.865" y1="18.5166" x2="62.865" y2="14.1224" width="0.2032" layer="1"/>
-<wire x1="62.865" y1="14.1224" x2="64.389" y2="12.5984" width="0.2032" layer="1"/>
-<wire x1="64.389" y1="12.5984" x2="64.389" y2="10.795" width="0.2032" layer="1"/>
-<wire x1="64.389" y1="10.795" x2="65.659" y2="9.525" width="0.2032" layer="1"/>
-</signal>
 <signal name="1WIRE">
 <contactref element="IC3" pad="66"/>
 <wire x1="51.492" y1="32.6938" x2="51.492" y2="24.4794" width="0.2032" layer="1"/>
@@ -5027,6 +5017,15 @@ design rules under a new name.</description>
 </signal>
 <signal name="RA15_ROT_SW">
 <contactref element="IC3" pad="67"/>
+<wire x1="51.892" y1="24.7906" x2="56.3372" y2="20.3454" width="0.2032" layer="1"/>
+<contactref element="SV1" pad="6"/>
+<wire x1="56.3372" y1="20.3454" x2="61.0362" y2="20.3454" width="0.2032" layer="1"/>
+<wire x1="61.0362" y1="20.3454" x2="62.865" y2="18.5166" width="0.2032" layer="1"/>
+<wire x1="62.865" y1="18.5166" x2="62.865" y2="14.1224" width="0.2032" layer="1"/>
+<wire x1="62.865" y1="14.1224" x2="64.389" y2="12.5984" width="0.2032" layer="1"/>
+<wire x1="64.389" y1="12.5984" x2="64.389" y2="10.795" width="0.2032" layer="1"/>
+<wire x1="64.389" y1="10.795" x2="65.659" y2="9.525" width="0.2032" layer="1"/>
+<wire x1="51.892" y1="32.6938" x2="51.892" y2="24.7906" width="0.2032" layer="1"/>
 </signal>
 </signals>
 </board>

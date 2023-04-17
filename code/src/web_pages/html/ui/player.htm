@@ -1,0 +1,253 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Odtwarzanie</title>
+<link rel="stylesheet" type="text/css" href="/ui/style.css">
+<link rel="stylesheet" type="text/css" href="/ui/menu.css">
+<script type="text/javascript">
+function preparePage() {
+	showDir('root');
+	loadInfo();
+	window.setInterval(loadInfo, 5000);
+}
+
+function loadInfo() {
+    getJSON("/ui/plinf.json", function(err, data) {
+        var vol = document.getElementById('volume');
+        var loop = document.getElementById('loop');
+        var playInf = document.getElementById('plinf');
+        if (err === null) {
+			if (data.type === "stream") {
+				playInf.value = data.title;
+			}
+			else if (data.type = "file") {
+				playInf.value = data.artist + " - " + data.title;
+			}
+			if ( (data.volume >= 1) && (data.volume <= 100) ) {
+				volume.value = data.volume;
+			}
+			if (data.loop === "true") {
+				loop.checked = true;
+			}
+			else {
+				loop.checked = false;
+			}
+        }
+        else {
+			
+		}
+    });	
+}
+
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
+
+function clearFiles() {
+	var select = document.getElementById('files');
+	var i, L = select.options.length - 1;
+	for(i = L; i >= 0; i--) {
+		select.remove(i);
+	}
+}
+
+function showDir(path) {
+    getJSON("/ui/dir.json?url="+path, function(err, data) {
+        var select = document.getElementById('files');
+        if (err === null) {
+			clearFiles();
+			if (data.parent !== "root") {
+				var back = document.createElement('option');
+				if (data.parent === "streams") {
+					back.value = "root";
+				}
+				else {
+					if ( (data.parent === "/mnt/myDrive0") || (data.parent === "/mnt/myDrive1") ) {
+						back.value = "root";
+					}
+					else {
+						back.value = data.parent.substr(0, data.parent.lastIndexOf("/"));
+						if (back.value === "") back.value = "root";
+					}
+				}
+				back.innerHTML = "..";
+				back.dataset.type = "dir";
+				select.appendChild(back);
+			}
+			data.dirs.sort();
+            for (i=0; i<data.dirs.length; i++) {
+				var opt = document.createElement('option');
+				if (data.parent !== "root" && data.parent !== "streams") {
+					opt.value = data.parent + "/"
+				}
+                opt.value += data.dirs[i];
+                opt.innerHTML = "&#128193 " + data.dirs[i];
+                opt.dataset.type = "dir";
+                select.appendChild(opt);
+            }
+            data.files.sort();
+            if (data.parent === "streams") {
+				for (i=0; i<data.files.length; i++) {
+					var opt = document.createElement('option');
+					opt.value = data.files[i].id;
+					opt.innerHTML = "&#128225" + data.files[i].name;
+					opt.dataset.type = "stream";
+					select.appendChild(opt);
+				}
+			}
+			else {
+				for (i=0; i<data.files.length; i++) {
+					var opt = document.createElement('option');
+					opt.value = data.parent + "/" + data.files[i];
+					opt.innerHTML = "&#9834 " + data.files[i];
+					opt.dataset.type = "file";
+					select.appendChild(opt);
+				}
+			}
+        }
+        else {
+			
+		}
+    });
+}
+
+function play(path, type="file") {
+	var token = document.getElementById('token');
+	var result = document.getElementById('result');
+	var playsrc = type;
+	
+	if (playsrc !== "file" && playsrc !== "dir" && playsrc !== "stream" && playsrc !== "id") return;
+
+	var request ="token=" + token.value + "&src=" + playsrc + "&url=" + path;
+	var ret = sendToPlayCgi(request);
+	if (ret) {
+		window.setTimeout(loadInfo, 500);
+	}	
+	return ret;	
+}
+
+function fileAction() {
+	var select = document.getElementById('files');
+	var option = select[select.selectedIndex];
+	var type = option.dataset.type;
+	
+	if (type === "dir") {
+		showDir(option.value);
+	}
+	else if (type === "file") {
+		play(option.value);
+	}
+	else if (type === "stream") {
+		play(option.value, "id");
+	}
+}
+
+function playBtnAction() {
+	var select = document.getElementById('files');
+	var option = select[select.selectedIndex];
+	var type = option.dataset.type;
+	play(option.value, type);
+}
+
+function stopBtnAction() {
+	play("stop");
+}
+
+function nextBtnAction() {
+	play("next");
+}
+
+function sendToPlayCgi(params) {
+	var http_request;
+	try {
+	   http_request = new XMLHttpRequest();
+	}
+	catch (e) {
+        result.innerHTML = "Wystąpił błąd przeglądarki. Wykonanie akcji nie jest możliwe.";
+        return false;
+	}
+	http_request.onreadystatechange = function () {
+		if (http_request.readyState === 4 && http_request.status === 200 ) {
+            if (http_request.responseText.startsWith("invalid_token")) {
+                result.style.display = 'block';
+                result.style.color = 'red';
+                result.innerHTML = "Nieprawidłowy token operacji. Spróbuj ponownie załadować stronę.";
+            }
+			else if (http_request.responseText.startsWith("ok")) {
+				result.style.display = 'block';
+				result.style.color = 'green';
+				result.innerHTML = "Ok";	
+			}
+			else {
+				result.style.display = 'block';
+				result.style.color = 'red';
+				result.innerHTML = "Wystąpił nieznany błąd.";					
+			}
+		}
+	};
+	http_request.open("POST", "/ui/play.cgi", true);
+	http_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	http_request.send(params);
+	return true;	
+}
+
+function setVolume() {
+	var vol = document.getElementById('volume').value;
+	var token = document.getElementById('token');
+	var result = document.getElementById('result');
+	var request ="token=" + token.value + "&vol=" + vol;
+	
+	var ret = sendToPlayCgi(request);
+	return ret;		
+}
+
+function setLoop() {
+	var loop = document.getElementById('loop');
+	var token = document.getElementById('token');
+	var result = document.getElementById('result');	
+	var loopMsg;
+	
+	if (loop.checked) {
+		loopMsg = 'true';
+	}
+	else {
+		loopMsg = 'false';
+	}
+	
+	var request = "token=" + token.value + "&loop=" + loopMsg;
+	var ret = sendToPlayCgi(request);
+	return ret;
+}
+
+</script>
+</head>
+<body onload="preparePage()">
+<script src="/ui/menu.js"></script>
+<div id="main">
+<h1>Odtwarzanie</h1>
+<input type="hidden" name="token" id="token" value="~configToken~">
+<select name="files" id="files" size="15" ondblclick="fileAction()">
+</select><br>
+<input type="button" name="play_button" value="Odtwarzaj" onclick="playBtnAction()">
+<input type="button" name="stop_button" value="Stop" onclick="stopBtnAction()">
+<input type="button" name="next_button" value="Następny" onclick="nextBtnAction()"><br>
+<label for="plinf">Odtwarzanie:</label><input type="text" id="plinf" value="" disabled><br>
+<label for="loop">Pętla:</label>
+<input type="checkbox" id="loop" name="loop" value="" onchange="setLoop()"><br>
+<label for="volume">Głośność:</label>
+<input type="range" min="1" max="100" value="50" class="slider" id="volume" onchange="setVolume()"><br>
+<div id="result" style="color:red; display:none;"></div>
+</div>
+</body>
+</html>
