@@ -7,10 +7,18 @@ Internet radio based on PIC32
   - [x] Add funcionality of printing "root" folder
   - [x] Add funcionality of reporting list of available streams
   - [x] Add contextual next button (play next stream or next file in directory)
-  - [ ] Add aditional info about currently played file or audio stream
-  - [ ] Add volume control
-  - [ ] Add option od setting loop flag  
+  - [x] Add aditional info about currently played file or audio stream
+  - [x] Add volume control
+  - [x] Add option od setting loop flag
+  - [ ] Add possibility to save config from web UI
+  - [ ] Add reset from web UI
+  - [ ] Option of adding streams to list
 - [ ] Create HD44780 UI
+  - [x] Show volume value
+  - [x] Show currently played stream/file
+  - [ ] Create interactive menu
+  - [ ] Scrolled text (info about played song/stream)
+- [ ] Move I2C (HD44780) driver from plib to Harmony.
 
 ### Completed Column ✓
 - [x] Debug SD card
@@ -21,3 +29,4 @@ Internet radio based on PIC32
 - [x] Update FatFS library to the newest version
 - [x] Determine why SPI Flash is so slow
 - [x] Move list of streams to file
+- [x] Move project from MLA to Harmony libraries
