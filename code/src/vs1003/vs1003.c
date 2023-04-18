@@ -25,6 +25,7 @@
 #include "mediainfo.h"
 #include "ringbuffer.h"
 #include "../common.h"
+#include "../lcd/ui.h"
 
 #define VS_DREQ_TRIS    TRISCbits.TRISC1
 #define VS_DREQ_PIN     PORTCbits.RC1       //It is input!
@@ -135,23 +136,6 @@ static uri_t uri;
 static bool loop_flag = false;
 static bool dir_flag = false;
 static uint8_t last_volume = 0;
-
-typedef enum {
-    STREAM_HOME = 0,
-    STREAM_HTTP_BEGIN,
-    STREAM_HTTP_NAME_RESOLVE,
-    STREAM_HTTP_OBTAIN_SOCKET,            
-    STREAM_HTTP_SOCKET_OBTAINED,
-    STREAM_HTTP_SEND_REQUEST,
-    STREAM_HTTP_PROCESS_HEADER,
-    STREAM_HTTP_FILL_BUFFER,
-    STREAM_HTTP_GET_DATA,
-    STREAM_FILE_FILL_BUFFER,   
-    STREAM_FILE_PLAY_REST,
-    STREAM_FILE_GET_DATA,
-    STREAM_HTTP_CLOSE,
-    STREAM_HTTP_RECONNECT_WAIT        
-} StreamState_t;
 
 static StreamState_t StreamState = STREAM_HOME;
 
@@ -760,6 +744,7 @@ void VS1003_setVolume(uint8_t vol) {
   value |= new_reg_value;
 
   VS1003_write_register(SCI_VOL,value); // VOL
+  lcd_ui_update_volume();
 }
 
 uint8_t VS1003_getVolume(void) {
@@ -907,6 +892,7 @@ static void VS1003_handle_end_of_file (void) {
             SYS_FS_FileClose(fsrc);
             VS1003_stopPlaying();
             mediainfo_clean();
+            lcd_ui_clear_content_info();
             StreamState = STREAM_HOME;
         }
     }    
@@ -979,6 +965,7 @@ void VS1003_play_http_stream_by_id(uint16_t id) {
 	if (url) {
 		VS1003_stop();
         mediainfo_title_set(name);
+        lcd_ui_update_content_info((const char*)name);
 		VS1003_play_http_stream(url);
 	}
 }
@@ -1036,6 +1023,7 @@ void VS1003_play_file (char* url) {
         }
         if (strncmp(id3, "TAG", 3)) {
             SYS_CONSOLE_PRINT("File doesn't have an ID3 tag\n\n");
+            mediainfo_title_set("No ID3");
         }
         else {
             unsigned char *s = (unsigned char*)id3+3;
@@ -1089,6 +1077,7 @@ void VS1003_play_file (char* url) {
         }
     }
     
+    lcd_ui_update_content_info(mediainfo_title_get());
     mediainfo_type_set(MEDIA_TYPE_FILE);
     StreamState = STREAM_FILE_FILL_BUFFER;
     VS1003_startPlaying();         //Start playing song
@@ -1137,6 +1126,7 @@ void VS1003_stop(void) {
     }
     VS1003_stopPlaying();
     mediainfo_clean();
+    lcd_ui_clear_content_info();
     StreamState = STREAM_HOME;
 }
 
@@ -1146,6 +1136,10 @@ void VS1003_setLoop(bool val) {
 
 bool VS1003_getLoop(void) {
     return loop_flag;
+}
+
+StreamState_t VS1003_getStreamState(void) {
+    return StreamState;
 }
 
 void VS1003_send_cmd_thread_safe(uint8_t cmd, uint32_t param) {

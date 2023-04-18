@@ -491,6 +491,7 @@
       <logicalFolder name="f8" displayName="LCD" projectFiles="true">
         <itemPath>../src/lcd/hd44780.h</itemPath>
         <itemPath>../src/lcd/i2c.h</itemPath>
+        <itemPath>../src/lcd/ui.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.h</itemPath>
@@ -895,6 +896,7 @@
       <logicalFolder name="f9" displayName="LCD" projectFiles="true">
         <itemPath>../src/lcd/hd44780.c</itemPath>
         <itemPath>../src/lcd/i2c.c</itemPath>
+        <itemPath>../src/lcd/ui.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.c</itemPath>

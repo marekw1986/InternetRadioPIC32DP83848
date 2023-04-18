@@ -46,6 +46,7 @@
 #include "tcpip/http_net.h"
 #include "http_net_print.h"
 #include "lcd/hd44780.h"
+#include "lcd/ui.h"
 #include "lcd/i2c.h"
 #include "common.h"
 
@@ -264,8 +265,7 @@ void APP_Tasks ( void )
             //i2c_init();
             lcd_init();
             lcd_cls();
-            lcd_locate(0, 0);
-            lcd_str("Volume: ");          
+            lcd_ui_draw_interface();          
             
             VS1003_begin();
             VS1003_setVolume(100);
@@ -346,17 +346,14 @@ void APP_Tasks ( void )
             
             int8_t tmp;
             if ( (tmp = rotary_handle()) ) {
-                char supbuf[16];
                 int8_t volume = VS1003_getVolume();
                 volume += tmp;
                 if (volume > 100) volume = 100;
                 if (volume < 0) volume = 0;
-                lcd_locate(0, 8);
-                snprintf(supbuf, sizeof(supbuf)-1, "%d%s", volume, (volume < 100) ? " " : "");
-                lcd_str(supbuf);
                 VS1003_setVolume(volume);                
             }
             
+            lcd_ui_handle();
             lcd_handle();
             
             break;

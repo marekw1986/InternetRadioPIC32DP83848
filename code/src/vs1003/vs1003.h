@@ -17,6 +17,23 @@
 #define TXE     0x02
 #define BSY     0x80
 
+typedef enum {
+    STREAM_HOME = 0,
+    STREAM_HTTP_BEGIN,
+    STREAM_HTTP_NAME_RESOLVE,
+    STREAM_HTTP_OBTAIN_SOCKET,            
+    STREAM_HTTP_SOCKET_OBTAINED,
+    STREAM_HTTP_SEND_REQUEST,
+    STREAM_HTTP_PROCESS_HEADER,
+    STREAM_HTTP_FILL_BUFFER,
+    STREAM_HTTP_GET_DATA,
+    STREAM_FILE_FILL_BUFFER,   
+    STREAM_FILE_PLAY_REST,
+    STREAM_FILE_GET_DATA,
+    STREAM_HTTP_CLOSE,
+    STREAM_HTTP_RECONNECT_WAIT        
+} StreamState_t;
+
 enum {VS_MSG_NEXT, VS_MSG_STOP, VS_MSG_PLAY_FILE, VS_MSG_PLAY_DIR, VS_MSG_PLAY_STREAM_BY_ID, VS_MSG_SET_VOL, VS_MSG_LOOP};
 
 typedef struct {
@@ -58,6 +75,7 @@ void VS1003_play_dir (const char* url);
 void VS1003_stop(void);
 void VS1003_setLoop(bool val);
 bool VS1003_getLoop(void);
+StreamState_t VS1003_getStreamState(void);
 uint8_t is_audio_file (char* name);
 void VS1003_activate_spectrum_analyzer(void);
 void VS1003_read_spectrum_analyzer(void);
