@@ -73,6 +73,7 @@
 
 APP_DATA appData;
 button_t next_btn;
+button_t prev_btn;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -95,6 +96,7 @@ button_t next_btn;
 
 void usb_write (void);
 void next_func (void);
+void prev_func (void);
 
 void usb_write (void) { 
     SYS_FS_HANDLE file;
@@ -124,8 +126,12 @@ void usb_write (void) {
 
 void next_func (void) {
     SYS_CONSOLE_PRINT("NEXT button pressed!\r\n");
-    VS1003_stop();
-    VS1003_play_next_http_stream_from_list();
+    VS1003_play_next();
+}
+
+void prev_func (void) {
+    SYS_CONSOLE_PRINT("PREV button pressed!\r\n");
+    VS1003_play_prev();
 }
 
 // *****************************************************************************
@@ -260,7 +266,8 @@ void APP_Tasks ( void )
             SYS_CONSOLE_PRINT("Initializing user app\r\n");
             
             rotary_init();
-            button_init(&next_btn, &PORTG, _PORTG_RG13_MASK, &next_func, NULL);
+            button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &prev_func, NULL);
+            button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &next_func, NULL);
             
             //i2c_init();
             lcd_init();
@@ -343,6 +350,7 @@ void APP_Tasks ( void )
             //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "Print from user task %d\r\n", i++);
             VS1003_handle();
             button_handle(&next_btn);
+            button_handle(&prev_btn);
             
             int8_t tmp;
             if ( (tmp = rotary_handle()) ) {

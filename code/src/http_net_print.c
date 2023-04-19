@@ -454,8 +454,12 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                     VS1003_send_cmd_thread_safe(VS_MSG_STOP, 0);
                 }
                 else if (strncmp(newurl, "next", 5) == 0) {
-                     SYS_CONSOLE_PRINT("POSTPlay: playing next song/stream\r\n");
+                    SYS_CONSOLE_PRINT("POSTPlay: playing next song/stream\r\n");
                      VS1003_send_cmd_thread_safe(VS_MSG_NEXT, 0);
+                }
+                else if (strncmp(newurl, "prev", 5) == 0) {
+                    SYS_CONSOLE_PRINT("POSTPlay: playing prev song/stream\r\n");
+                    VS1003_send_cmd_thread_safe(VS_MSG_PREV, 0);
                 }
                 else {
                     switch(playsrc) {

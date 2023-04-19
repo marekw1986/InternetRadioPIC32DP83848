@@ -34,7 +34,7 @@ typedef enum {
     STREAM_HTTP_RECONNECT_WAIT        
 } StreamState_t;
 
-enum {VS_MSG_NEXT, VS_MSG_STOP, VS_MSG_PLAY_FILE, VS_MSG_PLAY_DIR, VS_MSG_PLAY_STREAM_BY_ID, VS_MSG_SET_VOL, VS_MSG_LOOP};
+enum {VS_MSG_NEXT, VS_MSG_PREV, VS_MSG_STOP, VS_MSG_PLAY_FILE, VS_MSG_PLAY_DIR, VS_MSG_PLAY_STREAM_BY_ID, VS_MSG_SET_VOL, VS_MSG_LOOP};
 
 typedef struct {
 	uint16_t cmd;
@@ -66,10 +66,12 @@ void VS1003_print_byte_register(uint8_t reg);
 void VS1003_printDetails(void);
 void VS1003_loadUserCode(const uint16_t* buf, size_t len);
 void VS1003_play_next(void);
+void VS1003_play_prev(void);
 void VS1003_play_next_audio_file_from_directory (void);
 void VS1003_play_http_stream(const char* url);
-void VS1003_play_http_stream_by_id(uint16_t id);
+bool VS1003_play_http_stream_by_id(uint16_t id);
 void VS1003_play_next_http_stream_from_list(void);
+void VS1003_play_prev_http_stream_from_list(void);
 void VS1003_play_file (char* url);
 void VS1003_play_dir (const char* url);
 void VS1003_stop(void);

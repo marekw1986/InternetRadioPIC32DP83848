@@ -131,6 +131,8 @@ QueueHandle_t vsQueueHandle;
 static SYS_FS_HANDLE fsrc;
 static SYS_FS_HANDLE vsdir;
 
+static int current_stream_ind = 1;
+
 static TCP_SOCKET	VS_Socket = INVALID_SOCKET;
 static uri_t uri;
 static bool loop_flag = false;
@@ -627,6 +629,9 @@ void VS1003_handle(void) {
 			case VS_MSG_NEXT:
 				VS1003_play_next();
 				break;
+            case VS_MSG_PREV:
+                VS1003_play_prev();
+                break;
 			case VS_MSG_STOP:
 				VS1003_stop();
 				break;
@@ -814,6 +819,25 @@ void VS1003_play_next(void) {
     }
 }
 
+void VS1003_play_prev(void) {
+    switch (StreamState) {
+        case STREAM_FILE_FILL_BUFFER:
+        case STREAM_FILE_GET_DATA:
+            if (dir_flag) {
+                //TODO: This need to be implemented
+                //VS1003_play_prev_audio_file_from_directory();
+            }
+            break;
+        case STREAM_HTTP_FILL_BUFFER:
+        case STREAM_HTTP_GET_DATA:
+            VS1003_stop();
+            VS1003_play_prev_http_stream_from_list();
+            break;
+        default:
+            break;
+    }
+}
+
 
 static inline void await_data_request(void) {
     while ( !VS_DREQ_PIN );
@@ -957,7 +981,7 @@ void VS1003_play_http_stream(const char* url) {
     VS1003_startPlaying();
 }
 
-void VS1003_play_http_stream_by_id(uint16_t id) {
+bool VS1003_play_http_stream_by_id(uint16_t id) {
     char name[32];
     
     memset(name, 0x00, sizeof(name));
@@ -967,27 +991,42 @@ void VS1003_play_http_stream_by_id(uint16_t id) {
         mediainfo_title_set(name);
         lcd_ui_update_content_info((const char*)name);
 		VS1003_play_http_stream(url);
+        current_stream_ind = id;
+        return true;
 	}
+    return false;
 }
 
 void VS1003_play_next_http_stream_from_list(void) {
-    static int ind = 1;
     char name[32];
     
     memset(name, 0x00, sizeof(name));
-    char* url = get_station_url_from_file(ind, name, sizeof(name)-1);
+    current_stream_ind++;
+    char* url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
     if (url == NULL) {
         //Function returned NULL, there is no stream with such ind
         //Try again from the beginning
-        ind = 1;
-        url = get_station_url_from_file(ind, name, sizeof(name)-1);
+        current_stream_ind = 1;
+        url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
         if (url == NULL) return;
-    }
-    else {
-        ind++;
     }
     VS1003_stop();
     mediainfo_title_set(name);
+    lcd_ui_update_content_info((const char*)name);
+    VS1003_play_http_stream(url);
+}
+
+void VS1003_play_prev_http_stream_from_list(void) {
+    char name[32];
+    
+    memset(name, 0x00, sizeof(name));
+    current_stream_ind--;
+    if (current_stream_ind < 1) { current_stream_ind = 1; }
+    char* url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
+    if (url == NULL) return;
+    VS1003_stop();
+    mediainfo_title_set(name);
+    lcd_ui_update_content_info((const char*)name);
     VS1003_play_http_stream(url);
 }
 

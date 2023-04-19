@@ -9,6 +9,8 @@ static bool scroll_info = false;
 static char scroll_buffer[128];
 static char* scroll_ptr;
 
+const char padding[] = "                    ";
+
 static void clear_utf8(char* str);
 
 void lcd_ui_draw_interface(void) {
@@ -36,22 +38,18 @@ void lcd_ui_update_content_info(const char* str) {
         memset(padbuf, ' ', padlen);
         padbuf[padlen+1] = '\0';
         snprintf(supbuf, sizeof(supbuf)-1, "%s%s", str, padbuf);
-    }
-    else {
+    }    
+    else if (len == 20) {
         strncpy(supbuf, str, 20);
     }
-    
-//    else if (len == 20) {
-//        strncpy(supbuf, str, 20);
-//    }
-//    else {
-//        scroll_info = true;
-//        strncpy(scroll_buffer, str, sizeof(scroll_buffer)-1);
-//        clear_utf8(scroll_buffer);
-//        scroll_ptr = scroll_buffer;
-//        strncpy(supbuf, scroll_buffer, 20);
-//        scroll_timer = millis();
-//    }
+    else {
+        scroll_info = true;
+        snprintf(scroll_buffer, sizeof(scroll_buffer)-1, "%s%s%s", padding, str, padding);
+        clear_utf8(scroll_buffer);
+        scroll_ptr = scroll_buffer;
+        strncpy(supbuf, scroll_buffer, 20);
+        scroll_timer = millis();
+    }
     
     clear_utf8(supbuf);
     lcd_str(supbuf);
@@ -60,6 +58,22 @@ void lcd_ui_update_content_info(const char* str) {
 void lcd_ui_clear_content_info(void) {
     scroll_info = false;
     lcd_locate(1, 0);
+    for (int i=0; i<20; i++) {
+        lcd_char(' ');
+    }
+}
+
+void lcd_ui_update_state_info(const char* str) {
+    char supbuf[32];
+    
+    lcd_locate(2, 0);
+    strncpy(supbuf, str, 20);
+    clear_utf8(supbuf);
+    lcd_str(supbuf);
+}
+
+void lcd_ui_clear_state_info(void) {
+    lcd_locate(2, 0);
     for (int i=0; i<20; i++) {
         lcd_char(' ');
     }
@@ -74,17 +88,10 @@ void lcd_ui_handle(void) {
         refresh_timer = millis();
     }
     
-    if (scroll_info && ((uint32_t)(millis()-scroll_timer) > 1000) ) {
+    if (scroll_info && ((uint32_t)(millis()-scroll_timer) > 800) ) {
         char supbuf[32];
-        
-        uint8_t to_end = strlen(scroll_ptr);
         memset(supbuf, 0x00, sizeof(supbuf));
-        strncpy(supbuf, scroll_ptr, (to_end >= 20) ? 20 : to_end);
-        uint8_t i;
-        for (i=to_end; i<20; i++) {
-            supbuf[i] = ' ';
-        }
-        i='\0';
+        strncpy(supbuf, scroll_ptr, 20);
         lcd_locate(1, 0);
         lcd_str(supbuf);
 //        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
@@ -101,5 +108,18 @@ static void clear_utf8(char* str) {     //TEMP WORKAROUND
     while (*str) {
         *str &= ~(1<<7);
         str++;
+    }
+}
+
+static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len) {
+    uint16_t copied = 0;
+    while (*src) {
+        if ( !(*src & (1<<7)) ) {
+            *dst = *src;
+            dst++;
+            copied++;
+            if (copied >= len) {break;}
+        }
+        src++;
     }
 }
