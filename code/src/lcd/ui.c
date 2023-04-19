@@ -11,7 +11,8 @@ static char* scroll_ptr;
 
 const char padding[] = "                    ";
 
-static void clear_utf8(char* str);
+//static void clear_utf8(char* str);
+static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len);
 
 void lcd_ui_draw_interface(void) {
     lcd_locate(0, 0);
@@ -29,29 +30,37 @@ void lcd_ui_update_volume(void) {
 
 void lcd_ui_update_content_info(const char* str) {
     char supbuf[32];
+    char asciibuf[128];
     
-    lcd_locate(1, 0);
-    uint8_t len = strlen(str);
+    memset(asciibuf, 0x00, sizeof(asciibuf));
+    copy_utf8_to_ascii(asciibuf, str, sizeof(asciibuf)-1);
+    
+    uint8_t len = strlen(asciibuf);
     if (len < 20) {
         char padbuf[32];
+        memset(padbuf, 0x00, sizeof(padbuf));
         uint8_t padlen = (20-len);
         memset(padbuf, ' ', padlen);
         padbuf[padlen+1] = '\0';
-        snprintf(supbuf, sizeof(supbuf)-1, "%s%s", str, padbuf);
+        //char buf[32];
+        //copy_utf8_to_ascii(buf, str, sizeof(buf)-1);
+        snprintf(supbuf, sizeof(supbuf)-1, "%s%s", asciibuf, padbuf);
     }    
     else if (len == 20) {
-        strncpy(supbuf, str, 20);
+        strncpy(supbuf, asciibuf, 20);
+        //copy_utf8_to_ascii(supbuf, str, 20);
     }
     else {
         scroll_info = true;
-        snprintf(scroll_buffer, sizeof(scroll_buffer)-1, "%s%s%s", padding, str, padding);
-        clear_utf8(scroll_buffer);
+        snprintf(scroll_buffer, sizeof(scroll_buffer)-1, "%s%s%s", padding, asciibuf, padding);
+        //clear_utf8(scroll_buffer);
         scroll_ptr = scroll_buffer;
         strncpy(supbuf, scroll_buffer, 20);
+        //copy_utf8_to_ascii(supbuf, scroll_buffer, 20);
         scroll_timer = millis();
     }
     
-    clear_utf8(supbuf);
+    lcd_locate(1, 0);
     lcd_str(supbuf);
 }
 
@@ -67,8 +76,8 @@ void lcd_ui_update_state_info(const char* str) {
     char supbuf[32];
     
     lcd_locate(2, 0);
-    strncpy(supbuf, str, 20);
-    clear_utf8(supbuf);
+    copy_utf8_to_ascii(supbuf, str, 20);
+    //clear_utf8(supbuf);
     lcd_str(supbuf);
 }
 
@@ -91,6 +100,7 @@ void lcd_ui_handle(void) {
     if (scroll_info && ((uint32_t)(millis()-scroll_timer) > 800) ) {
         char supbuf[32];
         memset(supbuf, 0x00, sizeof(supbuf));
+        //copy_utf8_to_ascii(supbuf, scroll_ptr, 20);
         strncpy(supbuf, scroll_ptr, 20);
         lcd_locate(1, 0);
         lcd_str(supbuf);
@@ -104,12 +114,12 @@ void lcd_ui_handle(void) {
     }
 }
 
-static void clear_utf8(char* str) {     //TEMP WORKAROUND
-    while (*str) {
-        *str &= ~(1<<7);
-        str++;
-    }
-}
+//static void clear_utf8(char* str) {     //TEMP WORKAROUND
+//    while (*str) {
+//        *str &= ~(1<<7);
+//        str++;
+//    }
+//}
 
 static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len) {
     uint16_t copied = 0;
@@ -117,6 +127,7 @@ static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len) {
         if ( !(*src & (1<<7)) ) {
             *dst = *src;
             dst++;
+            *dst = '\0';
             copied++;
             if (copied >= len) {break;}
         }

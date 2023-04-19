@@ -809,6 +809,7 @@ void VS1003_play_next(void) {
                 VS1003_play_next_audio_file_from_directory();
             }
             break;
+        case STREAM_HOME:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
             VS1003_stop();
@@ -828,6 +829,7 @@ void VS1003_play_prev(void) {
                 //VS1003_play_prev_audio_file_from_directory();
             }
             break;
+        case STREAM_HOME:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
             VS1003_stop();
