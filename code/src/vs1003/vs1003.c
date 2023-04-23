@@ -27,6 +27,8 @@
 #include "../common.h"
 #include "../lcd/ui.h"
 
+#define USE_LCD_UI
+
 #define VS_DREQ_TRIS    TRISCbits.TRISC1
 #define VS_DREQ_PIN     PORTCbits.RC1       //It is input!
 #define VS_CS_TRIS      TRISEbits.TRISE7
@@ -749,7 +751,10 @@ void VS1003_setVolume(uint8_t vol) {
   value |= new_reg_value;
 
   VS1003_write_register(SCI_VOL,value); // VOL
+  
+  #ifdef USE_LCD_UI
   lcd_ui_update_volume();
+  #endif
 }
 
 uint8_t VS1003_getVolume(void) {
@@ -918,7 +923,9 @@ static void VS1003_handle_end_of_file (void) {
             SYS_FS_FileClose(fsrc);
             VS1003_stopPlaying();
             mediainfo_clean();
+            #ifdef USE_LCD_UI
             lcd_ui_clear_content_info();
+            #endif
             StreamState = STREAM_HOME;
         }
     }    
@@ -991,7 +998,9 @@ bool VS1003_play_http_stream_by_id(uint16_t id) {
 	if (url) {
 		VS1003_stop();
         mediainfo_title_set(name);
+        #ifdef USE_LCD_UI
         lcd_ui_update_content_info((const char*)name);
+        #endif
 		VS1003_play_http_stream(url);
         current_stream_ind = id;
         return true;
@@ -1014,7 +1023,9 @@ void VS1003_play_next_http_stream_from_list(void) {
     }
     VS1003_stop();
     mediainfo_title_set(name);
+    #ifdef USE_LCD_UI
     lcd_ui_update_content_info((const char*)name);
+    #endif
     VS1003_play_http_stream(url);
 }
 
@@ -1028,7 +1039,9 @@ void VS1003_play_prev_http_stream_from_list(void) {
     if (url == NULL) return;
     VS1003_stop();
     mediainfo_title_set(name);
+    #ifdef USE_LCD_UI
     lcd_ui_update_content_info((const char*)name);
+    #endif
     VS1003_play_http_stream(url);
 }
 
@@ -1118,7 +1131,9 @@ void VS1003_play_file (char* url) {
         }
     }
     
+    #ifdef USE_LCD_UI
     lcd_ui_update_content_info(mediainfo_title_get());
+    #endif
     mediainfo_type_set(MEDIA_TYPE_FILE);
     StreamState = STREAM_FILE_FILL_BUFFER;
     VS1003_startPlaying();         //Start playing song
@@ -1167,7 +1182,9 @@ void VS1003_stop(void) {
     }
     VS1003_stopPlaying();
     mediainfo_clean();
+    #ifdef USE_LCD_UI
     lcd_ui_clear_content_info();
+    #endif
     StreamState = STREAM_HOME;
 }
 

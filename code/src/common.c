@@ -13,6 +13,8 @@
 
 #define NTP_TIMESTAMP_DIFF     (2208988800)    // 1900 to 1970 in seconds
 
+int time_zone = -120;
+
 static volatile uint32_t milliseconds = 0;
 static volatile uint32_t upt = 0;
 char working_buffer[512];

@@ -28,7 +28,7 @@
 #define LCD_RW 	2
 #define LCD_E 	1
 
-#if ( (LCD_ROWS == 4) && (LCD_COLS == 16) )
+#if ( (LCD_ROWS == 4) && (LCD_COLS == 20) )
 #define LCD_LINE1 0x00		// adres 1 znaku 1 wiersza
 #define LCD_LINE2 0x28		// adres 1 znaku 2 wiersza
 #define LCD_LINE3 0x14  	// adres 1 znaku 3 wiersza

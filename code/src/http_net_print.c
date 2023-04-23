@@ -928,7 +928,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                 if (fileHandle != SYS_FS_HANDLE_INVALID) {
                     return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                 }
-                fileHandle = SYS_FS_FileOpen("/mnt/myDrive0/radio.txt", SYS_FS_FILE_OPEN_READ);
+                fileHandle = SYS_FS_FileOpen("/mnt/myDrive1/radio.txt", SYS_FS_FILE_OPEN_READ);
                 if (fileHandle == SYS_FS_HANDLE_INVALID) {
                     SYS_CONSOLE_PRINT("Can't open radio.txt file!\r\n");
                     return TCPIP_HTTP_DYN_PRINT_RES_DONE;                    

@@ -4,6 +4,7 @@
 #include <p32xxxx.h>
 #include <time.h>
 
+#include "definitions.h"
 #include "peripheral/coretimer/plib_coretimer.h"
 #include "hd44780.h"
 #include "i2c.h"
