@@ -1014,13 +1014,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: 1150248413C9442B2DEC463298D6294F
-- generatedChecksum: 1234AEEC8B98E4C0010B431CC40E7637
+- generatedChecksum: F23068844054F35754E78008AED84B11
   logicalPath: config/default/peripheral/i2c/master
   name: plib_i2c3_master.c
   physicalPath: peripheral/i2c/master
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 1234AEEC8B98E4C0010B431CC40E7637
+  userChecksum: F23068844054F35754E78008AED84B11
 - generatedChecksum: C2136D25396D86649CB2D3C8821CBDF7
   logicalPath: config/default/peripheral/rtcc
   name: plib_rtcc.c

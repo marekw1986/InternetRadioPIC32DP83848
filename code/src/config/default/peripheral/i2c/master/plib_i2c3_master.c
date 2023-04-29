@@ -68,7 +68,7 @@ void I2C3_Initialize(void)
     /* Disable the I2C Bus collision interrupt */
     IEC0CLR = _IEC0_I2C3BIE_MASK;
 
-    I2C3BRG = 496;
+    I2C3BRG = 196;
 
     I2C3CONCLR = _I2C3CON_SIDL_MASK;
     I2C3CONCLR = _I2C3CON_DISSLW_MASK;
