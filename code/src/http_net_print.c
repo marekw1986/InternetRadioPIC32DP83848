@@ -60,6 +60,8 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
     See http_net.h for details regarding each of these functions.
  ****************************************************************************/
 
+extern int time_zone;
+
 extern uint8_t is_audio_file (char* name);
 
 TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionGetPlayCgi(TCPIP_HTTP_NET_CONN_HANDLE connHandle);
@@ -71,6 +73,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPass(TCPIP_HTTP_NET_CONN_H
 
 static bool is_local_url_valid(const char* url);
 
+enum {CFGCHANGE_UNKNOWN, CFGCHANGE_INVALID_TOKEN, CFGCHANGE_INVALID_DHCP, CFGCHANGE_INVALID_IP, CFGCHANGE_INVALID_MAC, CFGCHANGE_INVALID_NETMASK, CFGCHANGE_INVALID_GW, CFGCHANGE_INVALID_DNS1, CFGCHANGE_INVALID_DNS2, CFGCHANGE_INVALID_NTP, CFGCHANGE_INVALID_TIMEZONE, CFGCHANGE_OK};
 enum {PLAY_UNKNOWN, PLAY_OK, PLAY_INVALID_TOKEN, PLAY_INVALID_URL, PLAY_INVALID_SRC};
 enum {DIR_MODE_PRINT_FS, DIR_MODE_PRINT_ROOT, DIR_MODE_PRINT_STREAMS};
 enum {DIR_UNKNOWN, DIR_OK, DIR_INVALID_TOKEN};
@@ -320,6 +323,13 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostConfig(TCPIP_HTTP_NET_CONN
                     break;
                 case NAME_TIMEZONE:
                     SYS_CONSOLE_PRINT("POSTConfig timezone, value: %s\r\n", (char *)httpDataBuff);
+                    int new_time_zone = atoi((const char*)httpDataBuff) * -60;
+                    if ( (new_time_zone < -780) || (new_time_zone > 660) ) {
+                        httpDataBuff[0] = CFGCHANGE_INVALID_TIMEZONE;
+                    }
+                    else {
+                        time_zone = new_time_zone;
+                    }
                     break;
                 default:
                     SYS_CONSOLE_PRINT("POSTConfig unknown parameter, value: %s\r\n", (char *)httpDataBuff);
