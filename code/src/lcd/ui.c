@@ -32,43 +32,36 @@ void lcd_ui_update_volume(void) {
 }
 
 void lcd_ui_update_content_info(const char* str) {
-    char supbuf[32];
     char asciibuf[128];
     
     memset(asciibuf, 0x00, sizeof(asciibuf));
     copy_utf8_to_ascii(asciibuf, str, sizeof(asciibuf)-1);
     
     uint8_t len = strlen(asciibuf);
-    if (len < LCD_COLS) {
-        char padbuf[32];
-        memset(padbuf, 0x00, sizeof(padbuf));
-        uint8_t padlen = (LCD_COLS-len);
-        memset(padbuf, ' ', padlen);
-        padbuf[padlen+1] = '\0';
-        //char buf[32];
-        //copy_utf8_to_ascii(buf, str, sizeof(buf)-1);
-        int ret = snprintf(supbuf, sizeof(supbuf)-1, "%s%s", asciibuf, padbuf);
-        if (ret > sizeof(supbuf)-1) { // TODO: rewrite it
-            return;
+    if (len <= LCD_COLS) {
+        if (len < LCD_COLS) {
+            len++;
+            while (len < LCD_COLS) {
+                if (len >= sizeof(asciibuf)-1) {
+                    break;
+                }
+                asciibuf[len] = ' ';
+                len++;
+            }
+            asciibuf[len] = '\0';
         }
+        lcd_locate(1, 0);
+        lcd_str(asciibuf);
     }    
-    else if (len == LCD_COLS) {
-        strncpy(supbuf, asciibuf, LCD_COLS);
-        //copy_utf8_to_ascii(supbuf, str, LCD_COLS);
-    }
     else {
         scroll_info = true;
         scroll_right = true;
-        //snprintf(scroll_buffer, sizeof(scroll_buffer)-1, "%s%s%s", padding, asciibuf, padding);
         strncpy(scroll_buffer, asciibuf, sizeof(scroll_buffer)-1);        //clear_utf8(scroll_buffer);
         scroll_ptr = scroll_buffer;
-        strncpy(supbuf, scroll_buffer, LCD_COLS);
-        //copy_utf8_to_ascii(supbuf, scroll_buffer, LCD_COLS);
         scroll_timer = millis();
+        lcd_locate(1, 0);
+        lcd_str_part(scroll_buffer, LCD_COLS);
     }
-    
-    lcd_locate(1, 0);
-    lcd_str(supbuf);
 }
 
 void lcd_ui_clear_content_info(void) {
@@ -105,19 +98,8 @@ void lcd_ui_handle(void) {
     }
     
     if (scroll_info && ((uint32_t)(millis()-scroll_timer) > 800) ) {
-        char supbuf[32];
-        //memset(supbuf, 0x00, sizeof(supbuf));
-        //copy_utf8_to_ascii(supbuf, scroll_ptr, LCD_COLS);
-        copy_utf8_to_ascii(supbuf, scroll_ptr, LCD_COLS);
         lcd_locate(1, 0);
-        lcd_str(supbuf);
-//        if (strlen(supbuf) < LCD_COLS) {
-//            int pad = LCD_COLS - strlen(supbuf);
-//            while(pad) {
-//                lcd_char(' ');
-//                pad--;
-//            }
-//        }
+        lcd_str_part(scroll_ptr, LCD_COLS);
 //        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
 //        SYS_CONSOLE_PRINT("Window: %s\r\n", supbuf);
         if (scroll_right) {

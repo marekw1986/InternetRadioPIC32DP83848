@@ -2,6 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/lcd/ui.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/vs1003/vs1003.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/app.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/third_party/wolfssl/wolfssl/wolfcrypt/src/md5.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/config/default/configuration.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadio_PIC32_DP83848/code/src/lcd/i2c.c</file>
+        </group>
     </open-files>
 </project-private>

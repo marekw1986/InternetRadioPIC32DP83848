@@ -241,9 +241,19 @@ void lcd_char(char c) {
 void lcd_str(char * str) {
 	register char znak;
 	while ( (znak=*(str++)) ) lcd_char( znak );
-
 }
 
+void lcd_str_part(char* str, uint16_t len) {
+    register char znak;
+    uint16_t cnt = 0;
+    while ( (znak=*(str++)) ) {
+        lcd_char( znak );
+        cnt++;
+        if (cnt >= len) {
+            break;
+        }
+    }
+}
 
 
 void lcd_locate(uint8_t y, uint8_t x) {
