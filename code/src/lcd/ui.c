@@ -4,6 +4,8 @@
 #include "../vs1003/vs1003.h"
 #include "../common.h"
 
+typedef enum {SCROLL, SCROLL_WAIT} scroll_state_t;
+static scroll_state_t scroll_state = SCROLL_WAIT;
 static uint32_t scroll_timer;
 static bool scroll_info = false;
 static bool scroll_right = true;
@@ -12,7 +14,8 @@ static char* scroll_ptr;
 
 const char padding[] = "                    ";
 
-void lcd_ui_handle_updating_time(void);
+static void lcd_ui_handle_updating_time(void);
+static void lcd_ui_handle_scroll(void);
 
 //static void clear_utf8(char* str);
 static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len);
@@ -59,6 +62,7 @@ void lcd_ui_update_content_info(const char* str) {
         strncpy(scroll_buffer, asciibuf, sizeof(scroll_buffer)-1);        //clear_utf8(scroll_buffer);
         scroll_ptr = scroll_buffer;
         scroll_timer = millis();
+        scroll_state = SCROLL_WAIT;
         lcd_locate(1, 0);
         lcd_str_part(scroll_buffer, LCD_COLS);
     }
@@ -96,28 +100,49 @@ void lcd_ui_handle(void) {
         lcd_ui_draw_interface();
         refresh_timer = millis();
     }
-    
-    if (scroll_info && ((uint32_t)(millis()-scroll_timer) > 800) ) {
-        lcd_locate(1, 0);
-        lcd_str_part(scroll_ptr, LCD_COLS);
-//        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
-//        SYS_CONSOLE_PRINT("Window: %s\r\n", supbuf);
-        if (scroll_right) {
-            scroll_ptr++;
-            if (scroll_ptr >= (scroll_buffer+strlen(scroll_buffer))-LCD_COLS) {
-                scroll_right = false;
-            }
-        }
-        else {
-            scroll_ptr--;
-            if (scroll_ptr <= (scroll_buffer)) {
-                scroll_right = true;
-            }
-        }
-        scroll_timer = millis();
-    }
-    
+    lcd_ui_handle_scroll();
     lcd_ui_handle_updating_time();
+}
+
+static void lcd_ui_handle_scroll(void) {
+    if (!scroll_info) {
+        return;
+    }
+    switch(scroll_state) {
+        case SCROLL:
+        if (((uint32_t)(millis()-scroll_timer) > 800)) {
+            if (scroll_right) {
+                scroll_ptr++;
+                if (scroll_ptr >= (scroll_buffer+strlen(scroll_buffer))-LCD_COLS) {
+                    scroll_right = false;
+                    scroll_state = SCROLL_WAIT;
+                }
+            }
+            else {
+                scroll_ptr--;
+                if (scroll_ptr <= (scroll_buffer)) {
+                    scroll_right = true;
+                    scroll_state = SCROLL_WAIT;
+                }
+            }
+            lcd_locate(1, 0);
+            lcd_str_part(scroll_ptr, LCD_COLS);
+    //        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
+    //        SYS_CONSOLE_PRINT("Window: %s\r\n", supbuf);            
+            scroll_timer = millis();
+        }             
+        break;
+        
+        case SCROLL_WAIT:
+        if (((uint32_t)(millis()-scroll_timer) > 3000)) {
+            scroll_timer = millis();
+            scroll_state = SCROLL;
+        }
+        break;
+        
+        default:
+        break;
+    }
 }
 
 void lcd_ui_handle_updating_time(void) {
