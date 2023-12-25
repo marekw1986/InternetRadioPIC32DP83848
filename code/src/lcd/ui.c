@@ -47,7 +47,10 @@ void lcd_ui_update_content_info(const char* str) {
         padbuf[padlen+1] = '\0';
         //char buf[32];
         //copy_utf8_to_ascii(buf, str, sizeof(buf)-1);
-        snprintf(supbuf, sizeof(supbuf)-1, "%s%s", asciibuf, padbuf);
+        int ret = snprintf(supbuf, sizeof(supbuf)-1, "%s%s", asciibuf, padbuf);
+        if (ret > sizeof(supbuf)-1) { // TODO: rewrite it
+            return;
+        }
     }    
     else if (len == LCD_COLS) {
         strncpy(supbuf, asciibuf, LCD_COLS);

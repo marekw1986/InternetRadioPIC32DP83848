@@ -27,6 +27,10 @@
 #include "../common.h"
 #include "../lcd/ui.h"
 
+#ifndef min
+#define min(a,b) ((a<b) ?a:b)
+#endif
+
 #define USE_LCD_UI
 
 #define VS_DREQ_TRIS    TRISCbits.TRISC1
@@ -958,9 +962,11 @@ void VS1003_play_next_audio_file_from_directory (void) {
         }
         else {
             if (is_audio_file(info.fname)) {
-                snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, info.fname);
-                VS1003_soft_stop();
-                VS1003_play_file(buf);
+                int ret = snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, info.fname);
+                if (ret <= sizeof(buf)-1) {
+                    VS1003_soft_stop();
+                    VS1003_play_file(buf);
+                }
                 return;
             }
         }

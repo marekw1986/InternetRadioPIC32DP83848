@@ -354,8 +354,8 @@ extern "C" {
 #define NO_PWDBASED
 #define NO_ERROR_STRINGS
 #define NO_OLD_TLS
-#define WOLFSSL_HAVE_MIN
-#define WOLFSSL_HAVE_MAX
+//#define WOLFSSL_HAVE_MIN
+//#define WOLFSSL_HAVE_MAX
 
 
 /*** TCP Configuration ***/
