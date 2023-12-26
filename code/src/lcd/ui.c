@@ -66,6 +66,7 @@ void lcd_ui_update_content_info(const char* str) {
         lcd_locate(1, 0);
         lcd_str_part(scroll_buffer, LCD_COLS);
     }
+    lcd_flush_buffer();
 }
 
 void lcd_ui_clear_content_info(void) {
@@ -74,6 +75,7 @@ void lcd_ui_clear_content_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
+    lcd_flush_buffer();
 }
 
 void lcd_ui_update_state_info(const char* str) {
@@ -91,6 +93,7 @@ void lcd_ui_clear_state_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
+    lcd_flush_buffer();
 }
 
 void lcd_ui_handle(void) {
