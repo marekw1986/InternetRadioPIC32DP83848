@@ -9,7 +9,7 @@
 #include "hd44780.h"
 #include "i2c.h"
 
-#define LCD_BUF_SIZE 512
+#define LCD_BUF_SIZE 128
 #define LCD_BUF_MASK ( LCD_BUF_SIZE - 1)
 
 #define SET_RS 	mpxLCD |= (1<<LCD_RS); 	SEND_I2C
@@ -56,17 +56,12 @@ static uint8_t lcd_buf_get(void) {
     return data;
 }
 
-void lcd_handle(void) {
-    uint8_t data;
-    uint8_t cmd;
-    uint8_t x, y;
+bool lcd_handle(void) {
+    uint8_t data = lcd_buf_get();
     
-    data = lcd_buf_get();
-    
-    if (!data) return;
-    
+    if (!data) return false;
     if (data & 0x80) {  //It is command for LCD!
-        cmd = (uint8_t)((data & 0x70) >> 4);
+        uint8_t cmd = (uint8_t)((data & 0x70) >> 4);
         switch(cmd) {
             case LCD_HOME:
             //lcd_write_cmd( LCDC_CLS|LCDC_HOME );
@@ -82,9 +77,9 @@ void lcd_handle(void) {
             #endif
             break;            
             
-            case LCD_LOCATE:
-            y = (data & 0x0F);
-            x = lcd_buf_get();
+            case LCD_LOCATE:;
+            uint8_t y = (data & 0x0F);
+            uint8_t x = lcd_buf_get();
             switch(y) {
                 case 0: y = LCD_LINE1; break;
                 #if (LCD_ROWS>1)
@@ -108,8 +103,8 @@ void lcd_handle(void) {
     else {  //It is just an ASCII character, send it to LCD
         lcd_write_data(data);
     }
+    return true;
 }
-
 
 #if USE_RW
 uint8_t check_BF(void);

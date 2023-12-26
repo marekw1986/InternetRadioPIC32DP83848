@@ -77,12 +77,13 @@ void lcd_ui_clear_content_info(void) {
 }
 
 void lcd_ui_update_state_info(const char* str) {
-    lcd_locate(2, 0);
-    lcd_str("                    ");
+    lcd_ui_clear_state_info();
+    lcd_flush_buffer();
     if (str) {
         lcd_locate(2,0);
         lcd_str(str);
     }
+    lcd_flush_buffer();
 }
 
 void lcd_ui_clear_state_info(void) {

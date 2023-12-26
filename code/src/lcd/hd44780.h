@@ -72,6 +72,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+    
+#define lcd_flush_buffer() while(lcd_handle())
 
 void lcd_init(void);
 void lcd_cls(void);
@@ -80,7 +82,7 @@ void lcd_str(const char * str);
 void lcd_str_part(const char* str, uint16_t len);
 void lcd_locate(uint8_t y, uint8_t x);
 void lcd_home(void);
-void lcd_handle(void);
+bool lcd_handle(void);
 
 
 #ifdef	__cplusplus
