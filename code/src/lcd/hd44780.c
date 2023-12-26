@@ -238,12 +238,12 @@ void lcd_char(char c) {
 }
 
 
-void lcd_str(char * str) {
+void lcd_str(const char * str) {
 	register char znak;
 	while ( (znak=*(str++)) ) lcd_char( znak );
 }
 
-void lcd_str_part(char* str, uint16_t len) {
+void lcd_str_part(const char* str, uint16_t len) {
     register char znak;
     uint16_t cnt = 0;
     while ( (znak=*(str++)) ) {

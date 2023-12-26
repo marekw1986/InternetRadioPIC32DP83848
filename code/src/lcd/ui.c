@@ -77,12 +77,12 @@ void lcd_ui_clear_content_info(void) {
 }
 
 void lcd_ui_update_state_info(const char* str) {
-    char supbuf[32];
-    
     lcd_locate(2, 0);
-    copy_utf8_to_ascii(supbuf, str, LCD_COLS);
-    //clear_utf8(supbuf);
-    lcd_str(supbuf);
+    lcd_str("                    ");
+    if (str) {
+        lcd_locate(2,0);
+        lcd_str(str);
+    }
 }
 
 void lcd_ui_clear_state_info(void) {
