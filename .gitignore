@@ -1,2 +1,3 @@
-code/nbproject
-code/.generated_files
+/firmware/InternetRadio.X/.generated_files/
+/firmware/InternetRadio.X/build/
+/firmware/InternetRadio.X/dist/
