@@ -16,6 +16,9 @@ extern "C" {
     
 typedef enum {MEDIA_TYPE_FILE = 0, MEDIA_TYPE_STREAM} mediainfo_type_t;
 
+#define GENRES 148
+const char *genres[GENRES];
+
 void mediainfo_clean (void);
 char* mediainfo_title_get(void);
 void mediainfo_title_set(const char* src);

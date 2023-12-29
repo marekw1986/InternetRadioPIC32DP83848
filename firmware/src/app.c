@@ -274,7 +274,7 @@ void APP_Tasks ( void )
             lcd_cls();
             lcd_ui_draw_interface();          
             
-            VS1003_begin();
+            VS1003_init();
             VS1003_setVolume(100);
             vTaskDelay(100);
             SYS_FS_EventHandlerSet((void *)APP_SYSFSEventHandler, (uintptr_t)NULL);

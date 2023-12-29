@@ -2,6 +2,7 @@
 /* Spectrum analyzer for VS1003b */
 
 #include "vs1003.h"
+#include "vs1003_low_level.h"
 
 #define CODE_SIZE 944
 const unsigned char atab[944] = { /* Register addresses */

@@ -497,6 +497,7 @@
         <itemPath>../src/vs1003/mediainfo.h</itemPath>
         <itemPath>../src/vs1003/ringbuffer.h</itemPath>
         <itemPath>../src/vs1003/vs1003.h</itemPath>
+        <itemPath>../src/vs1003/vs1003_low_level.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="wolfcrypt" projectFiles="true">
         <logicalFolder name="f1" displayName="port" projectFiles="true">
@@ -903,6 +904,7 @@
         <itemPath>../src/vs1003/ringbuffer.c</itemPath>
         <itemPath>../src/vs1003/vs1003.c</itemPath>
         <itemPath>../src/vs1003/specana1003b.c</itemPath>
+        <itemPath>../src/vs1003/vs1003_low_level.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f8" displayName="web_pages" projectFiles="true">
         <logicalFolder name="f1" displayName="opt" projectFiles="true">
@@ -1147,7 +1149,7 @@
         <targetDevice>PIC32MX795F512L</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>4.35</languageToolchainVersion>
         <platform>2</platform>

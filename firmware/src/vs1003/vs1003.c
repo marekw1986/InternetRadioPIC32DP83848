@@ -1,5 +1,7 @@
 /*
- Copyright (C) 2012 Andy Karpov <andy.karpov@gmail.com>
+ Copyright (C) 2023 Marek Wiecek
+ High level driver for VS1003 chip, designed to operate with
+ low level written by Andy Karpov.
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  version 2 as published by the Free Software Foundation.
@@ -9,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "peripheral/coretimer/plib_coretimer.h"
 #include <string.h>
 #include <math.h>
 #include <tcpip/tcpip.h>
@@ -22,116 +23,15 @@
 #include "system/debug/sys_debug.h"
 #include "system/fs/sys_fs.h"
 #include "vs1003.h"
+#include "vs1003_low_level.h"
 #include "mediainfo.h"
 #include "ringbuffer.h"
 #include "../common.h"
+#ifdef USE_LCD_UI
 #include "../lcd/ui.h"
-
-#ifndef min
-#define min(a,b) ((a<b) ?a:b)
 #endif
 
 #define RECONNECT_LIMIT 3
-#define USE_LCD_UI
-
-#define VS_DREQ_TRIS    TRISCbits.TRISC1
-#define VS_DREQ_PIN     PORTCbits.RC1       //It is input!
-#define VS_CS_TRIS      TRISEbits.TRISE7
-#define VS_CS_PIN		LATEbits.LATE7
-#define VS_DCS_TRIS     TRISEbits.TRISE6
-#define VS_DCS_PIN      LATEbits.LATE6
-#define VS_RESET_TRIS   TRISCbits.TRISC2
-#define VS_RESET_PIN	LATCbits.LATC2
-
-#define vs1003_chunk_size 32
-
-/****************************************************************************/
-
-// VS1003 SCI Write Command byte is 0x02
-#define VS_WRITE_COMMAND 0x02
-
-// VS1003 SCI Read COmmand byte is 0x03
-#define VS_READ_COMMAND  0x03
-
-// SCI Registers
-
-#define SCI_MODE            0x0
-#define SCI_STATUS          0x1
-#define SCI_BASS            0x2
-#define SCI_CLOCKF          0x3
-#define SCI_DECODE_TIME     0x4
-#define SCI_AUDATA          0x5
-#define SCI_WRAM            0x6
-#define SCI_WRAMADDR        0x7
-#define SCI_HDAT0           0x8
-#define SCI_HDAT1           0x9
-#define SCI_AIADDR          0xa
-#define SCI_VOL             0xb
-#define SCI_AICTRL0         0xc
-#define SCI_AICTRL1         0xd
-#define SCI_AICTRL2         0xe
-#define SCI_AICTRL3         0xf
-#define SCI_num_registers   0xf
-
-// SCI_MODE bits
-
-#define SM_DIFF             0
-#define SM_LAYER12          1
-#define SM_RESET            2
-#define SM_OUTOFWAV         3
-#define SM_EARSPEAKER_LO    4
-#define SM_TESTS            5
-#define SM_STREAM           6
-#define SM_EARSPEAKER_HI    7
-#define SM_DACT             8
-#define SM_SDIORD           9
-#define SM_SDISHARE         10
-#define SM_SDINEW           11
-#define SM_ADPCM            12
-#define SM_ADCPM_HP         13
-#define SM_LINE_IN          14
-
-#define GENRES 148
-
-char *genres[GENRES] = {
-  "Blues", "Classic Rock", "Country", "Dance",
-  "Disco", "Funk", "Grunge", "Hip-Hop",
-  "Jazz", "Metal", "New Age", "Oldies",
-  "Other", "Pop", "R&B", "Rap",
-  "Reggae", "Rock", "Techno", "Industrial",
-  "Alternative", "Ska", "Death Metal", "Pranks",
-  "Soundtrack", "Euro-Techno", "Ambient", "Trip-Hop",
-  "Vocal", "Jazz+Funk", "Fusion", "Trance",
-  "Classical", "Instrumental", "Acid", "House",
-  "Game", "Sound Clip", "Gospel", "Noise",
-  "AlternRock", "Bass", "Soul", "Punk",
-  "Space", "Meditative", "Instrumental Pop", "Instrumental Rock",
-  "Ethnic", "Gothic", "Darkwave", "Techno-Industrial",
-  "Electronic", "Pop-Folk", "Eurodance", "Dream",
-  "Southern Rock", "Comedy", "Cult", "Gangsta",
-  "Top 40", "Christian Rap", "Pop/Funk", "Jungle",
-  "Native American", "Cabaret", "New Wave", "Psychadelic",
-  "Rave", "Showtunes", "Trailer", "Lo-Fi",
-  "Tribal", "Acid Punk", "Acid Jazz", "Polka",
-  "Retro", "Musical", "Rock & Roll", "Hard Rock",
-  "Folk", "Folk/Rock", "National folk", "Swing",
-  "Fast-fusion", "Bebob", "Latin", "Revival",
-  "Celtic", "Bluegrass", "Avantgarde", "Gothic Rock",
-  "Progressive Rock", "Psychedelic Rock", "Symphonic Rock", "Slow Rock",
-  "Big Band", "Chorus", "Easy Listening", "Acoustic",
-  "Humour", "Speech", "Chanson", "Opera",
-  "Chamber Music", "Sonata", "Symphony", "Booty Bass",
-  "Primus", "Porn Groove", "Satire", "Slow Jam",
-  "Club", "Tango", "Samba", "Folklore",
-  "Ballad", "Powder Ballad", "Rhythmic Soul", "Freestyle",
-  "Duet", "Punk Rock", "Drum Solo", "A Capella",
-  "Euro-House", "Dance Hall", "Goa", "Drum & Bass",
-  "Club House", "Hardcore", "Terror", "Indie",
-  "BritPop", "NegerPunk", "Polsk Punk", "Beat",
-  "Christian Gangsta", "Heavy Metal", "Black Metal", "Crossover",
-  "Contemporary C", "Christian Rock", "Merengue", "Salsa",
-  "Thrash Metal", "Anime", "JPop", "SynthPop"
-};
 
 QueueHandle_t vsQueueHandle;
 
@@ -140,7 +40,7 @@ static SYS_FS_HANDLE vsdir;
 static uint8_t ReconnectLimit = RECONNECT_LIMIT;
 static int current_stream_ind = 1;
 
-static TCP_SOCKET	VS_Socket = INVALID_SOCKET;
+static TCP_SOCKET VS_Socket = INVALID_SOCKET;
 static uri_t uri;
 static bool loop_flag = false;
 static bool dir_flag = false;
@@ -157,159 +57,19 @@ typedef enum {
 
 static ReconnectStrategy_t ReconnectStrategy = DO_NOT_RECONNECT;
 
-typedef enum {
-    FEED_RET_NO_DATA_NEEDED = 0,
-    FEED_RET_OK,
-    FEED_RET_BUFFER_EMPTY
-} feed_ret_t;
-
-// Register names
-
-typedef enum {
-    reg_name_MODE = 0,
-    reg_name_STATUS,
-    reg_name_BASS,
-    reg_name_CLOCKF,
-    reg_name_DECODE_TIME,
-    reg_name_AUDATA,
-    reg_name_WRAM,
-    reg_name_WRAMADDR,
-    reg_name_HDAT0,
-    reg_name_HDAT1,
-    reg_name_AIADDR,
-    reg_name_VOL,
-    reg_name_AICTRL0,
-    reg_name_AICTRL1,
-    reg_name_AICTRL2,
-    reg_name_AICTRL3
-} register_names_t;
-
-const char * register_names[] =
-{
-  "MODE",
-  "STATUS",
-  "BASS",
-  "CLOCKF",
-  "DECODE_TIME",
-  "AUDATA",
-  "WRAM",
-  "WRAMADDR",
-  "HDAT0",
-  "HDAT1",
-  "AIADDR",
-  "VOL",
-  "AICTRL0",
-  "AICTRL1",
-  "AICTRL2",
-  "AICTRL3",
-};
-
 static void VS1003_startPlaying(void);
 static void VS1003_stopPlaying(void);
-static inline void await_data_request(void);
-static inline void control_mode_on(void);
-static inline void control_mode_off(void);
-static inline void data_mode_on(void);
-static inline void data_mode_off(void);
-static uint8_t VS1003_SPI_transfer(uint8_t outB);
 static void VS1003_soft_stop (void);
 static void VS1003_handle_end_of_file (void);
-static feed_ret_t VS1003_feed_from_buffer (void);
-//static void VS1003_set_bands(void);
 
-
-/****************************************************************************/
-
-uint16_t VS1003_read_register(uint8_t _reg) {
-  uint16_t result;
-  control_mode_on();
-  CORETIMER_DelayUs(1); // tXCSS
-  VS1003_SPI_transfer(VS_READ_COMMAND); // Read operation
-  VS1003_SPI_transfer(_reg); // Which register
-  result = VS1003_SPI_transfer(0xff) << 8; // read high byte
-  result |= VS1003_SPI_transfer(0xff); // read low byte
-  CORETIMER_DelayUs(1); // tXCSH
-  await_data_request();
-  control_mode_off();
-  return result;
-}
-
-/****************************************************************************/
-
-void VS1003_write_register(uint8_t _reg,uint16_t _value) {
-  control_mode_on();
-  CORETIMER_DelayUs(1); //delay_us(1); // tXCSS
-  VS1003_SPI_transfer(VS_WRITE_COMMAND); // Write operation
-  VS1003_SPI_transfer(_reg); // Which register
-  VS1003_SPI_transfer(_value >> 8); // Send hi byte
-  VS1003_SPI_transfer(_value & 0xff); // Send lo byte
-  CORETIMER_DelayUs(1); //delay_us(1); // tXCSH
-  await_data_request();
-  control_mode_off();
-}
-
-/****************************************************************************/
-
-void VS1003_sdi_send_buffer(const uint8_t* data, int len) {
-  int chunk_length;
-  
-  data_mode_on();
-  while ( len ) {
-    await_data_request();
-    CORETIMER_DelayUs(3); //delay_us(3);
-    chunk_length = min(len, vs1003_chunk_size);
-    len -= chunk_length;
-    while ( chunk_length-- ) VS1003_SPI_transfer(*data++);
-  }
-  data_mode_off();
-}
-
-/****************************************************************************/
-
-void VS1003_sdi_send_chunk(const uint8_t* data, int len) {
-    if (len > 32) return;
-    data_mode_on();
-    await_data_request();
-    while ( len-- ) VS1003_SPI_transfer(*data++);
-    data_mode_off();
-}
-
-/****************************************************************************/
-
-void VS1003_sdi_send_zeroes(int len) {
-  int chunk_length;  
-  data_mode_on();
-  while ( len ) {
-    await_data_request();
-    chunk_length = min(len,vs1003_chunk_size);
-    len -= chunk_length;
-    while ( chunk_length-- ) VS1003_SPI_transfer(0);
-  }
-  data_mode_off();
-}
-
-/****************************************************************************/
-
-static feed_ret_t VS1003_feed_from_buffer (void) {
-    uint8_t data[32];
-
-    if (!VS_DREQ_PIN) {
-        return FEED_RET_NO_DATA_NEEDED;
+void VS1003_init(void) {
+    VS1003_low_level_init();
+    vsQueueHandle = xQueueCreate(16, sizeof(vs1003cmd_t));
+    if (vsQueueHandle == NULL) {
+        SYS_CONSOLE_PRINT("ERROR: Can't create VS queue\r\n");
+        while(1);
     }
-    
-    do {
-        if (get_num_of_bytes_in_ringbuffer() < 32) return FEED_RET_BUFFER_EMPTY;
-        
-        uint16_t w = read_array_from_ringbuffer(data, 32);
-        if (w == 32) VS1003_sdi_send_chunk(data, 32);
-        asm("nop");
-        asm("nop");
-        asm("nop");
-    } while(VS_DREQ_PIN);
-
-    return FEED_RET_OK;
 }
-
 
 void VS1003_handle(void) {   
 	static uint32_t	timer;
@@ -734,80 +494,6 @@ void VS1003_handle(void) {
 	}    
 }
 
-
-/****************************************************************************/
-
-void VS1003_begin(void) {
-  // Keep the chip in reset until we are ready
-  VS_RESET_TRIS = 0;
-  VS_RESET_PIN = 0;
-
-  // The SCI and SDI will start deselected
-  VS_CS_TRIS = 0;
-  VS_CS_PIN = 1;
-  VS_DCS_TRIS = 0;
-  VS_DCS_PIN = 1;
-
-  // DREQ is an input
-  VS_DREQ_TRIS = 1;
-
-  // Boot VS1003
-  SYS_CONSOLE_PRINT("Booting VS1003...\r\n");
-
-  vTaskDelay(1);
-
-  // init SPI slow mode
-  //SPI4 configuration     
-  SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 79; //(GetPeripheralClock()-1ul)/2ul/250000;       //250 kHz  
-
-  // release from reset
-  VS_RESET_PIN = 1;
-  
-  // Declick: Immediately switch analog off
-  VS1003_write_register(SCI_VOL,0xffff); // VOL
-
-  /* Declick: Slow sample rate for slow analog part startup */
-  VS1003_write_register(SCI_AUDATA,10);
-
-  vTaskDelay(100);
-
-  /* Switch on the analog parts */
-  VS1003_write_register(SCI_VOL,0xfefe); // VOL
-  
-  SYS_CONSOLE_PRINT("VS1003 still booting\r\n");
-
-  VS1003_write_register(SCI_AUDATA,44101); // 44.1kHz stereo
-
-  VS1003_write_register(SCI_VOL,0x2020); // VOL
-  
-  // soft reset
-  VS1003_write_register(SCI_MODE, (1 << SM_SDINEW) | (1 << SM_RESET) );
-  vTaskDelay(1);
-  await_data_request();
-  VS1003_write_register(SCI_CLOCKF,0xF800); // Experimenting with highest clock settings
-  vTaskDelay(1);
-  await_data_request();
-
-  // Now you can set high speed SPI clock   
-  SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
-  SPI1BRG = 2; //8MHz
-
-  SYS_CONSOLE_PRINT("VS1003 Set\r\n");
-  VS1003_printDetails();
-  SYS_CONSOLE_PRINT("VS1003 OK\r\n");
-  
-  vsQueueHandle = xQueueCreate(16, sizeof(vs1003cmd_t));
-  if (vsQueueHandle == NULL) {
-      SYS_CONSOLE_PRINT("Can't create VS queue\r\n");
-  }
-  else {
-      SYS_CONSOLE_PRINT("VS queue created\r\n");
-  }
-}
-
-/****************************************************************************/
-
 void VS1003_setVolume(uint8_t vol) {
   if ((vol < 1) || (vol > 100)) return;
   int x = log10f(vol)*1000;
@@ -833,45 +519,6 @@ uint8_t VS1003_getVolume(void) {
 void VS1003_playChunk(const uint8_t* data, size_t len) {
   VS1003_sdi_send_buffer(data,len);
 }
-
-/****************************************************************************/
-
-void VS1003_print_byte_register(uint8_t reg) {
-  char extra_tab = strlen(register_names[reg]) < 5 ? '\t' : 0;
-  SYS_CONSOLE_PRINT("%02x %s\t%c = 0x%02x\r\n", reg, register_names[reg], extra_tab, VS1003_read_register(reg));
-}
-
-/****************************************************************************/
-
-void VS1003_printDetails(void) {
-  SYS_CONSOLE_PRINT("VS1003 Configuration:\r\n");
-  int i = 0;
-  while ( i <= SCI_num_registers )
-    VS1003_print_byte_register(i++);
-}
-
-/****************************************************************************/
-
-//void VS1003_loadUserCode(const uint16_t* buf, size_t len) {
-//  while (len) {
-//    uint16_t addr = *buf++; len--;
-//    uint16_t n = *buf++; len--;
-//    if (n & 0x8000U) { /* RLE run, replicate n samples */
-//      n &= 0x7FFF;
-//      uint16_t val = *buf++; len--;
-//      while (n--) {
-//	    SYS_CONSOLE_PRINT("W %02x: %04x\r\n", addr, val);
-//        VS1003_write_register(addr, val);
-//      }
-//    } else {           /* Copy run, copy n samples */
-//      while (n--) {
-//        uint16_t val = *buf++; len--;
-//        SYS_CONSOLE_PRINT("W %02x: %04x\r\n", addr, val);
-//        VS1003_write_register(addr, val);
-//      }
-//    }
-//  }
-//}
 
 void VS1003_play_next(void) {
     switch (StreamState) {
@@ -911,47 +558,16 @@ void VS1003_play_prev(void) {
             break;
     }
 }
-
-
-static inline void await_data_request(void) {
-    while ( !VS_DREQ_PIN );
-}
-
-static inline void control_mode_on(void) {
-    VS_DCS_PIN = 1;
-    VS_CS_PIN = 0;
-}
-
-static inline void control_mode_off(void) {
-    VS_CS_PIN = 1;
-}
-
-static inline void data_mode_on(void) {
-    VS_CS_PIN = 1;
-    VS_DCS_PIN = 0;
-}
-
-static inline void data_mode_off(void) {
-    VS_DCS_PIN = 1;
-}
   
 static void VS1003_startPlaying(void) {
-  VS1003_sdi_send_zeroes(10);
+    VS1003_sdi_send_zeroes(10);
 }
   
 static void VS1003_stopPlaying(void) {
     VS1003_sdi_send_zeroes(2048);
     ringbuffer_clear();
 }
-  
-static uint8_t VS1003_SPI_transfer(uint8_t outB) {
-    SPI1BUF = outB;
-    while (SPI1STATbits.SPITBF);
-    while (!SPI1STATbits.SPIRBF);
-    return SPI1BUF;
-}
-  
-
+ 
 uint8_t is_audio_file (char* name) {
     if (strstr(name, ".MP3") || strstr(name, ".WMA") || strstr(name, ".MID") || strstr(name, ".mp3") || strstr(name, ".wma") || strstr(name, ".mid")) {
         return 1;
