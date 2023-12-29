@@ -685,7 +685,7 @@ bool VS1003_play_http_stream_by_id(uint16_t id) {
 		VS1003_stop();
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
-        lcd_ui_update_content_info((const char*)name);
+        lcd_ui_update_content_info(mediainfo_title_get());
         #endif
 		VS1003_play_http_stream(url);
         current_stream_ind = id;
@@ -710,7 +710,7 @@ void VS1003_play_next_http_stream_from_list(void) {
     VS1003_stop();
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
-    lcd_ui_update_content_info((const char*)name);
+    lcd_ui_update_content_info(mediainfo_title_get());
     #endif
     VS1003_play_http_stream(url);
 }
@@ -726,7 +726,7 @@ void VS1003_play_prev_http_stream_from_list(void) {
     VS1003_stop();
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
-    lcd_ui_update_content_info((const char*)name);
+    lcd_ui_update_content_info(mediainfo_title_get());
     #endif
     VS1003_play_http_stream(url);
 }

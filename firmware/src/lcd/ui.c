@@ -9,14 +9,11 @@ static scroll_state_t scroll_state = SCROLL_WAIT;
 static uint32_t scroll_timer;
 static bool scroll_info = false;
 static bool scroll_right = true;
-static char scroll_buffer[128];
-static char* scroll_ptr;
+static const char* scroll_begin;
+static const char* scroll_ptr;
 
 static void lcd_ui_handle_updating_time(void);
 static void lcd_ui_handle_scroll(void);
-
-//static void clear_utf8(char* str);
-static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len);
 
 void lcd_ui_draw_interface(void) {
     lcd_locate(3, 0);
@@ -33,36 +30,22 @@ void lcd_ui_update_volume(void) {
 }
 
 void lcd_ui_update_content_info(const char* str) {
-    char asciibuf[128];
-    
-    memset(asciibuf, 0x00, sizeof(asciibuf));
-    copy_utf8_to_ascii(asciibuf, str, sizeof(asciibuf)-1);
-    
-    uint8_t len = strlen(asciibuf);
-    if (len <= LCD_COLS) {
-        if (len < LCD_COLS) {
-            len++;
-            while (len < LCD_COLS) {
-                if (len >= sizeof(asciibuf)-1) {
-                    break;
-                }
-                asciibuf[len] = ' ';
-                len++;
-            }
-            asciibuf[len] = '\0';
-        }
+    if (strlen(str) <= LCD_COLS) {
         lcd_locate(1, 0);
-        lcd_str(asciibuf);
+        uint8_t rest = lcd_utf8str_part(str, LCD_COLS);
+        while (rest) {
+            lcd_char(' ');
+            rest--;
+        }
     }    
     else {
         scroll_info = true;
         scroll_right = true;
-        strncpy(scroll_buffer, asciibuf, sizeof(scroll_buffer)-1);        //clear_utf8(scroll_buffer);
-        scroll_ptr = scroll_buffer;
+        scroll_begin = scroll_ptr = str;
         scroll_timer = millis();
         scroll_state = SCROLL_WAIT;
         lcd_locate(1, 0);
-        lcd_str_part(scroll_buffer, LCD_COLS);
+        lcd_utf8str_part(scroll_begin, LCD_COLS);
     }
     lcd_flush_buffer();
 }
@@ -115,20 +98,24 @@ static void lcd_ui_handle_scroll(void) {
         if (((uint32_t)(millis()-scroll_timer) > 800)) {
             if (scroll_right) {
                 scroll_ptr++;
-                if (scroll_ptr >= (scroll_buffer+strlen(scroll_buffer))-LCD_COLS) {
+                if (scroll_ptr >= (scroll_begin+strlen(scroll_begin))-LCD_COLS) {
                     scroll_right = false;
                     scroll_state = SCROLL_WAIT;
                 }
             }
             else {
                 scroll_ptr--;
-                if (scroll_ptr <= (scroll_buffer)) {
+                if (scroll_ptr <= (scroll_begin)) {
                     scroll_right = true;
                     scroll_state = SCROLL_WAIT;
                 }
             }
             lcd_locate(1, 0);
-            lcd_str_part(scroll_ptr, LCD_COLS);
+            uint8_t rest = lcd_utf8str_part(scroll_ptr, LCD_COLS);
+            while (rest) {
+                lcd_char(' ');
+                rest--;
+            }
     //        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
     //        SYS_CONSOLE_PRINT("Window: %s\r\n", supbuf);            
             scroll_timer = millis();
@@ -161,25 +148,4 @@ void lcd_ui_handle_updating_time(void) {
         lcd_locate(0, 0);
         lcd_str(supbuf);
     }  
-}
-
-//static void clear_utf8(char* str) {     //TEMP WORKAROUND
-//    while (*str) {
-//        *str &= ~(1<<7);
-//        str++;
-//    }
-//}
-
-static void copy_utf8_to_ascii(char* dst, const char* src, uint16_t len) {
-    uint16_t copied = 0;
-    while (*src) {
-        if ( !(*src & (1<<7)) ) {
-            *dst = *src;
-            dst++;
-            copied++;
-            if (copied >= len) {break;}
-        }
-        src++;
-    }
-    *dst = '\0';
 }

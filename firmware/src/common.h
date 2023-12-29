@@ -59,4 +59,3 @@ uint32_t uptime(void);
 #endif
 
 #endif	/* COMMON_H */
-
