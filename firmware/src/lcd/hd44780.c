@@ -252,12 +252,12 @@ uint16_t lcd_str_part(const char* str, const uint16_t len) {
 }
 
 uint16_t lcd_utf8str_part(const char* str, const uint16_t len) {
-    register char znak;
+    char znak;
     uint16_t cnt=0;
     while ( (znak=*str) ) {
         str++;
         if (znak & (1<<7)) {
-            uint16_t znak_utf = ((uint16_t)znak<<8) | (*str);
+            uint16_t znak_utf = znak<<8 | (uint8_t)*str;
             switch (znak_utf) {
                 case 0xC485:
                 lcd_char('a');
