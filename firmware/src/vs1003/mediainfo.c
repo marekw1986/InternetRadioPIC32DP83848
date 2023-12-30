@@ -2,6 +2,8 @@
 #include <string.h>
 #include "mediainfo.h"
 
+#define GENRE_VOID_ID GENRES+1
+
 const char *genres[GENRES] = {
   "Blues", "Classic Rock", "Country", "Dance",
   "Disco", "Funk", "Grunge", "Hip-Hop",
@@ -42,12 +44,14 @@ const char *genres[GENRES] = {
   "Thrash Metal", "Anime", "JPop", "SynthPop"
 };
 
+const char* genre_void = "";
+
 static char title[31];
 static char artist[31];
 static char album[31];
 static char year[5];
 static char comment[31];
-static char genre[31];
+static uint16_t genre;
 static mediainfo_type_t type = MEDIA_TYPE_STREAM;
 
 void mediainfo_clean (void) {
@@ -56,7 +60,7 @@ void mediainfo_clean (void) {
     album[0] = '\0';
     year[0] = '\0';
     comment[0] = '\0';
-    genre[0] = '\0';
+    genre = GENRE_VOID_ID;
 }
 
 char* mediainfo_title_get(void) {
@@ -64,7 +68,8 @@ char* mediainfo_title_get(void) {
 }
 
 void mediainfo_title_set(const char* src) {
-    strncpy(title, src, sizeof(title)-1);
+    strncpy(title, src, 30);
+    title[30] = '\0';
 }
 
 char* mediainfo_artist_get(void) {
@@ -72,7 +77,8 @@ char* mediainfo_artist_get(void) {
 }
 
 void mediainfo_artist_set(const char* src) {
-    strncpy(artist, src, sizeof(artist)-1);
+    strncpy(artist, src, 30);
+    artist[30] = '\0';
 }
 
 char* mediainfo_album_get(void) {
@@ -80,7 +86,8 @@ char* mediainfo_album_get(void) {
 }
 
 void mediainfo_album_set(const char* src) {
-    strncpy(album, src, sizeof(album)-1);
+    strncpy(album, src, 30);
+    album[30] = '\0';
 }
 
 char* mediainfo_year_get(void) {
@@ -88,7 +95,8 @@ char* mediainfo_year_get(void) {
 }
 
 void mediainfo_year_set(const char* src) {
-    strncpy(year, src, sizeof(year)-1);
+    strncpy(year, src, 4);
+    year[4] = '\0';
 }
 
 char* mediainfo_comment_get(void) {
@@ -96,15 +104,26 @@ char* mediainfo_comment_get(void) {
 }
 
 void mediainfo_comment_set(const char* src) {
-    strncpy(comment, src, sizeof(comment)-1);
+    strncpy(comment, src, 30);
+    comment[30] = '\0';
 }
 
-char* mediainfo_genre_get(void) {
-    return genre;
+const char* mediainfo_genre_get(void) {
+    if (genre < GENRES) {
+        return genres[genre];
+    }
+    else {
+        return genre_void;
+    }
 }
 
-void mediainfo_genre_set(const char* src) {
-    strncpy(genre, src, sizeof(genre)-1);
+void mediainfo_genre_set(uint16_t src) {
+    if (src < GENRES) {
+        genre = src;
+    }
+    else {
+        genre = GENRE_VOID_ID;
+    }
 }
 
 mediainfo_type_t mediainfo_type_get(void) {

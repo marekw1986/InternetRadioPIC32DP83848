@@ -767,53 +767,30 @@ void VS1003_play_file (char* url) {
         }
         else {
             unsigned char *s = (unsigned char*)id3+3;
-            char title[31];
-            char artist[31];
-            char album[31];
-            char year[5];
-            char comment[31];
-            char genre[31];
             
             /* Id3 tag elements don't necessarily end in a '\0' if they
             occupy the full 30 character space. Thus, we'll have to
             nul-terminate all strings just to be sure. */
-            strncpy(title, (const char*)s, 30);
-            title[30] = '\0';
+            mediainfo_title_set((const char*)s);
             s += 30;
-
-            strncpy(artist,(const char*) s, 30);
-            artist[30] = '\0';
+            mediainfo_artist_set((const char*)s);
             s += 30;
-
-            strncpy(album, (const char*)s, 30);
-            album[30] = '\0';
+            mediainfo_album_set((const char*)s);
             s += 30;
-
-            strncpy(year, (const char*)s, 4);
-            year[4] = '\0';
+            mediainfo_year_set((const char*)s);
             s += 4;
-
-            strncpy(comment, (const char*)s, 30);
-            comment[30] = '\0';
+            mediainfo_comment_set((const char*)s);
             s += 30;
 
             /* The genre field is not encoded as a string, but just one byte
             that indexes the decoding table. If memory is too expensive,
             the whole field may be ignored or just shown as a number. */
-            if (*s >= GENRES)
-              strcpy(genre, "Unknown");
-            else
-              strcpy(genre, genres[*s]);
+            mediainfo_genre_set(*s);
 
             /* And now the final printing */
-            SYS_CONSOLE_PRINT("Title  : %-30s  Artist: %s\r\n", title, artist);
-            mediainfo_title_set(title);
-            mediainfo_artist_set(artist);
-            SYS_CONSOLE_PRINT("Album  : %-30s  Year  : %4s\r\n", album, year);
-            mediainfo_album_set(album);
-            mediainfo_year_set(year);
-            SYS_CONSOLE_PRINT("Comment: %-30s  Genre : %s\r\n", comment, genre);
-            mediainfo_genre_set(genre);
+            SYS_CONSOLE_PRINT("Title  : %-30s  Artist: %s\r\n", mediainfo_title_get(), mediainfo_artist_get());
+            SYS_CONSOLE_PRINT("Album  : %-30s  Year  : %4s\r\n", mediainfo_album_get(), mediainfo_year_get());
+            SYS_CONSOLE_PRINT("Comment: %-30s  Genre : %s\r\n", mediainfo_comment_get(), mediainfo_genre_get());
         }
     }
     

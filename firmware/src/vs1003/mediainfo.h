@@ -30,8 +30,8 @@ char* mediainfo_year_get(void);
 void mediainfo_year_set(const char* src);
 char* mediainfo_comment_get(void);
 void mediainfo_comment_set(const char* src);
-char* mediainfo_genre_get(void);
-void mediainfo_genre_set(const char* src);
+const char* mediainfo_genre_get(void);
+void mediainfo_genre_set(uint16_t src);
 mediainfo_type_t mediainfo_type_get(void);
 void mediainfo_type_set(mediainfo_type_t src);
 
