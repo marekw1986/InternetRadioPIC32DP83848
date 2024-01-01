@@ -272,7 +272,7 @@ void APP_Tasks ( void )
             //i2c_init();
             lcd_init();
             lcd_cls();
-            lcd_ui_draw_interface();          
+            lcd_ui_init();          
             
             VS1003_init();
             VS1003_setVolume(100);

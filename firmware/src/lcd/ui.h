@@ -12,14 +12,13 @@
 extern "C" {
 #endif
 
-void lcd_ui_draw_interface(void);    
+void lcd_ui_init(void);
 void lcd_ui_update_volume(void);
 void lcd_ui_update_content_info(const char* str);
 void lcd_ui_clear_content_info(void);
 void lcd_ui_update_state_info(const char* str);
 void lcd_ui_clear_state_info(void);
 void lcd_ui_handle(void);
-
 
 
 #ifdef	__cplusplus
