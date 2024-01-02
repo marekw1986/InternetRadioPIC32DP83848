@@ -342,6 +342,21 @@ uint16_t lcd_utf8str_part(const char* str, const uint16_t len) {
     return len-cnt;
 }
 
+void lcd_str_padd_rest(const char* str, const uint16_t len, char padd) {
+	uint8_t rest = lcd_str_part(str, LCD_COLS);
+	while (rest) {
+		lcd_char(padd);
+		rest--;
+	}
+}
+
+void lcd_utf8str_padd_rest(const char* str, const uint16_t len, char padd) {
+	uint8_t rest = lcd_utf8str_part(str, LCD_COLS);
+	while (rest) {
+		lcd_char(padd);
+		rest--;
+	}
+}
 
 void lcd_locate(uint8_t y, uint8_t x) {
     uint8_t tmp;

@@ -127,6 +127,9 @@ static void lcd_ui_handle_scroll(void) {
         if (((uint32_t)(millis()-scroll_timer) > 800)) {
             if (scroll_right) {
                 scroll_ptr++;
+                lcd_locate(1, 0);
+                lcd_utf8str_padd_rest(scroll_ptr, LCD_COLS, ' ');
+                if (*scroll_ptr & (1<<7)) { scroll_ptr++; }
                 if (scroll_ptr >= (scroll_begin+strlen(scroll_begin))-LCD_COLS) {
                     scroll_right = false;
                     scroll_state = SCROLL_WAIT;
@@ -134,16 +137,15 @@ static void lcd_ui_handle_scroll(void) {
             }
             else {
                 scroll_ptr--;
+                lcd_locate(1, 0);
                 if (scroll_ptr <= (scroll_begin)) {
                     scroll_right = true;
                     scroll_state = SCROLL_WAIT;
                 }
-            }
-            lcd_locate(1, 0);
-            uint8_t rest = lcd_utf8str_part(scroll_ptr, LCD_COLS);
-            while (rest) {
-                lcd_char(' ');
-                rest--;
+                else {
+					if ( *(scroll_ptr-1) & (1<<7)) { scroll_ptr--; }	
+				}
+                lcd_utf8str_padd_rest(scroll_ptr, LCD_COLS, ' ');
             }
     //        SYS_CONSOLE_PRINT("Whole: %s\r\n", scroll_buffer);
     //        SYS_CONSOLE_PRINT("Window: %s\r\n", supbuf);            

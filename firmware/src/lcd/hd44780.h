@@ -81,6 +81,8 @@ void lcd_char(char c);
 void lcd_str(const char * str);
 uint16_t lcd_str_part(const char* str, const uint16_t len);
 uint16_t lcd_utf8str_part(const char* str, const uint16_t len);
+void lcd_str_padd_rest(const char* str, const uint16_t len, char padd);
+void lcd_utf8str_padd_rest(const char* str, const uint16_t len, char padd);
 void lcd_locate(uint8_t y, uint8_t x);
 void lcd_home(void);
 bool lcd_handle(void);
