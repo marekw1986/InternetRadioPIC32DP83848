@@ -72,8 +72,6 @@
 */
 
 APP_DATA appData;
-button_t next_btn;
-button_t prev_btn;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -122,16 +120,6 @@ void usb_write (void) {
     }
     SYS_FS_FilePrintf(file, "Test\r\n");
     SYS_FS_FileClose(file); 
-}
-
-void next_func (void) {
-    SYS_CONSOLE_PRINT("NEXT button pressed!\r\n");
-    VS1003_play_next();
-}
-
-void prev_func (void) {
-    SYS_CONSOLE_PRINT("PREV button pressed!\r\n");
-    VS1003_play_prev();
 }
 
 // *****************************************************************************
@@ -264,15 +252,10 @@ void APP_Tasks ( void )
         case APP_STATE_INIT:
         {
             SYS_CONSOLE_PRINT("Initializing user app\r\n");
-            
-            rotary_init();
-            button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &prev_func, NULL);
-            button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &next_func, NULL);
-            
             //i2c_init();
             lcd_init();
             lcd_cls();
-            lcd_ui_init();          
+            ui_init();          
             
             VS1003_init();
             VS1003_setVolume(100);
@@ -351,19 +334,10 @@ void APP_Tasks ( void )
             //static uint16_t i = 0;
             //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "Print from user task %d\r\n", i++);
             VS1003_handle();
-            button_handle(&next_btn);
-            button_handle(&prev_btn);
             
-            int8_t tmp;
-            if ( (tmp = rotary_handle()) ) {
-                int8_t volume = VS1003_getVolume();
-                volume += tmp;
-                if (volume > 100) volume = 100;
-                if (volume < 0) volume = 0;
-                VS1003_setVolume(volume);                
-            }
+
             
-            lcd_ui_handle();
+            ui_handle();
             lcd_handle();
             
             break;

@@ -22,7 +22,8 @@ extern "C" {
 #endif
 
 void rotary_init (void);
-int8_t rotary_handle (void);
+void rotary_register_callback(void (*cbk)(int8_t));
+void rotary_handle (void);
 
 
 #ifdef	__cplusplus
