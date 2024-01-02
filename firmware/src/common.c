@@ -10,10 +10,13 @@
 #include "tcpip/tcpip.h"
 #include "system/fs/sys_fs.h"
 #include "system/debug/sys_debug.h"
+#include "wolfcrypt/hash.h"
 
 #define NTP_TIMESTAMP_DIFF     (2208988800)    // 1900 to 1970 in seconds
 
 int time_zone = -120;
+
+static uint16_t max_stream_id = 0;
 
 static volatile uint32_t milliseconds = 0;
 static volatile uint32_t upt = 0;
@@ -99,7 +102,7 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
         //There is no complete line. Return to continue later.
         return HTTP_HEADER_IN_PROGRESS;
     }
-    if (tok > working_buffer+sizeof(working_buffer)-1) { return HTTP_HEADER_ERROR; }
+    if (tok > working_buffer+sizeof(working_buffer)) { return HTTP_HEADER_ERROR; }
     tok[0] = '\0';
     tok[1] = '\0';
     next_line = tok + 2;
@@ -123,10 +126,10 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
     }
     else {
         //First line already parsed, parsing next lines
-        analyze_line(working_buffer, sizeof(working_buffer)-1, uri);
+        analyze_line(working_buffer, sizeof(working_buffer), uri);
     }
     
-    strncpy(working_buffer, next_line, sizeof(working_buffer)-1);    
+    strncpy(working_buffer, next_line, sizeof(working_buffer));    
     if (memcmp(working_buffer, "\r\n", 2) == 0) {
         return finalize_http_parsing(uri);
     }
@@ -218,14 +221,42 @@ uint8_t parse_url (const char* url, size_t len, uri_t* uri) {
 		}
 	}
     
-    if (serverlen > (sizeof(uri->server)-1)) { return 0; }
+    if (serverlen > (sizeof(uri->server))) { return 0; }
 	memcpy(uri->server, serverbegin, serverlen);
     uri->server[serverlen] = '\0';
 	filelen = strlen(rest);
-    if (filelen > (sizeof(uri->file)+1)) { return 0; }
+    if (filelen > (sizeof(uri->file))) { return 0; }
 	memcpy(uri->file, rest, filelen);
     uri->file[filelen] = '\0';
 	return 1;
+}
+
+void initialize_stream_list(void) {
+    SYS_FS_HANDLE file;
+    uint16_t number = 0;
+    
+    file = SYS_FS_FileOpen("/mnt/myDrive1/radio.txt", SYS_FS_FILE_OPEN_READ);
+    if (file == SYS_FS_HANDLE_INVALID) {
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
+        return;
+    }
+    while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
+        if (working_buffer[strlen(working_buffer)] == '\n') {
+            working_buffer[strlen(working_buffer)] = '\0';
+        }
+        int ret = parse_stream_data_line(working_buffer, strlen(working_buffer), NULL, 0, NULL, 0);
+        if (ret > number) {
+            number = ret;
+        }
+    }
+    if (number > 0) {
+        max_stream_id = number;
+    }
+    SYS_FS_FileClose(file);
+}
+
+uint16_t get_max_stream_id(void) {
+    return max_stream_id;
 }
 
 /*WARNING: To preserve precious memory on that hardware this function uses the same working buffer as
@@ -241,11 +272,11 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
         return NULL;
     }
     
-    while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)-1) == SYS_FS_RES_SUCCESS) {
+    while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         if (working_buffer[strlen(working_buffer)-1] == '\n') {
             working_buffer[strlen(working_buffer)-1] = '\0';
         }
-        int ret = parse_stream_data_line(working_buffer, strlen(working_buffer), stream_name, stream_name_len, working_buffer, sizeof(working_buffer)-1);
+        int ret = parse_stream_data_line(working_buffer, strlen(working_buffer), stream_name, stream_name_len, working_buffer, sizeof(working_buffer));
         if (ret && ret == number) {
             result = working_buffer;
             break;

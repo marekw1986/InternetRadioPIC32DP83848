@@ -302,6 +302,8 @@ void APP_Tasks ( void )
         {   
             if ( /*appData.sdCardConnected &&*/ appData.usbDriveConnected) {
                 appData.state = APP_STATE_TCPIP_WAIT_INIT;
+                // USB initialized - read list of streams and find max
+                initialize_stream_list();
             }
             
             break;

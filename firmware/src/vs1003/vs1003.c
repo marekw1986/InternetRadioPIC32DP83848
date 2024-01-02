@@ -720,7 +720,7 @@ void VS1003_play_prev_http_stream_from_list(void) {
     
     memset(name, 0x00, sizeof(name));
     current_stream_ind--;
-    if (current_stream_ind < 1) { current_stream_ind = 1; }
+    if (current_stream_ind < 1) { current_stream_ind = get_max_stream_id(); }
     char* url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
     if (url == NULL) return;
     VS1003_stop();
