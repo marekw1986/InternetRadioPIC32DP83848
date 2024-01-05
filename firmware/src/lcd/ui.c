@@ -37,6 +37,7 @@ static void ui_handle_scroll(void);
 static void ui_rotary_change_volume(int8_t new_vol);
 static void ui_rotary_move_cursor(int8_t val);
 static void ui_button_switch_state(void);
+static void ui_button_play_selected_stream(void);
 
 void ui_init(void) {
     rotary_init();
@@ -54,12 +55,14 @@ void ui_switch_state(ui_state_t new_state) {
 		case UI_HANDLE_MAIN_SCREEN:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_change_volume);
+        button_register_long_callback(&state_button, NULL);
 		ui_draw_main_screen();
 		break;
 		
 		case UI_HANDLE_SCROLLABLE_LIST:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_move_cursor);
+        button_register_long_callback(&state_button, ui_button_play_selected_stream);
 		ui_draw_scrollable_list();
 		break;
 	}
@@ -304,4 +307,10 @@ static void ui_button_switch_state(void) {
     else {
         ui_switch_state(UI_HANDLE_MAIN_SCREEN);
     }
+}
+
+static void ui_button_play_selected_stream(void) {
+    if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
+    VS1003_play_http_stream_by_id(selected_stream_id);
+    ui_switch_state(UI_HANDLE_MAIN_SCREEN);
 }

@@ -10,6 +10,17 @@ void button_init(button_t *btn, volatile unsigned int *port, uint16_t pin_bm, vo
     btn->state = 0;
 }
 
+void button_register_push_callback(button_t *btn, void (*push_proc)(void)) {
+    if (push_proc) {
+        btn->push_proc = push_proc;
+    }
+}
+
+void button_register_long_callback(button_t *btn, void (*long_proc)(void)) {
+    if (long_proc) {
+        btn->long_proc = long_proc;
+    }
+}
 
 void button_handle(button_t *btn) {
     uint8_t pressed;

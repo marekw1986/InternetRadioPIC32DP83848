@@ -25,6 +25,8 @@ typedef struct button {
 } button_t;
 
 void button_init(button_t *btn, volatile unsigned int *port, uint16_t pin_bm, void (*push_proc)(void), void (*long_proc)(void));
+void button_register_push_callback(button_t *btn, void (*push_proc)(void));
+void button_register_long_callback(button_t *btn, void (*long_proc)(void));
 void button_handle(button_t *btn);
 
 
