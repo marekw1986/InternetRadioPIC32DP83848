@@ -686,6 +686,7 @@ bool VS1003_play_http_stream_by_id(uint16_t id) {
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
+        ui_set_selected_stream_id(id);
         #endif
 		VS1003_play_http_stream(url);
         current_stream_ind = id;

@@ -65,7 +65,12 @@ void ui_switch_state(ui_state_t new_state) {
 	}
 }
 
-uint8_t calculate_selected_line(void) {
+void ui_set_selected_stream_id(uint16_t id) {
+	if (id > get_max_stream_id()) return;
+	selected_stream_id = id;
+}
+
+static uint8_t calculate_selected_line(void) {
 	uint8_t selected_line = (selected_stream_id%(LCD_ROWS));
 	selected_line = selected_line ? selected_line-1 : LCD_ROWS-1;
 	return selected_line;

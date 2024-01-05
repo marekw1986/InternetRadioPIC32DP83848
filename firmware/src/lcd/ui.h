@@ -16,6 +16,7 @@ extern "C" {
 
 void ui_init(void);
 void ui_switch_state(ui_state_t new_state);
+void ui_set_selected_stream_id(uint16_t id);
 void ui_update_volume(void);
 void ui_update_content_info(const char* str);
 void ui_clear_content_info(void);
