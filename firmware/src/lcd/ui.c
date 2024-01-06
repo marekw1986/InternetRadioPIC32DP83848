@@ -6,13 +6,13 @@
 #include "../io/buttons.h"
 #include "../io/rotary.h"
 #include "../common.h"
-#include "internal.h"
 
 typedef enum {SCROLL, SCROLL_WAIT} scroll_state_t;
 
 static button_t next_btn;
 static button_t prev_btn;
 static button_t state_button;
+static button_t rotary_button;
 
 static ui_state_t ui_state = UI_HANDLE_MAIN_SCREEN;
 static scroll_state_t scroll_state = SCROLL_WAIT;
@@ -46,6 +46,7 @@ void ui_init(void) {
     button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1003_play_prev, NULL);
     button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1003_play_next, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
+    button_init(&rotary_button, &PORTA, _PORTA_RA15_MASK, NULL, NULL);
     rotary_register_callback(ui_rotary_change_volume);
     
 	ui_state = UI_HANDLE_MAIN_SCREEN;
@@ -53,13 +54,14 @@ void ui_init(void) {
 }
 
 void ui_switch_state(ui_state_t new_state) {
+    scroll_info = false;    // Reset scrolling after every change of state
 	switch(new_state) {
 		case UI_HANDLE_MAIN_SCREEN:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_change_volume);
         button_register_push_callback(&prev_btn, VS1003_play_prev);
         button_register_push_callback(&next_btn, VS1003_play_next);
-        button_register_long_callback(&state_button, NULL);
+        button_register_push_callback(&rotary_button, NULL);
 		ui_draw_main_screen();
 		break;
 		
@@ -68,7 +70,7 @@ void ui_switch_state(ui_state_t new_state) {
         rotary_register_callback(ui_rotary_move_cursor);
         button_register_push_callback(&prev_btn, ui_button_stream_list_prev_page);
         button_register_push_callback(&next_btn, ui_button_stream_list_next_page);
-        button_register_long_callback(&state_button, ui_button_play_selected_stream);
+        button_register_push_callback(&rotary_button, ui_button_play_selected_stream);
 		ui_draw_scrollable_list();
 		break;
 	}
@@ -203,6 +205,7 @@ void ui_handle(void) {
     button_handle(&next_btn);
     button_handle(&prev_btn);
     button_handle(&state_button);
+    button_handle(&rotary_button);
 }
 
 static void ui_handle_main_screen(void) {
