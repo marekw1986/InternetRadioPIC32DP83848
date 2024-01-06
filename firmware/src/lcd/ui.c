@@ -38,6 +38,8 @@ static void ui_rotary_change_volume(int8_t new_vol);
 static void ui_rotary_move_cursor(int8_t val);
 static void ui_button_switch_state(void);
 static void ui_button_play_selected_stream(void);
+static void ui_button_stream_list_next_page(void);
+static void ui_button_stream_list_prev_page(void);
 
 void ui_init(void) {
     rotary_init();
@@ -55,6 +57,8 @@ void ui_switch_state(ui_state_t new_state) {
 		case UI_HANDLE_MAIN_SCREEN:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_change_volume);
+        button_register_push_callback(&prev_btn, VS1003_play_prev);
+        button_register_push_callback(&next_btn, VS1003_play_next);
         button_register_long_callback(&state_button, NULL);
 		ui_draw_main_screen();
 		break;
@@ -62,6 +66,8 @@ void ui_switch_state(ui_state_t new_state) {
 		case UI_HANDLE_SCROLLABLE_LIST:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_move_cursor);
+        button_register_push_callback(&prev_btn, ui_button_stream_list_prev_page);
+        button_register_push_callback(&next_btn, ui_button_stream_list_next_page);
         button_register_long_callback(&state_button, ui_button_play_selected_stream);
 		ui_draw_scrollable_list();
 		break;
@@ -108,7 +114,7 @@ static void ui_draw_scrollable_list(void) {
                 snprintf(buf, sizeof(buf), "%s%s", "  ", name);
             }
 			lcd_locate(line, 0);
-			lcd_str_padd_rest(buf, LCD_COLS, ' ');
+			lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
             lcd_flush_buffer();
 		}
 	}
@@ -313,4 +319,22 @@ static void ui_button_play_selected_stream(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     VS1003_play_http_stream_by_id(selected_stream_id);
     ui_switch_state(UI_HANDLE_MAIN_SCREEN);
+}
+
+static void ui_button_stream_list_next_page(void) {
+    if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
+    selected_stream_id += LCD_ROWS;
+    if (selected_stream_id > get_max_stream_id()) {
+        selected_stream_id = get_max_stream_id();
+    }
+    ui_draw_scrollable_list();
+}
+
+static void ui_button_stream_list_prev_page(void) {
+    if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
+    selected_stream_id -= LCD_ROWS;
+    if (selected_stream_id < 1) {
+        selected_stream_id = 1;
+    }
+    ui_draw_scrollable_list();
 }

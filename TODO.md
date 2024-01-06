@@ -17,7 +17,10 @@ Internet radio based on PIC32
   - [x] Show volume value
   - [x] Show currently played stream/file
   - [ ] Create interactive menu
-  - [ ] Scrolled text (info about played song/stream)
+	- [x] Add option to select stream from list
+	- [ ] Add option to play file from local storage
+	- [ ] Add option to change playback settings (for example playing in loop)
+  - [x] Scrolled text (info about played song/stream)
 - [ ] Move I2C (HD44780) driver from plib to Harmony.
 
 ### Completed Column ✓
