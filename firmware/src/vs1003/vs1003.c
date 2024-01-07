@@ -75,7 +75,6 @@ void VS1003_handle(void) {
 	static uint32_t	timer;
     static IP_MULTI_ADDRESS ServerAddress;
     TCPIP_DNS_RESULT dnsres;
-    static uri_t tempUri;
     int w; // to_load;
     uint8_t data[32];
     int br;
@@ -233,7 +232,7 @@ void VS1003_handle(void) {
             
             w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
             if (w) {
-                http_res_t http_result = parse_http_headers((char*)data, w, &tempUri);
+                http_res_t http_result = parse_http_headers((char*)data, w, &uri);
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         SYS_CONSOLE_PRINT("Parsing headers error\r\n");
@@ -253,7 +252,7 @@ void VS1003_handle(void) {
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
-                        memcpy(&uri, &tempUri, sizeof(uri_t));
+//                        /memcpy(&uri, &uri, sizeof(uri_t));
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
