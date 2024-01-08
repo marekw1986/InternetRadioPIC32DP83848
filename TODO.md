@@ -33,3 +33,4 @@ Internet radio based on PIC32
 - [x] Determine why SPI Flash is so slow
 - [x] Move list of streams to file
 - [x] Move project from MLA to Harmony libraries
+- [x] Add backlight timeout
