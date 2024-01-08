@@ -27,6 +27,7 @@
 #define LCD_RS 	3
 #define LCD_RW 	2
 #define LCD_E 	1
+#define LCD_BACKLIGHT 0
 
 #if ( (LCD_ROWS == 4) && (LCD_COLS == 20) )
 #define LCD_LINE1 0x00		// adres 1 znaku 1 wiersza
@@ -85,6 +86,7 @@ void lcd_str_padd_rest(const char* str, const uint16_t len, char padd);
 void lcd_utf8str_padd_rest(const char* str, const uint16_t len, char padd);
 void lcd_locate(uint8_t y, uint8_t x);
 void lcd_home(void);
+void lcd_set_backlight_state(bool state);
 bool lcd_handle(void);
 
 

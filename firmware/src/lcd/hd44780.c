@@ -21,6 +21,9 @@
 #define SET_E 	mpxLCD |= (1<<LCD_E); 	SEND_I2C
 #define CLR_E 	mpxLCD &= ~(1<<LCD_E); 	SEND_I2C
 
+#define SET_BACKLIGHT mpxLCD |= (1<<LCD_BACKLIGHT); SEND_I2C
+#define CLR_BACKLIGHT mpxLCD &= ~(1<<LCD_BACKLIGHT); SEND_I2C
+
 #define LCD_HOME    0x00
 #define LCD_CLS     0x01
 #define LCD_LOCATE  0x02
@@ -380,6 +383,15 @@ void lcd_home(void) {
     
     tmp = 0x80 | (0x70 & (LCD_HOME << 4));
     lcd_buf_put(tmp);
+}
+
+void lcd_set_backlight_state(bool state) {
+    if (state == true) {
+        CLR_BACKLIGHT;
+    }
+    else {
+        SET_BACKLIGHT;
+    }
 }
 
 

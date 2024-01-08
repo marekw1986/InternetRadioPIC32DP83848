@@ -7,12 +7,16 @@
 #include "../io/rotary.h"
 #include "../common.h"
 
+#define BACKLIGHT_DURATION 10000
+
 typedef enum {SCROLL, SCROLL_WAIT} scroll_state_t;
 
 static button_t next_btn;
 static button_t prev_btn;
 static button_t state_button;
 static button_t rotary_button;
+
+static uint32_t backlight_timer = 0;
 
 static ui_state_t ui_state = UI_HANDLE_MAIN_SCREEN;
 static scroll_state_t scroll_state = SCROLL_WAIT;
@@ -29,6 +33,7 @@ static void ui_draw_main_screen(void);
 static void ui_draw_scrollable_list(void);
 static void ui_handle_main_screen(void);
 static void ui_handle_scrollable_list(void);
+static void ui_handle_backlight(void);
 static void ui_draw_pointer_at_line(uint8_t line);
 static void ui_handle_updating_time(void);
 static void ui_handle_scroll(void);
@@ -40,6 +45,7 @@ static void ui_button_switch_state(void);
 static void ui_button_play_selected_stream(void);
 static void ui_button_stream_list_next_page(void);
 static void ui_button_stream_list_prev_page(void);
+static void ui_button_update_backlight();
 
 void ui_init(void) {
     rotary_init();
@@ -47,7 +53,10 @@ void ui_init(void) {
     button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1003_play_next, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
     button_init(&rotary_button, &PORTA, _PORTA_RA15_MASK, NULL, NULL);
+    button_register_global_callback(ui_button_update_backlight);
     rotary_register_callback(ui_rotary_change_volume);
+    
+    backlight_timer = millis();
     
 	ui_state = UI_HANDLE_MAIN_SCREEN;
 	ui_draw_main_screen();
@@ -201,6 +210,7 @@ void ui_handle(void) {
 		ui_handle_scrollable_list();
 		break;
 	}
+    ui_handle_backlight();
     rotary_handle();
     button_handle(&next_btn);
     button_handle(&prev_btn);
@@ -215,6 +225,14 @@ static void ui_handle_main_screen(void) {
 
 static void ui_handle_scrollable_list(void) {
 
+}
+
+static void ui_handle_backlight(void) {
+    if (backlight_timer && ((uint32_t)(millis()-backlight_timer > BACKLIGHT_DURATION))) {
+        backlight_timer = 0;
+        // turn off backlight here
+        lcd_set_backlight_state(false);
+    }
 }
 
 static void ui_handle_scroll(void) {
@@ -340,4 +358,13 @@ static void ui_button_stream_list_prev_page(void) {
         selected_stream_id = 1;
     }
     ui_draw_scrollable_list();
+}
+
+static void ui_button_update_backlight() {
+    if (backlight_timer == 0) {
+        // Turn on backlight here (only if it is currently turned off)
+        lcd_set_backlight_state(true);
+    }
+    // Reset timer
+    backlight_timer = millis();
 }

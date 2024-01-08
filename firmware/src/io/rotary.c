@@ -1,4 +1,5 @@
 #include "rotary.h"
+#include "buttons.h"
 
 void (*rotary_cbk)(int8_t);
 
@@ -28,9 +29,11 @@ void rotary_handle (void) {
         }
         
         if (ROTARY_DT_PIN) {
+            button_call_global_callback();
             rotary_cbk(-1);
         }
         else {
+            button_call_global_callback();
             rotary_cbk(1);
         }
     }
