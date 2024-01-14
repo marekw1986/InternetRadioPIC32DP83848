@@ -1,7 +1,7 @@
-#include <stdint.h>
-
 #ifndef _VS1003_LOW_LEVEL_H_
 #define _VS1003_LOW_LEVEL_H_
+
+#include <stdint.h>
 
 #define VS_DREQ_TRIS    TRISCbits.TRISC1
 #define VS_DREQ_PIN     PORTCbits.RC1       //It is input!

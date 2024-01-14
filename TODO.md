@@ -22,6 +22,7 @@ Internet radio based on PIC32
 	- [ ] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
 - [ ] Move I2C (HD44780) driver from plib to Harmony.
+- [ ] Determine cause of ocassional failures of network connectivity
 
 ### Completed Column ✓
 - [x] Debug SD card

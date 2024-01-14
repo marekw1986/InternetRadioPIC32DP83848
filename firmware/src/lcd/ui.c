@@ -111,30 +111,34 @@ static void ui_draw_scrollable_list(void) {
 	if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
 	uint8_t selected_line = calculate_selected_line();
 	uint8_t stream_at_first_line = selected_stream_id-selected_line;
-	char name[19];
-    char buf[21];
+	char name[22];
+    char buf[24];
 	char* url = NULL;
     lcd_cls();
 	for (int line=0; line<LCD_ROWS; line++) {
 		url = get_station_url_from_file(stream_at_first_line+line, name, sizeof(name));
 		if (url != NULL) {
+            int bytes_in_buffer;
             if (line == selected_line) {
-                snprintf(buf, sizeof(buf), "%s%s", "->", name);
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", ">", stream_at_first_line+line, name);
             }
             else {
-                snprintf(buf, sizeof(buf), "%s%s", "  ", name);
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", " ", stream_at_first_line+line, name);
             }
-			lcd_locate(line, 0);
-			lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
-            lcd_flush_buffer();
+            if (bytes_in_buffer > 0) {
+                lcd_locate(line, 0);
+                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
+                lcd_flush_buffer();
+            }
 		}
+        else { break; }
 	}
 }
 
 static void ui_draw_pointer_at_line(uint8_t line) {
 	if (line > 3) { return; }
 	lcd_locate(line, 0);
-	lcd_str("->");
+	lcd_str(">");
 	lcd_flush_buffer();
 }
 
@@ -309,19 +313,20 @@ static void ui_rotary_change_volume(int8_t new_vol) {
 
 static void ui_rotary_move_cursor(int8_t val) {
 	uint8_t prev_selected_line = calculate_selected_line();
+    uint16_t prev_selected_stream_id = selected_stream_id;
 	selected_stream_id += val;
 	if (selected_stream_id < 1) {
-		selected_stream_id = 1;
-	}
-	else if (selected_stream_id > get_max_stream_id()) {
 		selected_stream_id = get_max_stream_id();
 	}
-	if ( ((prev_selected_line == 0) && (val<0)) || ((prev_selected_line == LCD_ROWS-1) && (val > 0)) ) {
+	else if (selected_stream_id > get_max_stream_id()) {
+		selected_stream_id = 1;
+	}
+	if ( ((prev_selected_line == 0) && (val<0)) || ( ((prev_selected_line == LCD_ROWS-1) || (prev_selected_stream_id == get_max_stream_id())) && (val > 0)) ) {
 		ui_draw_scrollable_list();
 	}
 	else  {
 		lcd_locate(prev_selected_line, 0);
-		lcd_str("  ");
+		lcd_str(" ");
 		lcd_flush_buffer();
 		ui_draw_pointer_at_line(calculate_selected_line());
 	}
@@ -346,7 +351,7 @@ static void ui_button_stream_list_next_page(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     selected_stream_id += LCD_ROWS;
     if (selected_stream_id > get_max_stream_id()) {
-        selected_stream_id = get_max_stream_id();
+        selected_stream_id = 1;
     }
     ui_draw_scrollable_list();
 }
@@ -355,7 +360,7 @@ static void ui_button_stream_list_prev_page(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     selected_stream_id -= LCD_ROWS;
     if (selected_stream_id < 1) {
-        selected_stream_id = 1;
+        selected_stream_id = get_max_stream_id();
     }
     ui_draw_scrollable_list();
 }
