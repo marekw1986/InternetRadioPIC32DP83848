@@ -12,17 +12,27 @@
 #define LCD_BUF_SIZE 128
 #define LCD_BUF_MASK ( LCD_BUF_SIZE - 1)
 
-#define SET_RS 	mpxLCD |= (1<<LCD_RS); 	SEND_I2C
-#define CLR_RS 	mpxLCD &= ~(1<<LCD_RS); SEND_I2C
+#define LCD_DATA_TRIS TRISD
+#define LCD_DATA_TRIS_SET TRISDSET
+#define LCD_DATA_TRIS_CLR TRISDCLR
+#define LCD_DATA_LAT LATD
+#define LCD_DATA_SET LATDSET
+#define LCD_DATA_CLR LATDCLR
+#define LCD_DATA_PORT PORTD
+#define LCD_DATA_SHIFT 2 //DB4 at bit
+#define LCD_DATA_MASK (0x0F<<LCD_DATA_SHIFT)
 
-#define SET_RW 	mpxLCD |= (1<<LCD_RW); 	SEND_I2C
-#define CLR_RW 	mpxLCD &= ~(1<<LCD_RW); SEND_I2C
+#define SET_RS 	LATGbits.LATG12 = 1
+#define CLR_RS 	LATGbits.LATG12 = 0
 
-#define SET_E 	mpxLCD |= (1<<LCD_E); 	SEND_I2C
-#define CLR_E 	mpxLCD &= ~(1<<LCD_E); 	SEND_I2C
+#define SET_RW 	LATGbits.LATG14 = 1
+#define CLR_RW 	LATGbits.LATG14 = 0
 
-#define SET_BACKLIGHT mpxLCD |= (1<<LCD_BACKLIGHT); SEND_I2C
-#define CLR_BACKLIGHT mpxLCD &= ~(1<<LCD_BACKLIGHT); SEND_I2C
+#define SET_E 	LATEbits.LATE1 = 1
+#define CLR_E 	LATEbits.LATE1 = 0
+
+#define SET_BACKLIGHT LATCbits.LATC15 = 1
+#define CLR_BACKLIGHT LATCbits.LATC15 = 0
 
 #define LCD_HOME    0x00
 #define LCD_CLS     0x01
@@ -113,47 +123,27 @@ bool lcd_handle(void) {
 uint8_t check_BF(void);
 #endif
 
-uint8_t	mpxLCD;
-
 static inline void data_dir_out(void) {
-    mpxLCD	&= ~(1<<LCD_D7);
-    mpxLCD	&= ~(1<<LCD_D6);
-    mpxLCD	&= ~(1<<LCD_D5);
-    mpxLCD	&= ~(1<<LCD_D4);
-    SEND_I2C;
+    LCD_DATA_TRIS_CLR = LCD_DATA_MASK;
 }
 
 #if USE_RW
 static inline void data_dir_in(void) {
-    mpxLCD |= (1<<LCD_D7);
-    mpxLCD |= (1<<LCD_D6);
-    mpxLCD |= (1<<LCD_D5);
-    mpxLCD |= (1<<LCD_D4);
-    SEND_I2C;
+    LCD_DATA_TRIS_SET = LCD_DATA_MASK;
 }
 #endif
 
 static inline void lcd_sendHalf(uint8_t data) {
-    if (data&(1<<0)) mpxLCD |= (1<<LCD_D4); else mpxLCD &= ~(1<<LCD_D4);
-    if (data&(1<<1)) mpxLCD |= (1<<LCD_D5); else mpxLCD &= ~(1<<LCD_D5);
-    if (data&(1<<2)) mpxLCD |= (1<<LCD_D6); else mpxLCD &= ~(1<<LCD_D6);
-    if (data&(1<<3)) mpxLCD |= (1<<LCD_D7); else mpxLCD &= ~(1<<LCD_D7);
-    SEND_I2C;
+    LCD_DATA_CLR = LCD_DATA_MASK;
+    uint8_t to_send = (data << LCD_DATA_SHIFT) & LCD_DATA_MASK;
+    LCD_DATA_SET = to_send;
 }
 
 #if USE_RW == 1
 
 static inline uint8_t lcd_readHalf(void)
-{
-	uint8_t result=0;
-    uint8_t res=0;
-
-    res = RECEIVE_I2C;
-    if(res&(1<<LCD_D4)) result |= (1<<0);
-    if(res&(1<<LCD_D5)) result |= (1<<1);
-    if(res&(1<<LCD_D6)) result |= (1<<2);
-    if(res&(1<<LCD_D7)) result |= (1<<3);
-
+{    
+    uint8_t result = (LCD_DATA_PORT & LCD_DATA_MASK) >> LCD_DATA_SHIFT;
 	return result;
 }
 #endif
@@ -397,17 +387,14 @@ void lcd_set_backlight_state(bool state) {
 
 
 void lcd_init( void ) {
-    mpxLCD = 0;
-
     //LCD_LED_ON;
 
     vTaskDelay(15);
-    mpxLCD &= ~(1<<LCD_E);
-    mpxLCD &= ~(1<<LCD_RS);
+    CLR_E;
+    CLR_RS;
     #if USE_RW == 1
-        mpxLCD &= ~(1<<LCD_RW);
+    CLR_RW;
     #endif
-    SEND_I2C;
 
 	// jeszcze nie mozna uzywac Busy Flag
 	SET_E;
