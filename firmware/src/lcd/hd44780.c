@@ -125,18 +125,22 @@ uint8_t check_BF(void);
 
 static inline void data_dir_out(void) {
     LCD_DATA_TRIS_CLR = LCD_DATA_MASK;
+    asm("nop");
 }
 
 #if USE_RW
 static inline void data_dir_in(void) {
     LCD_DATA_TRIS_SET = LCD_DATA_MASK;
+    asm("nop");
 }
 #endif
 
 static inline void lcd_sendHalf(uint8_t data) {
     LCD_DATA_CLR = LCD_DATA_MASK;
+    asm("nop");
     uint32_t to_send = ((uint32_t)data << LCD_DATA_SHIFT) & LCD_DATA_MASK;
     LCD_DATA_SET = to_send;
+    asm("nop");
 }
 
 #if USE_RW == 1
