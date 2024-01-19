@@ -152,18 +152,23 @@ void _lcd_write_byte(unsigned char _data) {
 
 	#if USE_RW == 1
     CLR_RW;
+    asm("nop");
 	#endif
 
 	SET_E;
+    asm("nop");
 	lcd_sendHalf(_data >> 4);
 	CLR_E;
+    asm("nop");
 
 	SET_E;
+    asm("nop");
 	lcd_sendHalf(_data);
 	CLR_E;
+    asm("nop");
 
 	#if USE_RW == 1
-    while( (check_BF() & (1<<7)) );
+    while( (check_BF() & (1<<7)) ) {asm("nop");}
 	#else
     vTaskDelay(120);
 	#endif
@@ -174,18 +179,20 @@ void _lcd_write_byte(unsigned char _data) {
 uint8_t _lcd_read_byte(void) {
 	uint8_t result=0;
 	data_dir_in();
-
+    asm("nop");
 	SET_RW;
-
+    asm("nop");
 	SET_E;
-
+    asm("nop");
 	result = (lcd_readHalf() << 4);	
-
 	CLR_E;
-
+    asm("nop");
+    
 	SET_E;
+    asm("nop");
 	result |= lcd_readHalf();
 	CLR_E;
+    asm("nop");
 
 	return result;
 }
