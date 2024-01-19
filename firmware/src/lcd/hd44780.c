@@ -148,7 +148,6 @@ static inline uint8_t lcd_readHalf(void)
 #endif
 
 void _lcd_write_byte(unsigned char _data) {
-
 	data_dir_out();
 
 	#if USE_RW == 1
@@ -173,7 +172,6 @@ void _lcd_write_byte(unsigned char _data) {
 
 #if USE_RW == 1
 uint8_t _lcd_read_byte(void) {
-
 	uint8_t result=0;
 	data_dir_in();
 
@@ -196,23 +194,19 @@ uint8_t _lcd_read_byte(void) {
 
 #if USE_RW == 1
 uint8_t check_BF(void) {
-
 	CLR_RS;
 
 	return _lcd_read_byte();
 }
 #endif
 
-
 void lcd_write_cmd(uint8_t cmd) {
-
 	CLR_RS;
 
 	_lcd_write_byte(cmd);
 }
 
 void lcd_write_data(uint8_t data) {
-
 	SET_RS;
 	_lcd_write_byte(data);
 }
