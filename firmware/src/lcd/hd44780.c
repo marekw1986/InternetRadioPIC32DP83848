@@ -20,7 +20,7 @@
 #define LCD_DATA_CLR LATDCLR
 #define LCD_DATA_PORT PORTD
 #define LCD_DATA_SHIFT 2 //DB4 at bit
-#define LCD_DATA_MASK (0x0F<<LCD_DATA_SHIFT)
+#define LCD_DATA_MASK (0x0000000F<<LCD_DATA_SHIFT)
 
 #define SET_RS 	LATGbits.LATG12 = 1
 #define CLR_RS 	LATGbits.LATG12 = 0
@@ -38,7 +38,7 @@
 #define LCD_CLS     0x01
 #define LCD_LOCATE  0x02
 
-uint8_t  LCD_Buf[LCD_BUF_SIZE];
+uint8_t LCD_Buf[LCD_BUF_SIZE];
 uint8_t LCD_Head;
 uint8_t LCD_Tail;
 
@@ -135,12 +135,11 @@ static inline void data_dir_in(void) {
 
 static inline void lcd_sendHalf(uint8_t data) {
     LCD_DATA_CLR = LCD_DATA_MASK;
-    uint8_t to_send = (data << LCD_DATA_SHIFT) & LCD_DATA_MASK;
+    uint32_t to_send = ((uint32_t)data << LCD_DATA_SHIFT) & LCD_DATA_MASK;
     LCD_DATA_SET = to_send;
 }
 
 #if USE_RW == 1
-
 static inline uint8_t lcd_readHalf(void)
 {    
     uint8_t result = (LCD_DATA_PORT & LCD_DATA_MASK) >> LCD_DATA_SHIFT;
@@ -153,7 +152,7 @@ void _lcd_write_byte(unsigned char _data) {
 	data_dir_out();
 
 	#if USE_RW == 1
-		CLR_RW;
+    CLR_RW;
 	#endif
 
 	SET_E;
@@ -165,11 +164,9 @@ void _lcd_write_byte(unsigned char _data) {
 	CLR_E;
 
 	#if USE_RW == 1
-
-		while( (check_BF() & (1<<7)) );
-
+    while( (check_BF() & (1<<7)) );
 	#else
-		vTaskDelay(120);
+    vTaskDelay(120);
 	#endif
 
 }
