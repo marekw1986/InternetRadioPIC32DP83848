@@ -548,6 +548,30 @@ static const DRV_MIIM_INIT drvMiimInitData_0 =
    .ethphyId = DRV_MIIM_ETH_MODULE_ID_0,
 };
 
+/*** DP83848 PHY Driver Time-Out Initialization Data ***/
+DRV_ETHPHY_TMO drvdp83848Tmo = 
+{
+    .resetTmo = DRV_ETHPHY_DP83848_RESET_CLR_TMO,
+    .aNegDoneTmo = DRV_ETHPHY_DP83848_NEG_DONE_TMO,
+    .aNegInitTmo = DRV_ETHPHY_DP83848_NEG_INIT_TMO,    
+};
+
+/*** ETH PHY Initialization Data ***/
+extern void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj, DRV_HANDLE handle);
+const DRV_ETHPHY_INIT tcpipPhyInitData_DP83848 =
+{    
+    .ethphyId               = DRV_DP83848_PHY_PERIPHERAL_ID,
+    .phyAddress             = DRV_DP83848_PHY_ADDRESS,
+    .phyFlags               = DRV_DP83848_PHY_CONFIG_FLAGS,
+    .pPhyObject             = &DRV_ETHPHY_OBJECT_DP83848,
+    .resetFunction          = AppDP83848ResetFunction,
+    .ethphyTmo              = &drvdp83848Tmo,
+    .pMiimObject            = &DRV_MIIM_OBJECT_BASE_Default,
+    .pMiimInit              = &drvMiimInitData_0,
+    .miimIndex              = 0,
+};
+
+
 /* Net Presentation Layer Data Definitions */
 #include "net_pres/pres/net_pres_enc_glue.h"
 
@@ -671,30 +695,6 @@ static const NET_PRES_INIT_DATA netPresInitData =
 };
   
  
-
-/*** DP83848 PHY Driver Time-Out Initialization Data ***/
-DRV_ETHPHY_TMO drvdp83848Tmo = 
-{
-    .resetTmo = DRV_ETHPHY_DP83848_RESET_CLR_TMO,
-    .aNegDoneTmo = DRV_ETHPHY_DP83848_NEG_DONE_TMO,
-    .aNegInitTmo = DRV_ETHPHY_DP83848_NEG_INIT_TMO,    
-};
-
-/*** ETH PHY Initialization Data ***/
-extern void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj, DRV_HANDLE handle);
-const DRV_ETHPHY_INIT tcpipPhyInitData_DP83848 =
-{    
-    .ethphyId               = DRV_DP83848_PHY_PERIPHERAL_ID,
-    .phyAddress             = DRV_DP83848_PHY_ADDRESS,
-    .phyFlags               = DRV_DP83848_PHY_CONFIG_FLAGS,
-    .pPhyObject             = &DRV_ETHPHY_OBJECT_DP83848,
-    .resetFunction          = AppDP83848ResetFunction,
-    .ethphyTmo              = &drvdp83848Tmo,
-    .pMiimObject            = &DRV_MIIM_OBJECT_BASE_Default,
-    .pMiimInit              = &drvMiimInitData_0,
-    .miimIndex              = 0,
-};
-
 
 // <editor-fold defaultstate="collapsed" desc="File System Initialization Data">
 
@@ -899,7 +899,6 @@ void SYS_Initialize ( void* data )
 
 	SPI1_Initialize();
 
-    I2C3_Initialize();
     RTCC_Initialize();
 
     /* Initialize SDSPI0 Driver Instance */

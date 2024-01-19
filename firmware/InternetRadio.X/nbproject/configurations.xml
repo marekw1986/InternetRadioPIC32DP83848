@@ -341,12 +341,6 @@
             <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.h</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="i2c" projectFiles="true">
-              <logicalFolder name="f1" displayName="master" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c3_master.h</itemPath>
-                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c_master_common.h</itemPath>
-              </logicalFolder>
-            </logicalFolder>
             <logicalFolder name="f7" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/rtcc/plib_rtcc.h</itemPath>
             </logicalFolder>
@@ -780,11 +774,6 @@
             <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.c</itemPath>
             </logicalFolder>
-            <logicalFolder name="f10" displayName="i2c" projectFiles="true">
-              <logicalFolder name="f1" displayName="master" projectFiles="true">
-                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c3_master.c</itemPath>
-              </logicalFolder>
-            </logicalFolder>
             <logicalFolder name="f7" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/rtcc/plib_rtcc.c</itemPath>
             </logicalFolder>
@@ -1077,56 +1066,55 @@
                    projectFiles="false">
       <logicalFolder name="f1" displayName="default.mhc" projectFiles="true">
         <logicalFolder name="f2" displayName="Group0" projectFiles="true">
-          <itemPath>../src/config/default/default.mhc/Group0/net_Pres.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipIcmp.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/lib_crypto.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/drvPic32mEthmac.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/drvMiim.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipTcp.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipStack.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipCmd.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipNetConfig.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipSntp.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipHttpNet.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipIcmp.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/lib_wolfssl.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipDns.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipArp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/Group0.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/lib_wolfcrypt.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/lib_wolfssl.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipStack.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipDns.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipNbns.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipNetConfig.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipIPv4.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipDhcp.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/drvExtPhyDp83848.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipTcp.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipHttpNet.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipSntp.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipIPv4.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/drvMiim.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipUdp.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group0/tcpipArp.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/drvPic32mEthmac.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/drvExtPhyDp83848.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/net_Pres.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/lib_crypto.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipNbns.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/lib_zlib.yml</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="Group1" projectFiles="true">
+          <itemPath>../src/config/default/default.mhc/Group1/spi4.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/Group1.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group1/drv_sdspi.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group1/usb_host_msd.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/drv_spi.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group1/sys_fs.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group1/spi4.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group1/usb_host_msd.yml</itemPath>
-          <itemPath>../src/config/default/default.mhc/Group1/drv_sdspi.yml</itemPath>
         </logicalFolder>
-        <itemPath>../src/config/default/default.mhc/tmr2.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/usb_host.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/i2c3.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/core.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/settings.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/FreeRTOS.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/project.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/GraphSettings.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/dfp.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/sys_command.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/rtcc.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/spi1.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/drv_usbfs_v1.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/HarmonyCore.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/uart4.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/core_timer.yml</itemPath>
-        <itemPath>../src/config/default/default.mhc/sys_time.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sys_debug.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sys_console.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/sys_time.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/spi1.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/HarmonyCore.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/project.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/uart4.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/usb_host.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/core.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/tmr2.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/rtcc.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/GraphSettings.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/core_timer.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/FreeRTOS.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/sys_command.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/dfp.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/drv_usbfs_v1.yml</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="wolfcrypt" projectFiles="true">
         <itemPath>../src/third_party/wolfssl/wolfssl/wolfcrypt/src/misc.c</itemPath>
@@ -1261,7 +1249,7 @@
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-cross-reference-file" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
-        <property key="heap-size" value="85248"/>
+        <property key="heap-size" value="84992"/>
         <property key="input-libraries" value=""/>
         <property key="kseg-length" value=""/>
         <property key="kseg-origin" value=""/>
