@@ -13,7 +13,7 @@
 #define LCD_ROWS 4
 #define LCD_COLS 20
 
-#define USE_RW 1
+#define USE_RW 0
 
 #if ( (LCD_ROWS == 4) && (LCD_COLS == 20) )
 #define LCD_LINE1 0x00		// adres 1 znaku 1 wiersza

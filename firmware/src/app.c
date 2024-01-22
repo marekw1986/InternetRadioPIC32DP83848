@@ -252,7 +252,6 @@ void APP_Tasks ( void )
         case APP_STATE_INIT:
         {
             SYS_CONSOLE_PRINT("Initializing user app\r\n");
-            //i2c_init();
             lcd_init();
             lcd_cls();
             ui_init();          
@@ -334,8 +333,6 @@ void APP_Tasks ( void )
             //static uint16_t i = 0;
             //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "Print from user task %d\r\n", i++);
             VS1003_handle();
-            
-
             
             ui_handle();
             lcd_handle();

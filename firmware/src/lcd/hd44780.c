@@ -22,17 +22,17 @@
 #define LCD_DATA_SHIFT 2 //DB4 at bit
 #define LCD_DATA_MASK (0x0000000F<<LCD_DATA_SHIFT)
 
-#define SET_RS 	LATGbits.LATG12 = 1; asm("nop")
-#define CLR_RS 	LATGbits.LATG12 = 0; asm("nop")
+#define SET_RS 	LATGbits.LATG12 = 1
+#define CLR_RS 	LATGbits.LATG12 = 0
 
-#define SET_RW 	LATGbits.LATG14 = 1; asm("nop")
-#define CLR_RW 	LATGbits.LATG14 = 0; asm("nop")
+#define SET_RW 	LATGbits.LATG14 = 1
+#define CLR_RW 	LATGbits.LATG14 = 0
 
-#define SET_E 	LATEbits.LATE1 = 1; asm("nop")
-#define CLR_E 	LATEbits.LATE1 = 0; asm("nop")
+#define SET_E 	LATEbits.LATE1 = 1
+#define CLR_E 	LATEbits.LATE1 = 0
 
-#define SET_BACKLIGHT LATCbits.LATC15 = 1; asm("nop")
-#define CLR_BACKLIGHT LATCbits.LATC15 = 0; asm("nop")
+#define SET_BACKLIGHT LATCbits.LATC15 = 1
+#define CLR_BACKLIGHT LATCbits.LATC15 = 0
 
 #define LCD_HOME    0x00
 #define LCD_CLS     0x01
@@ -125,22 +125,18 @@ uint8_t check_BF(void);
 
 static inline void data_dir_out(void) {
     LCD_DATA_TRIS_CLR = LCD_DATA_MASK;
-    asm("nop");
 }
 
 #if USE_RW
 static inline void data_dir_in(void) {
     LCD_DATA_TRIS_SET = LCD_DATA_MASK;
-    asm("nop");
 }
 #endif
 
 static inline void lcd_sendHalf(uint8_t data) {
     LCD_DATA_CLR = LCD_DATA_MASK;
-    asm("nop");
     uint32_t to_send = ((uint32_t)data << LCD_DATA_SHIFT) & LCD_DATA_MASK;
     LCD_DATA_SET = to_send;
-    asm("nop");
 }
 
 #if USE_RW == 1
@@ -169,7 +165,7 @@ void _lcd_write_byte(unsigned char _data) {
 	#if USE_RW == 1
     while( (check_BF() & (1<<7)) );
 	#else
-    vTaskDelay(120);
+    CORETIMER_DelayUs(120);
 	#endif
 
 }
@@ -206,7 +202,6 @@ uint8_t check_BF(void) {
 
 void lcd_write_cmd(uint8_t cmd) {
 	CLR_RS;
-
 	_lcd_write_byte(cmd);
 }
 
