@@ -7,7 +7,6 @@
 #include "definitions.h"
 #include "peripheral/coretimer/plib_coretimer.h"
 #include "hd44780.h"
-#include "i2c.h"
 
 #define LCD_DATA_TRIS TRISD
 #define LCD_DATA_TRIS_SET TRISDSET
