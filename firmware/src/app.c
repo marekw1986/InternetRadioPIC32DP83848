@@ -335,7 +335,6 @@ void APP_Tasks ( void )
             VS1003_handle();
             
             ui_handle();
-            lcd_handle();
             
             break;
         }
