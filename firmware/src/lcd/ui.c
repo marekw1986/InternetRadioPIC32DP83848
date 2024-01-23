@@ -192,6 +192,9 @@ void ui_update_state_info(const char* str) {
         lcd_locate(2,0);
         lcd_str_part(str, LCD_COLS);
     }
+    else {
+        ui_clear_state_info();
+    }
 }
 
 void ui_clear_state_info(void) {

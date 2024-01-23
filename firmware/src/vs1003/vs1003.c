@@ -156,7 +156,7 @@ void VS1003_handle(void) {
                 StreamState=STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Socket fail\r\n");
 				break;
@@ -269,7 +269,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }            
             break;
@@ -289,7 +289,7 @@ void VS1003_handle(void) {
                 timer = millis();
                 StreamState = STREAM_HTTP_GET_DATA;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Playing stream");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 break;
             }
@@ -299,7 +299,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -311,7 +311,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }                        
             break;
@@ -336,7 +336,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -347,7 +347,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }
 			break;
@@ -365,7 +365,7 @@ void VS1003_handle(void) {
             if (StreamState == STREAM_FILE_PLAY_REST) break;
             StreamState = STREAM_FILE_GET_DATA;
             #ifdef USE_LCD_UI
-            ui_update_state_info("Playing file");
+            ui_update_state_info(VS1003_get_state_description());
             #endif
             break;
             
