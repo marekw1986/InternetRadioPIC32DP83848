@@ -23,6 +23,7 @@ Internet radio based on PIC32
   - [x] Scrolled text (info about played song/stream)
 - [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
+- [ ] Controll LCD backlight brightness with soft PWM
 
 ### Completed Column ✓
 - [x] Debug SD card

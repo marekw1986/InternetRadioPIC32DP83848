@@ -100,6 +100,13 @@ static void ui_draw_main_screen(void) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     lcd_cls();
 	ui_update_content_info(mediainfo_title_get());
+    const char* state_description = VS1003_get_state_description();
+    if (state_description == NULL) {
+        ui_clear_state_info();
+    }
+    else {
+        ui_update_state_info(state_description);
+    }
     lcd_locate(3, 0);
     lcd_str("Volume: ");
     ui_update_volume();

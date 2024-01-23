@@ -277,6 +277,9 @@ void lcd_locate(uint8_t y, uint8_t x) {
 
 void lcd_cls(void) {
     lcd_write_cmd( LCDC_CLS );
+    #if USE_RW == 0
+    vTaskDelay(5);
+    #endif
 }
 
 

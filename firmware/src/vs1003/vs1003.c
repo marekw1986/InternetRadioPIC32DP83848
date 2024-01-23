@@ -607,6 +607,7 @@ static void VS1003_handle_end_of_file (void) {
             mediainfo_clean();
             #ifdef USE_LCD_UI
             ui_clear_content_info();
+            ui_clear_state_info();
             #endif
             StreamState = STREAM_HOME;
         }
@@ -849,6 +850,7 @@ void VS1003_stop(void) {
     mediainfo_clean();
     #ifdef USE_LCD_UI
     ui_clear_content_info();
+    ui_clear_state_info();
     #endif
     StreamState = STREAM_HOME;
 }
@@ -872,6 +874,28 @@ void VS1003_send_cmd_thread_safe(uint8_t cmd, uint32_t param) {
 	if (xQueueSend(vsQueueHandle, (void*)&command, portMAX_DELAY)) {
 		SYS_CONSOLE_PRINT("Sending thread safe command to VS1003: %d\r\n", command.cmd);
 	}
+}
+
+const char* VS1003_get_state_description(void) {
+    switch(StreamState) {
+//        case STREAM_HTTP_NAME_RESOLVE:
+//        case STREAM_HTTP_OBTAIN_SOCKET:            
+//        case STREAM_HTTP_SOCKET_OBTAINED:
+//        case STREAM_HTTP_SEND_REQUEST:
+//        case STREAM_HTTP_PROCESS_HEADER:
+        case STREAM_HTTP_FILL_BUFFER:
+        case STREAM_HTTP_GET_DATA:
+            return "Playing stream";
+        case STREAM_FILE_FILL_BUFFER:
+        case STREAM_FILE_PLAY_REST:
+        case STREAM_FILE_GET_DATA:
+            return "Playing file";
+        default:
+            return NULL;
+//        case STREAM_HTTP_CLOSE:
+//        case STREAM_HTTP_RECONNECT_WAIT:     
+    }
+    return NULL;
 }
 
 
