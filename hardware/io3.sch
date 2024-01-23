@@ -17059,10 +17059,12 @@ Based on the following sources:
 <segment>
 <pinref part="R12" gate="G$1" pin="2"/>
 <wire x1="279.4" y1="307.34" x2="279.4" y2="312.42" width="0.1524" layer="91"/>
+<label x="279.4" y="312.42" size="1.4224" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
 <pinref part="R10" gate="G$1" pin="2"/>
 <wire x1="279.4" y1="269.24" x2="279.4" y2="271.78" width="0.1524" layer="91"/>
+<label x="279.4" y="271.78" size="1.4224" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
 <pinref part="R14" gate="G$1" pin="2"/>
@@ -17087,6 +17089,7 @@ Based on the following sources:
 <segment>
 <pinref part="R18" gate="G$1" pin="2"/>
 <wire x1="342.9" y1="292.1" x2="342.9" y2="297.18" width="0.1524" layer="91"/>
+<label x="342.9" y="297.18" size="1.4224" layer="95" rot="R90" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="VCCA"/>

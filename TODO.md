@@ -21,7 +21,7 @@ Internet radio based on PIC32
 	- [ ] Add option to play file from local storage
 	- [ ] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
-- [ ] Use bufy flag instead delay in HD44780 driver
+- [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
 
 ### Completed Column ✓
