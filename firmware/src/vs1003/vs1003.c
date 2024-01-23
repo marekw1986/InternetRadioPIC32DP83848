@@ -94,7 +94,7 @@ void VS1003_handle(void) {
                 if (dnsres < 0) {
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
-                    ui_update_state_info(NULL);
+                    ui_clear_state_info();
                     #endif
                     SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve error %d\r\n", dnsres);
                     break;
@@ -115,7 +115,7 @@ void VS1003_handle(void) {
             else {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(NULL);
+                ui_clear_state_info();
                 #endif                
                 SYS_CONSOLE_PRINT("DNS uri.server empty\r\n");
                 break;
@@ -129,7 +129,7 @@ void VS1003_handle(void) {
             if (dnsres < 0) {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(NULL);
+                ui_clear_state_info();
                 #endif
                 SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved error: %d\r\n", dnsres);
                 break;
@@ -406,7 +406,7 @@ void VS1003_handle(void) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
-                    ui_update_state_info(NULL);
+                    ui_clear_state_info();
                     #endif
                     break;
                 case RECONNECT_IMMEDIATELY:
@@ -418,7 +418,7 @@ void VS1003_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
-                        ui_update_state_info(NULL);
+                        ui_clear_state_info();
                         #endif
                     }
                     break;
@@ -432,7 +432,7 @@ void VS1003_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
-                        ui_update_state_info(NULL);
+                        ui_clear_state_info();
                         #endif
                     }
                     break;

@@ -17023,6 +17023,7 @@ Based on the following sources:
 <wire x1="144.78" y1="327.66" x2="152.4" y2="327.66" width="0.1524" layer="91"/>
 <wire x1="152.4" y1="327.66" x2="152.4" y2="325.12" width="0.1524" layer="91"/>
 <junction x="144.78" y="327.66"/>
+<label x="144.78" y="332.74" size="1.4224" layer="95" rot="R90" xref="yes"/>
 </segment>
 </net>
 <net name="3V" class="0">
@@ -17099,6 +17100,7 @@ Based on the following sources:
 <wire x1="134.62" y1="327.66" x2="124.46" y2="327.66" width="0.1524" layer="91"/>
 <wire x1="124.46" y1="327.66" x2="124.46" y2="317.5" width="0.1524" layer="91"/>
 <junction x="134.62" y="327.66"/>
+<label x="139.7" y="332.74" size="1.4224" layer="95" rot="R90" xref="yes"/>
 </segment>
 </net>
 <net name="BACKLIGHT" class="0">
@@ -17239,6 +17241,7 @@ Based on the following sources:
 <segment>
 <pinref part="JP1" gate="A" pin="7"/>
 <wire x1="185.42" y1="170.18" x2="193.04" y2="170.18" width="0.1524" layer="91"/>
+<label x="193.04" y="170.18" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="ROT_B_" class="0">
@@ -17305,6 +17308,7 @@ Based on the following sources:
 <segment>
 <pinref part="JP1" gate="A" pin="4"/>
 <wire x1="177.8" y1="165.1" x2="170.18" y2="165.1" width="0.1524" layer="91"/>
+<label x="170.18" y="165.1" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="LCD_EN_RE1" class="0">
@@ -17316,6 +17320,7 @@ Based on the following sources:
 <segment>
 <pinref part="JP1" gate="A" pin="22"/>
 <wire x1="177.8" y1="187.96" x2="162.56" y2="187.96" width="0.1524" layer="91"/>
+<label x="162.56" y="187.96" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="RW_RG14" class="0">
@@ -17327,6 +17332,7 @@ Based on the following sources:
 <segment>
 <pinref part="JP1" gate="A" pin="21"/>
 <wire x1="185.42" y1="187.96" x2="195.58" y2="187.96" width="0.1524" layer="91"/>
+<label x="195.58" y="187.96" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RS_RG12" class="0">
@@ -17338,6 +17344,7 @@ Based on the following sources:
 <segment>
 <pinref part="JP1" gate="A" pin="24"/>
 <wire x1="177.8" y1="190.5" x2="162.56" y2="190.5" width="0.1524" layer="91"/>
+<label x="162.56" y="190.5" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="D4_RD2" class="0">

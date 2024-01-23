@@ -60,8 +60,7 @@ static inline void lcd_sendHalf(uint8_t data) {
 #if USE_RW == 1
 static inline uint8_t lcd_readHalf(void)
 {    
-    uint8_t result = (LCD_DATA_PORT & LCD_DATA_MASK) >> LCD_DATA_SHIFT;
-	return result;
+    return (LCD_DATA_PORT & LCD_DATA_MASK) >> LCD_DATA_SHIFT;
 }
 #endif
 

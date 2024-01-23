@@ -100,11 +100,9 @@ static void ui_draw_main_screen(void) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     lcd_cls();
 	ui_update_content_info(mediainfo_title_get());
-//    lcd_flush_buffer()
     lcd_locate(3, 0);
     lcd_str("Volume: ");
     ui_update_volume();
-//    lcd_flush_buffer();
 }
 
 static void ui_draw_scrollable_list(void) {
@@ -128,7 +126,6 @@ static void ui_draw_scrollable_list(void) {
             if (bytes_in_buffer > 0) {
                 lcd_locate(line, 0);
                 lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
-//                lcd_flush_buffer();
             }
 		}
         else { break; }
@@ -138,8 +135,7 @@ static void ui_draw_scrollable_list(void) {
 static void ui_draw_pointer_at_line(uint8_t line) {
 	if (line > 3) { return; }
 	lcd_locate(line, 0);
-	lcd_str(">");
-//	lcd_flush_buffer();
+	lcd_char('>');
 }
 
 void ui_update_volume(void) {
@@ -149,7 +145,7 @@ void ui_update_volume(void) {
     uint8_t volume = VS1003_getVolume();
     snprintf(supbuf, sizeof(supbuf)-1, "%d%s", volume, (volume < 100) ? " " : "");
     lcd_locate(3, 8);
-    lcd_str(supbuf);
+    lcd_str_part(supbuf, 3);
 }
 
 void ui_update_content_info(const char* str) {
@@ -171,7 +167,6 @@ void ui_update_content_info(const char* str) {
         lcd_locate(1, 0);
         lcd_utf8str_part(scroll_begin, LCD_COLS);
     }
-//    lcd_flush_buffer();
 }
 
 void ui_clear_content_info(void) {
@@ -181,18 +176,15 @@ void ui_clear_content_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
-//    lcd_flush_buffer();
 }
 
 void ui_update_state_info(const char* str) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     ui_clear_state_info();
-//    lcd_flush_buffer();
     if (str) {
         lcd_locate(2,0);
-        lcd_str(str);
+        lcd_str_part(str, LCD_COLS);
     }
-//    lcd_flush_buffer();
 }
 
 void ui_clear_state_info(void) {
@@ -201,7 +193,6 @@ void ui_clear_state_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
-//    lcd_flush_buffer();
 }
 
 void ui_handle(void) {
@@ -298,7 +289,7 @@ void ui_handle_updating_time(void) {
         char supbuf[32];
         snprintf(supbuf, sizeof(supbuf), "%02d:%02d:%02d  %02d-%02d-%04d", (uint8_t)current_time->tm_hour, (uint8_t)current_time->tm_min, (uint8_t)current_time->tm_sec, (uint8_t)current_time->tm_mday, (uint8_t)current_time->tm_mon+1, (uint16_t)current_time->tm_year+1900);
         lcd_locate(0, 0);
-        lcd_str(supbuf);
+        lcd_str_part(supbuf, LCD_COLS);
     }  
 }
 
@@ -326,8 +317,7 @@ static void ui_rotary_move_cursor(int8_t val) {
 	}
 	else  {
 		lcd_locate(prev_selected_line, 0);
-		lcd_str(" ");
-//		lcd_flush_buffer();
+		lcd_char(' ');
 		ui_draw_pointer_at_line(calculate_selected_line());
 	}
 }
@@ -343,8 +333,8 @@ static void ui_button_switch_state(void) {
 
 static void ui_button_play_selected_stream(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
-    VS1003_play_http_stream_by_id(selected_stream_id);
     ui_switch_state(UI_HANDLE_MAIN_SCREEN);
+    VS1003_play_http_stream_by_id(selected_stream_id);
 }
 
 static void ui_button_stream_list_next_page(void) {
