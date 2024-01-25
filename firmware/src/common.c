@@ -263,6 +263,10 @@ uint16_t get_max_stream_id(void) {
  parse_http_headers(). Be sure not to use both of them at the same time. Remember that
  parse_http_headers() is baing called multiple times by state machine.*/
 char* get_station_url_from_file(uint16_t number, char* stream_name, size_t stream_name_len) {
+    return get_station_url_from_file_use_seek(number, stream_name, stream_name_len, NULL);
+}
+
+char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, size_t stream_name_len, int32_t* cur_pos) {
     SYS_FS_HANDLE file;
     char* result = NULL;
     
@@ -270,6 +274,14 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
     if (file == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return NULL;
+    }
+    
+    if (cur_pos && (*cur_pos > 0)) {
+        int32_t seek_result = SYS_FS_FileSeek(file, *cur_pos, SYS_FS_SEEK_SET);
+        if (seek_result == -1) {
+            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
+            return NULL;
+        }
     }
     
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
@@ -281,6 +293,10 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
             result = working_buffer;
             break;
         }
+    }
+    if (cur_pos) {
+        int32_t tmp = SYS_FS_FileTell(file);
+        if (tmp > 0) { *cur_pos = tmp; }
     }
     SYS_FS_FileClose(file);
     return result;

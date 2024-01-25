@@ -53,6 +53,7 @@ uint8_t parse_url (const char* str, size_t len, uri_t* uri);
 void initialize_stream_list(void);
 uint16_t get_max_stream_id(void);
 char* get_station_url_from_file(uint16_t number, char* stream_name, size_t stream_name_len);
+char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, size_t stream_name_len, int32_t* cur_pos);
 uint8_t parse_stream_data_line(char* line, size_t line_len, char* stream_name, size_t stream_name_len, char* stream_url, size_t stream_url_len);
 uint32_t millis(void);
 uint32_t uptime(void);

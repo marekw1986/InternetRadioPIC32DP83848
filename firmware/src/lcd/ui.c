@@ -27,6 +27,9 @@ static const char* scroll_begin;
 static const char* scroll_ptr;
 
 static int32_t selected_stream_id = 1;
+static int32_t cur_pos = 0;
+static uint8_t currently_drawn_line=0;
+static bool drawing_scrollable_list_active = false;
 
 static uint8_t calculate_selected_line(void);
 static void ui_draw_main_screen(void);
@@ -113,30 +116,11 @@ static void ui_draw_main_screen(void) {
 }
 
 static void ui_draw_scrollable_list(void) {
-	if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
-	uint8_t selected_line = calculate_selected_line();
-	uint8_t stream_at_first_line = selected_stream_id-selected_line;
-	char name[22];
-    char buf[24];
-	char* url = NULL;
+    if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     lcd_cls();
-	for (int line=0; line<LCD_ROWS; line++) {
-		url = get_station_url_from_file(stream_at_first_line+line, name, sizeof(name));
-		if (url != NULL) {
-            int bytes_in_buffer;
-            if (line == selected_line) {
-                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", ">", stream_at_first_line+line, name);
-            }
-            else {
-                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", " ", stream_at_first_line+line, name);
-            }
-            if (bytes_in_buffer > 0) {
-                lcd_locate(line, 0);
-                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
-            }
-		}
-        else { break; }
-	}
+    cur_pos = 0;
+    currently_drawn_line=0;
+    drawing_scrollable_list_active = true;
 }
 
 static void ui_draw_pointer_at_line(uint8_t line) {
@@ -229,7 +213,35 @@ static void ui_handle_main_screen(void) {
 }
 
 static void ui_handle_scrollable_list(void) {
-
+    if (drawing_scrollable_list_active) {
+        uint8_t selected_line = calculate_selected_line();
+        uint8_t stream_at_first_line = selected_stream_id-selected_line;
+        char name[22];
+        char buf[24];
+        char* url = NULL;
+        url = get_station_url_from_file_use_seek(stream_at_first_line+currently_drawn_line, name, sizeof(name), &cur_pos);
+        if (url != NULL) {
+            int bytes_in_buffer;
+            if (currently_drawn_line == selected_line) {
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", ">", stream_at_first_line+currently_drawn_line, name);
+            }
+            else {
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", " ", stream_at_first_line+currently_drawn_line, name);
+            }
+            if (bytes_in_buffer > 0) {
+                lcd_locate(currently_drawn_line, 0);
+                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
+            }
+            currently_drawn_line++;
+        }
+        else {
+            drawing_scrollable_list_active = false;
+        }
+        if (currently_drawn_line >= LCD_ROWS) {
+            cur_pos = 0;
+            drawing_scrollable_list_active = false;
+        }
+    }
 }
 
 static void ui_handle_backlight(void) {
@@ -323,7 +335,7 @@ static void ui_rotary_move_cursor(int8_t val) {
 		selected_stream_id = 1;
 	}
 	if ( ((prev_selected_line == 0) && (val<0)) || ( ((prev_selected_line == LCD_ROWS-1) || (prev_selected_stream_id == get_max_stream_id())) && (val > 0)) ) {
-		ui_draw_scrollable_list();
+        ui_draw_scrollable_list();
 	}
 	else  {
 		lcd_locate(prev_selected_line, 0);
