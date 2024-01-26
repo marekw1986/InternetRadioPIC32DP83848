@@ -34,6 +34,7 @@ extern "C" {
 // *****************************************************************************
 
 #define USE_LCD_UI
+#define STREAM_LIST_PATH "/mnt/myDrive1/radio.txt"
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus

@@ -236,7 +236,7 @@ void initialize_stream_list(void) {
     SYS_FS_HANDLE file;
     uint16_t number = 0;
     
-    file = SYS_FS_FileOpen("/mnt/myDrive1/radio.txt", SYS_FS_FILE_OPEN_READ);
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
     if (file == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return;
