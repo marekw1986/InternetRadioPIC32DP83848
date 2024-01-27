@@ -29,7 +29,6 @@
 
 #include <stdio.h>
 #include "system/debug/sys_debug.h"
-//#include "ff.h"
 #include "app.h"
 #include "system_config.h"
 #include "system_definitions.h"
@@ -37,7 +36,6 @@
 #include "task.h"
 #include "usb/usb_host.h"
 #include "usb/usb_host_msd.h"
-//#include "driver/usb/usbhs/src/usbhs_registers.h"
 #include "vs1003/vs1003.h"
 #include "io/buttons.h"
 #include "io/rotary.h"
@@ -91,36 +89,6 @@ APP_DATA appData;
 
 /* TODO:  Add any necessary local functions.
 */
-
-void usb_write (void);
-void next_func (void);
-void prev_func (void);
-
-void usb_write (void) { 
-    SYS_FS_HANDLE file;
-    int32_t fileSize;
-    int32_t res;
-
-    file = SYS_FS_FileOpen("/mnt/myDrive1/file.txt", SYS_FS_FILE_OPEN_APPEND);   //(&file, "0:/test.txt", (FA_OPEN_ALWAYS | FA_WRITE));
-    if (file == SYS_FS_HANDLE_INVALID) {
-        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SYS_FS_FileOpen error\r\n");
-        return;
-    }
-    fileSize = SYS_FS_FileSize(file);
-    if (fileSize == 0) {
-        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "To jest pierwsza linia\r\n", &file);
-    }
-    else {
-        res = SYS_FS_FileSeek(file, fileSize, SYS_FS_SEEK_SET);
-        if ( (res == -1) || (res != fileSize) ) {
-            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "f_lseek error code: %i\r\n", res); 
-            SYS_FS_FileClose(file);
-            return;
-        }
-    }
-    SYS_FS_FilePrintf(file, "Test\r\n");
-    SYS_FS_FileClose(file); 
-}
 
 // *****************************************************************************
 // *****************************************************************************
@@ -321,7 +289,6 @@ void APP_Tasks ( void )
         {
             
             if ((uint32_t)(millis()-timer) > 1000) {
-                //usb_write();
                 if (lcd_light) {
                     lcd_light = 0;
                 }

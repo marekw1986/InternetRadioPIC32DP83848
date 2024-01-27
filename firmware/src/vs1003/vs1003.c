@@ -181,8 +181,6 @@ void VS1003_handle(void) {
 					VS_Socket = INVALID_SOCKET;
 					StreamState = STREAM_HTTP_CLOSE;     //was StreamState--
                     ReconnectStrategy = DO_NOT_RECONNECT;
-                    //TODO limit number of reconnections or repair differently
-                    //If we stuck here, it breaks state machine!!!!!
 				}
 				break;
 			}
@@ -207,7 +205,6 @@ void VS1003_handle(void) {
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)" HTTP/1.0\r\nHost: ");
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)uri.server);
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)"\r\nConnection: keep-alive\r\n\r\n");
-//
             SYS_CONSOLE_PRINT("Sending headers\r\n");
             
             TCPIP_TCP_WasReset(VS_Socket);
@@ -223,9 +220,6 @@ void VS1003_handle(void) {
 			{
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_IMMEDIATELY;
-//                #ifdef USE_LCD_UI
-//                lcd_ui_update_state_info("Reconnecting");
-//                #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				break;
 			}
@@ -239,20 +233,15 @@ void VS1003_handle(void) {
                         prepare_http_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
-//                        #ifdef USE_LCD_UI
-//                        lcd_ui_update_state_info("Reconnecting");
-//                        #endif
                         break;
                     case HTTP_HEADER_OK:
                         SYS_CONSOLE_PRINT("It is 200 OK\r\n");
                         timer = millis();
-                        //memcpy(&uri, &tempUri, sizeof(uri_t));
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
                         VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
-//                        /memcpy(&uri, &uri, sizeof(uri_t));
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
@@ -264,7 +253,7 @@ void VS1003_handle(void) {
             }
             
             if ( (uint32_t)(millis()-timer) > 5000) {
-                //There was no data in 2 seconds - reconnect
+                //There was no data in 5 seconds - reconnect
                 SYS_CONSOLE_PRINT("Internet radio: no header timeout - reseting\r\n");
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 StreamState = STREAM_HTTP_CLOSE;
