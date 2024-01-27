@@ -230,6 +230,10 @@ void VS1003_handle(void) {
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         SYS_CONSOLE_PRINT("Parsing headers error\r\n");
+                        // We have rubbish in uri from unsuccessful parsing attempt
+                        // Need to be regenerated
+                        char* url = get_station_url_from_file(current_stream_ind, NULL, 0);
+                        parse_url(url, strlen(url), &uri);
                         prepare_http_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
