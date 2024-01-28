@@ -4,13 +4,15 @@ attributes: {id: tcpipStack}
 children:
 - type: Symbols
   children:
-  - type: Integer
-    attributes: {id: TCPIP_RTOS_TASK_STACK_SIZE}
+  - type: String
+    attributes: {id: TCPIP_STACK_CALLOC_FUNC}
     children:
-    - type: Values
+    - type: Attributes
       children:
-      - type: User
-        attributes: {value: '8192'}
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_STACK_DRAM_RUN_LIMIT}
     children:
@@ -19,7 +21,7 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: Integer
     attributes: {id: TCPIP_STACK_DRAM_SIZE}
     children:
@@ -28,11 +30,14 @@ children:
       - type: Boolean
         attributes: {id: visible}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_HEAP_CALC_MASK}
+    children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '47104'}
+        attributes: {value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_STACK_HEAP_SIZE_RECOMMEND}
     children:
@@ -77,13 +82,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipStack, value: '40000000'}
-  - type: String
-    attributes: {id: TCPIP_STACK_MALLOC_FUNC}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: malloc}
   - type: String
     attributes: {id: TCPIP_STACK_MII_MODE_IDX0}
     children:
@@ -130,13 +128,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipStack, value: 'true'}
-  - type: Combo
-    attributes: {id: TCPIP_STACK_USE_HEAP_CONFIG}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: TCPIP_STACK_HEAP_TYPE_EXTERNAL_HEAP}
   - type: File
     attributes: {id: TCPIP_SYS_RTOS_TASK}
     children:
