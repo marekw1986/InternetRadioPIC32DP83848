@@ -91,8 +91,14 @@ function showDir(path) {
 				if (data.parent !== "root" && data.parent !== "streams") {
 					opt.value = data.parent + "/"
 				}
-                opt.value += data.dirs[i].sn;
-                opt.innerHTML = "&#128193 " + data.dirs[i].ln;
+				if (data.parent == "root") {
+					opt.value += data.dirs[i];
+					opt.innerHTML = "&#128193 " + data.dirs[i];
+				}
+				else {
+					opt.value += data.dirs[i].sn;
+					opt.innerHTML = "&#128193 " + data.dirs[i].ln;
+				}
                 opt.dataset.type = "dir";
                 select.appendChild(opt);
             }
