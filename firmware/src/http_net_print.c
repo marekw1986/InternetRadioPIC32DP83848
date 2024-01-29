@@ -908,7 +908,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
                         // failed to get a buffer; retry
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
-                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s\"%s\"", *firstOne ? "" : ", ", stat.fname);
+                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"lname\":\"%s\",\"sname\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, stat.altname);
                     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
                     *firstOne = 0;
                 }
@@ -1008,7 +1008,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                         // failed to get a buffer; retry
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
-                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s\"%s\"", *firstOne ? "" : ", ", stat.fname);
+                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"lname\":\"%s\",\"sname\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, stat.altname);
                     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
                     *firstOne = 0;
                 }
