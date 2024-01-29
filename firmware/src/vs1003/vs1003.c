@@ -161,6 +161,13 @@ void VS1003_handle(void) {
                 SYS_CONSOLE_PRINT("Socket fail\r\n");
 				break;
             }
+            // Increase size of RX buffer
+            if (TCPIP_TCP_FifoSizeAdjust(VS_Socket, 4096, 512, TCP_ADJUST_RX_ONLY)) {
+                SYS_CONSOLE_PRINT("RX buffer resized\r\n");
+            }
+            else {
+                SYS_CONSOLE_PRINT("Can't resize RX buffer!\r\n");
+            }
             StreamState = STREAM_HTTP_SOCKET_OBTAINED;
             SYS_CONSOLE_PRINT("Socket obtained\r\n");
             timer = millis();
