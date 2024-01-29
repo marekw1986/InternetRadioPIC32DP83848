@@ -72,6 +72,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
 TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPass(TCPIP_HTTP_NET_CONN_HANDLE connHandle);
 
 static bool is_local_url_valid(const char* url);
+const char* get_altname_if_available(SYS_FS_FSTAT* stat);
 
 enum {CFGCHANGE_UNKNOWN, CFGCHANGE_INVALID_TOKEN, CFGCHANGE_INVALID_DHCP, CFGCHANGE_INVALID_IP, CFGCHANGE_INVALID_MAC, CFGCHANGE_INVALID_NETMASK, CFGCHANGE_INVALID_GW, CFGCHANGE_INVALID_DNS1, CFGCHANGE_INVALID_DNS2, CFGCHANGE_INVALID_NTP, CFGCHANGE_INVALID_TIMEZONE, CFGCHANGE_OK};
 enum {PLAY_UNKNOWN, PLAY_OK, PLAY_INVALID_TOKEN, PLAY_INVALID_URL, PLAY_INVALID_SRC};
@@ -908,9 +909,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
                         // failed to get a buffer; retry
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
-                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, stat.altname);
-                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                    *firstOne = 0;
+                    size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
+                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                        *firstOne = 0;
+                    }
                 }
             }
             else {
@@ -1008,9 +1011,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                         // failed to get a buffer; retry
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
-                    snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, stat.altname);
-                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                    *firstOne = 0;
+                    size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
+                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                        *firstOne = 0;
+                    }
                 }
             }
             else {
@@ -1198,4 +1203,14 @@ static bool is_local_url_valid(const char* url) {
         return true;
     }
     return false;
+}
+
+const char* get_altname_if_available(SYS_FS_FSTAT* stat) {
+    if (strlen(stat->altname)) {
+        return stat->altname;
+    }
+    else if (strlen(stat->fname) <= 12) {
+        return stat->fname;
+    }
+    return "";
 }
