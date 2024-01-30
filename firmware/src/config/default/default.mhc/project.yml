@@ -2036,13 +2036,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: F2EE7FD927604DD4B5E5A41891E8C53B
+- generatedChecksum: 4C4F187075D7CF8DD38C44D480D90055
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: F2EE7FD927604DD4B5E5A41891E8C53B
+  userChecksum: 4C4F187075D7CF8DD38C44D480D90055
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
@@ -5280,7 +5280,7 @@ settings:
   delimiter: ''
   key: heap-size
   security: NON_SECURE
-  value: '81920'
+  value: '84992'
 - append: false
   category: C32-LD
   delimiter: ''

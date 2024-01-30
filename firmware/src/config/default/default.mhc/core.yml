@@ -3110,7 +3110,7 @@ children:
       - type: String
         attributes: {id: value}
         children:
-        - {type: Value, value: '81920'}
+        - {type: Value, value: '84992'}
   - type: Integer
     attributes: {id: XC32_HEAP_SIZE}
     children:
@@ -3119,6 +3119,6 @@ children:
       - type: Dynamic
         attributes: {id: core, value: '1024'}
       - type: User
-        attributes: {value: '81920'}
+        attributes: {value: '84992'}
 - type: ElementPosition
   attributes: {x: '240', y: '20', id: core}
