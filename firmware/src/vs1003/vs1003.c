@@ -163,16 +163,19 @@ void VS1003_handle(void) {
                 SYS_CONSOLE_PRINT("Socket fail\r\n");
 				break;
             }
+            
+            SYS_CONSOLE_PRINT("Socket obtained\r\n");
             // Increase size of RX buffer
             if (TCPIP_TCP_FifoSizeAdjust(VS_Socket, 4096, 512, TCP_ADJUST_RX_ONLY)) {
                 SYS_CONSOLE_PRINT("RX buffer resized\r\n");
+                StreamState = STREAM_HTTP_SOCKET_OBTAINED;
+                timer = millis();
             }
             else {
                 SYS_CONSOLE_PRINT("Can't resize RX buffer!\r\n");
+				StreamState = STREAM_HTTP_CLOSE;
+                ReconnectStrategy = RECONNECT_IMMEDIATELY;
             }
-            StreamState = STREAM_HTTP_SOCKET_OBTAINED;
-            SYS_CONSOLE_PRINT("Socket obtained\r\n");
-            timer = millis();
             break;            
 
 		case STREAM_HTTP_SOCKET_OBTAINED:
@@ -183,11 +186,6 @@ void VS1003_handle(void) {
 				if((uint32_t)(millis()-timer) > 5000)
 				{
 					SYS_CONSOLE_PRINT("Socket timeout\r\n");
-                    // Close the socket so it can be used by other modules
-					if (!TCPIP_TCP_Disconnect(VS_Socket)) {
-                        TCPIP_TCP_Abort(VS_Socket, true);
-                    }
-					VS_Socket = INVALID_SOCKET;
 					StreamState = STREAM_HTTP_CLOSE;     //was StreamState--
                     ReconnectStrategy = DO_NOT_RECONNECT;
 				}
@@ -399,6 +397,8 @@ void VS1003_handle(void) {
         	break;            
 	
 		case STREAM_HTTP_CLOSE:
+            // Restore default size of RX buffer. Is it required?
+            TCPIP_TCP_FifoSizeAdjust(VS_Socket, 512, 512, TCP_ADJUST_RX_ONLY);
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			if (!TCPIP_TCP_Disconnect(VS_Socket)) {
@@ -831,6 +831,8 @@ void VS1003_stop(void) {
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {
+                // Restore default size of RX buffer. Is it required?
+                TCPIP_TCP_FifoSizeAdjust(VS_Socket, 512, 512, TCP_ADJUST_RX_ONLY);
                 if (!TCPIP_TCP_Disconnect(VS_Socket)) {
                     TCPIP_TCP_Abort(VS_Socket, true);
                 }
