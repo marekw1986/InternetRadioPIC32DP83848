@@ -6,43 +6,54 @@
 #define WORKING_BUFFER_SIZE 512
 static char* working_buffer = NULL;
 static uint16_t http_code = 0;
+static http_err_t error_code = HTTP_ERR_UNKNOWN;
 
 static void analyze_line(char* line, uint16_t len, uri_t* uri);
-static http_res_t finalize_http_parsing(uri_t* uri);
+static http_res_t http_finalize_parsing(uri_t* uri);
 
-bool prepare_http_parser(void) {
+bool http_prepare_parser(void) {
     if (working_buffer) { return false; }
     http_code = 0;
+    error_code = HTTP_ERR_UNKNOWN;
     working_buffer = (char*)malloc(WORKING_BUFFER_SIZE*sizeof(char));
     if (working_buffer == NULL) return false;
     memset(working_buffer, 0x00, WORKING_BUFFER_SIZE);
     return true;
 }
 
-void release_http_parser(void) {
+void http_release_parser(void) {
     if (working_buffer) {
         free(working_buffer);
         working_buffer = NULL;
         http_code = 0;
+        error_code = HTTP_ERR_UNKNOWN;
     }
 }
 
-static http_res_t finalize_http_parsing(uri_t* uri) {
+http_err_t http_get_err_code(void) {
+    return error_code;
+}
+
+static http_res_t http_finalize_parsing(uri_t* uri) {
     switch(http_code) {
         case 200:
         return HTTP_HEADER_OK;
+        error_code = HTTP_NO_ERR;
         break;
         
         case 301:
         case 302:
         if ( (strlen(uri->server) == 0) || (strlen(uri->file) == 0) || (uri->port == 0) ) {
+            error_code = HTTP_ERR_NO_DATA;
             return HTTP_HEADER_ERROR;
         }
         return HTTP_HEADER_REDIRECTED;
+        error_code = HTTP_NO_ERR;
         break;
         
         default:
         return HTTP_HEADER_ERROR;
+        error_code = HTTP_ERR_UNKNOWN;
         break;
     }
     
@@ -61,12 +72,18 @@ static void analyze_line(char* line, uint16_t len, uri_t* uri) {
     }
 }
 
-http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
+http_res_t http_parse_headers(char* str, size_t len, uri_t* uri) {
 	char* tok;
     char* next_line;
 	
-    if (working_buffer == NULL) { return HTTP_HEADER_ERROR; }   // TODO: Prepare another enum to indicate not allocated buffer
-	if (str == NULL) { return HTTP_HEADER_ERROR; }
+    if (working_buffer == NULL) {
+        error_code = HTTP_ERR_ALOC;
+        return HTTP_HEADER_ERROR;
+    }   // TODO: Prepare another enum to indicate not allocated buffer
+	if (str == NULL) {
+        error_code = HTTP_ERR_STR_NULL;
+        return HTTP_HEADER_ERROR;
+    }
     
     strncat(working_buffer, str, len);
     
@@ -75,24 +92,33 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
         //There is no complete line. Return to continue later.
         return HTTP_HEADER_IN_PROGRESS;
     }
-    if (tok > working_buffer+WORKING_BUFFER_SIZE) { return HTTP_HEADER_ERROR; }
+    if (tok > working_buffer+WORKING_BUFFER_SIZE) {
+        error_code = HTTP_ERR_BUF_OVERFLOW;
+        return HTTP_HEADER_ERROR;
+    }
     tok[0] = '\0';
     tok[1] = '\0';
     next_line = tok + 2;
     //printf("Current line: %s\r\n", working_buffer);
     
     if (strlen(working_buffer) == 0) {
-        return finalize_http_parsing(uri);
+        return http_finalize_parsing(uri);
     }
 	
 	if (http_code == 0) {
         //First line is not parsed
         if ( (strncmp(working_buffer, "HTTP/", 5) == 0) || (strncmp(str, "ICY", 3) == 0) ) {
             tok = strchr(working_buffer, ' ');
-            if (tok == NULL) { return HTTP_HEADER_ERROR; }
+            if (tok == NULL) {
+                error_code = HTTP_ERR_PARSING_CODE;
+                return HTTP_HEADER_ERROR;
+            }
             tok++;
             http_code = atoi(tok);
-            if (http_code == 0) { return HTTP_HEADER_ERROR; }
+            if (http_code == 0) {
+                error_code = HTTP_ERR_PARSING_CODE;
+                return HTTP_HEADER_ERROR;
+            }
             //Now we begin parsing parameters, so clean uri
             memset(uri, 0x00, sizeof(uri_t));
         }
@@ -104,7 +130,7 @@ http_res_t parse_http_headers(char* str, size_t len, uri_t* uri) {
     
     strncpy(working_buffer, next_line, WORKING_BUFFER_SIZE);    
     if (memcmp(working_buffer, "\r\n", 2) == 0) {
-        return finalize_http_parsing(uri);
+        return http_finalize_parsing(uri);
     }
     
     return HTTP_HEADER_IN_PROGRESS;

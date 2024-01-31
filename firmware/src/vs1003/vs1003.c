@@ -220,7 +220,7 @@ void VS1003_handle(void) {
 			TCPIP_TCP_Flush(VS_Socket);
             timer = millis();
 			StreamState = STREAM_HTTP_PROCESS_HEADER;
-            prepare_http_parser();
+            http_prepare_parser();
 			break;
             
         case STREAM_HTTP_PROCESS_HEADER:
@@ -234,28 +234,28 @@ void VS1003_handle(void) {
             
             w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
             if (w) {
-                http_res_t http_result = parse_http_headers((char*)data, w, &uri);
+                http_res_t http_result = http_parse_headers((char*)data, w, &uri);
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
-                        SYS_CONSOLE_PRINT("Parsing headers error\r\n");
+                        SYS_CONSOLE_PRINT("Parsing headers error code: %d\r\n", http_get_err_code());
                         // We have rubbish in uri from unsuccessful parsing attempt
                         // Need to be regenerated
                         char* url = get_station_url_from_file(current_stream_ind, NULL, 0);
                         parse_url(url, strlen(url), &uri);
-                        release_http_parser();
+                        http_release_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
                         SYS_CONSOLE_PRINT("It is 200 OK\r\n");
-                        release_http_parser();
+                        http_release_parser();
                         timer = millis();
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
                         VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
-                        release_http_parser();
+                        http_release_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
