@@ -79,7 +79,7 @@ http_res_t http_parse_headers(char* str, size_t len, uri_t* uri) {
     if (working_buffer == NULL) {
         error_code = HTTP_ERR_ALOC;
         return HTTP_HEADER_ERROR;
-    }   // TODO: Prepare another enum to indicate not allocated buffer
+    }
 	if (str == NULL) {
         error_code = HTTP_ERR_STR_NULL;
         return HTTP_HEADER_ERROR;
