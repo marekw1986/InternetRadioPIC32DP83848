@@ -25,6 +25,7 @@ uint16_t http_code = 0;
 
 static http_res_t finalize_http_parsing(uri_t* uri);
 static void analyze_line(char* line, uint16_t len, uri_t* uri);
+static char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_name, size_t stream_name_len);
 
 SYS_FS_RESULT FormatSpiFlashDisk (void) {
     SYS_FS_RESULT res;
@@ -235,7 +236,7 @@ void initialize_stream_list(void) {
     SYS_FS_HANDLE file;
     uint16_t number = 0;
     
-    file = SYS_FS_FileOpen("/mnt/myDrive1/radio.txt", SYS_FS_FILE_OPEN_READ);
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
     if (file == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return;
@@ -263,6 +264,10 @@ uint16_t get_max_stream_id(void) {
  parse_http_headers(). Be sure not to use both of them at the same time. Remember that
  parse_http_headers() is baing called multiple times by state machine.*/
 char* get_station_url_from_file(uint16_t number, char* stream_name, size_t stream_name_len) {
+    return get_station_url_from_file_use_seek(number, stream_name, stream_name_len, NULL);
+}
+
+char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, size_t stream_name_len, int32_t* cur_pos) {
     SYS_FS_HANDLE file;
     char* result = NULL;
     
@@ -272,6 +277,36 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
         return NULL;
     }
     
+    if (cur_pos && (*cur_pos > 0)) {
+        int32_t seek_result = SYS_FS_FileSeek(file, *cur_pos, SYS_FS_SEEK_SET);
+        if (seek_result == -1) {
+            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
+            return NULL;
+        }
+    }
+    
+    result = find_station_in_file(file, number, stream_name, stream_name_len);
+    if (cur_pos && (*cur_pos > 0) && (result == NULL)) {
+        // It is possible stream is located somewhere earlier in file
+        // Look again, just i case if we missed it
+        int32_t seek_result = SYS_FS_FileSeek(file, 0, SYS_FS_SEEK_SET);
+        if (seek_result == -1) {
+            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
+            return NULL;
+        }
+        result = find_station_in_file(file, number, stream_name, stream_name_len);
+    }
+    
+    if (cur_pos) {
+        int32_t tmp = SYS_FS_FileTell(file);
+        if (tmp > 0) { *cur_pos = tmp; }
+    }
+    SYS_FS_FileClose(file);
+    return result;
+}
+
+char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_name, size_t stream_name_len) {
+	char* result = NULL;
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         if (working_buffer[strlen(working_buffer)-1] == '\n') {
             working_buffer[strlen(working_buffer)-1] = '\0';
@@ -282,7 +317,6 @@ char* get_station_url_from_file(uint16_t number, char* stream_name, size_t strea
             break;
         }
     }
-    SYS_FS_FileClose(file);
     return result;
 }
 

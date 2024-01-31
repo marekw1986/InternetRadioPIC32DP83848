@@ -27,6 +27,9 @@ static const char* scroll_begin;
 static const char* scroll_ptr;
 
 static int32_t selected_stream_id = 1;
+static int32_t cur_pos = 0;
+static uint8_t currently_drawn_line=0;
+static bool drawing_scrollable_list_active = false;
 
 static uint8_t calculate_selected_line(void);
 static void ui_draw_main_screen(void);
@@ -100,46 +103,30 @@ static void ui_draw_main_screen(void) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     lcd_cls();
 	ui_update_content_info(mediainfo_title_get());
-    lcd_flush_buffer()
+    const char* state_description = VS1003_get_state_description();
+    if (state_description == NULL) {
+        ui_clear_state_info();
+    }
+    else {
+        ui_update_state_info(state_description);
+    }
     lcd_locate(3, 0);
     lcd_str("Volume: ");
     ui_update_volume();
-    lcd_flush_buffer();
 }
 
 static void ui_draw_scrollable_list(void) {
-	if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
-	uint8_t selected_line = calculate_selected_line();
-	uint8_t stream_at_first_line = selected_stream_id-selected_line;
-	char name[22];
-    char buf[24];
-	char* url = NULL;
+    if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     lcd_cls();
-	for (int line=0; line<LCD_ROWS; line++) {
-		url = get_station_url_from_file(stream_at_first_line+line, name, sizeof(name));
-		if (url != NULL) {
-            int bytes_in_buffer;
-            if (line == selected_line) {
-                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", ">", stream_at_first_line+line, name);
-            }
-            else {
-                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", " ", stream_at_first_line+line, name);
-            }
-            if (bytes_in_buffer > 0) {
-                lcd_locate(line, 0);
-                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
-                lcd_flush_buffer();
-            }
-		}
-        else { break; }
-	}
+    cur_pos = 0;
+    currently_drawn_line=0;
+    drawing_scrollable_list_active = true;
 }
 
 static void ui_draw_pointer_at_line(uint8_t line) {
 	if (line > 3) { return; }
 	lcd_locate(line, 0);
-	lcd_str(">");
-	lcd_flush_buffer();
+	lcd_char('>');
 }
 
 void ui_update_volume(void) {
@@ -149,7 +136,7 @@ void ui_update_volume(void) {
     uint8_t volume = VS1003_getVolume();
     snprintf(supbuf, sizeof(supbuf)-1, "%d%s", volume, (volume < 100) ? " " : "");
     lcd_locate(3, 8);
-    lcd_str(supbuf);
+    lcd_str_part(supbuf, 3);
 }
 
 void ui_update_content_info(const char* str) {
@@ -171,7 +158,6 @@ void ui_update_content_info(const char* str) {
         lcd_locate(1, 0);
         lcd_utf8str_part(scroll_begin, LCD_COLS);
     }
-    lcd_flush_buffer();
 }
 
 void ui_clear_content_info(void) {
@@ -181,18 +167,18 @@ void ui_clear_content_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
-    lcd_flush_buffer();
 }
 
 void ui_update_state_info(const char* str) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     ui_clear_state_info();
-    lcd_flush_buffer();
     if (str) {
         lcd_locate(2,0);
-        lcd_str(str);
+        lcd_str_part(str, LCD_COLS);
     }
-    lcd_flush_buffer();
+    else {
+        ui_clear_state_info();
+    }
 }
 
 void ui_clear_state_info(void) {
@@ -201,7 +187,6 @@ void ui_clear_state_info(void) {
     for (int i=0; i<LCD_COLS; i++) {
         lcd_char(' ');
     }
-    lcd_flush_buffer();
 }
 
 void ui_handle(void) {
@@ -228,7 +213,35 @@ static void ui_handle_main_screen(void) {
 }
 
 static void ui_handle_scrollable_list(void) {
-
+    if (drawing_scrollable_list_active) {
+        uint8_t selected_line = calculate_selected_line();
+        uint8_t stream_at_first_line = selected_stream_id-selected_line;
+        char name[22];
+        char buf[24];
+        char* url = NULL;
+        url = get_station_url_from_file_use_seek(stream_at_first_line+currently_drawn_line, name, sizeof(name), &cur_pos);
+        if (url != NULL) {
+            int bytes_in_buffer;
+            if (currently_drawn_line == selected_line) {
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", ">", stream_at_first_line+currently_drawn_line, name);
+            }
+            else {
+                bytes_in_buffer = snprintf(buf, sizeof(buf), "%s%d %s", " ", stream_at_first_line+currently_drawn_line, name);
+            }
+            if (bytes_in_buffer > 0) {
+                lcd_locate(currently_drawn_line, 0);
+                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
+            }
+            currently_drawn_line++;
+        }
+        else {
+            drawing_scrollable_list_active = false;
+        }
+        if (currently_drawn_line >= LCD_ROWS) {
+            cur_pos = 0;
+            drawing_scrollable_list_active = false;
+        }
+    }
 }
 
 static void ui_handle_backlight(void) {
@@ -298,7 +311,7 @@ void ui_handle_updating_time(void) {
         char supbuf[32];
         snprintf(supbuf, sizeof(supbuf), "%02d:%02d:%02d  %02d-%02d-%04d", (uint8_t)current_time->tm_hour, (uint8_t)current_time->tm_min, (uint8_t)current_time->tm_sec, (uint8_t)current_time->tm_mday, (uint8_t)current_time->tm_mon+1, (uint16_t)current_time->tm_year+1900);
         lcd_locate(0, 0);
-        lcd_str(supbuf);
+        lcd_str_part(supbuf, LCD_COLS);
     }  
 }
 
@@ -322,12 +335,11 @@ static void ui_rotary_move_cursor(int8_t val) {
 		selected_stream_id = 1;
 	}
 	if ( ((prev_selected_line == 0) && (val<0)) || ( ((prev_selected_line == LCD_ROWS-1) || (prev_selected_stream_id == get_max_stream_id())) && (val > 0)) ) {
-		ui_draw_scrollable_list();
+        ui_draw_scrollable_list();
 	}
 	else  {
 		lcd_locate(prev_selected_line, 0);
-		lcd_str(" ");
-		lcd_flush_buffer();
+		lcd_char(' ');
 		ui_draw_pointer_at_line(calculate_selected_line());
 	}
 }
@@ -343,8 +355,8 @@ static void ui_button_switch_state(void) {
 
 static void ui_button_play_selected_stream(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
-    VS1003_play_http_stream_by_id(selected_stream_id);
     ui_switch_state(UI_HANDLE_MAIN_SCREEN);
+    VS1003_play_http_stream_by_id(selected_stream_id);
 }
 
 static void ui_button_stream_list_next_page(void) {

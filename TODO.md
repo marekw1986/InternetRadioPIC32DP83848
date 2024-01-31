@@ -21,8 +21,9 @@ Internet radio based on PIC32
 	- [ ] Add option to play file from local storage
 	- [ ] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
-- [ ] Move I2C (HD44780) driver from plib to Harmony.
+- [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
+- [ ] Controll LCD backlight brightness with soft PWM
 
 ### Completed Column ✓
 - [x] Debug SD card
@@ -35,3 +36,4 @@ Internet radio based on PIC32
 - [x] Move list of streams to file
 - [x] Move project from MLA to Harmony libraries
 - [x] Add backlight timeout
+- [x] Move HD44780 from I2C to GPIO bus

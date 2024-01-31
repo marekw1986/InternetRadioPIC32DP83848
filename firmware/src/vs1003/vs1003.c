@@ -94,7 +94,7 @@ void VS1003_handle(void) {
                 if (dnsres < 0) {
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
-                    ui_update_state_info(NULL);
+                    ui_clear_state_info();
                     #endif
                     SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve error %d\r\n", dnsres);
                     break;
@@ -115,7 +115,7 @@ void VS1003_handle(void) {
             else {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(NULL);
+                ui_clear_state_info();
                 #endif                
                 SYS_CONSOLE_PRINT("DNS uri.server empty\r\n");
                 break;
@@ -129,7 +129,7 @@ void VS1003_handle(void) {
             if (dnsres < 0) {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(NULL);
+                ui_clear_state_info();
                 #endif
                 SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved error: %d\r\n", dnsres);
                 break;
@@ -156,10 +156,17 @@ void VS1003_handle(void) {
                 StreamState=STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Socket fail\r\n");
 				break;
+            }
+            // Increase size of RX buffer
+            if (TCPIP_TCP_FifoSizeAdjust(VS_Socket, 4096, 512, TCP_ADJUST_RX_ONLY)) {
+                SYS_CONSOLE_PRINT("RX buffer resized\r\n");
+            }
+            else {
+                SYS_CONSOLE_PRINT("Can't resize RX buffer!\r\n");
             }
             StreamState = STREAM_HTTP_SOCKET_OBTAINED;
             SYS_CONSOLE_PRINT("Socket obtained\r\n");
@@ -181,8 +188,6 @@ void VS1003_handle(void) {
 					VS_Socket = INVALID_SOCKET;
 					StreamState = STREAM_HTTP_CLOSE;     //was StreamState--
                     ReconnectStrategy = DO_NOT_RECONNECT;
-                    //TODO limit number of reconnections or repair differently
-                    //If we stuck here, it breaks state machine!!!!!
 				}
 				break;
 			}
@@ -207,7 +212,6 @@ void VS1003_handle(void) {
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)" HTTP/1.0\r\nHost: ");
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)uri.server);
 			TCPIP_TCP_StringPut(VS_Socket, (const uint8_t*)"\r\nConnection: keep-alive\r\n\r\n");
-//
             SYS_CONSOLE_PRINT("Sending headers\r\n");
             
             TCPIP_TCP_WasReset(VS_Socket);
@@ -223,9 +227,6 @@ void VS1003_handle(void) {
 			{
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_IMMEDIATELY;
-//                #ifdef USE_LCD_UI
-//                lcd_ui_update_state_info("Reconnecting");
-//                #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				break;
 			}
@@ -236,23 +237,22 @@ void VS1003_handle(void) {
                 switch (http_result) {
                     case HTTP_HEADER_ERROR:
                         SYS_CONSOLE_PRINT("Parsing headers error\r\n");
+                        // We have rubbish in uri from unsuccessful parsing attempt
+                        // Need to be regenerated
+                        char* url = get_station_url_from_file(current_stream_ind, NULL, 0);
+                        parse_url(url, strlen(url), &uri);
                         prepare_http_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
-//                        #ifdef USE_LCD_UI
-//                        lcd_ui_update_state_info("Reconnecting");
-//                        #endif
                         break;
                     case HTTP_HEADER_OK:
                         SYS_CONSOLE_PRINT("It is 200 OK\r\n");
                         timer = millis();
-                        //memcpy(&uri, &tempUri, sizeof(uri_t));
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
                         VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
-//                        /memcpy(&uri, &uri, sizeof(uri_t));
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
@@ -264,12 +264,12 @@ void VS1003_handle(void) {
             }
             
             if ( (uint32_t)(millis()-timer) > 5000) {
-                //There was no data in 2 seconds - reconnect
+                //There was no data in 5 seconds - reconnect
                 SYS_CONSOLE_PRINT("Internet radio: no header timeout - reseting\r\n");
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }            
             break;
@@ -289,7 +289,7 @@ void VS1003_handle(void) {
                 timer = millis();
                 StreamState = STREAM_HTTP_GET_DATA;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Playing stream");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 break;
             }
@@ -299,7 +299,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -311,7 +311,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }                        
             break;
@@ -336,7 +336,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -347,7 +347,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info("Reconnecting");
+                ui_update_state_info(VS1003_get_state_description());
                 #endif
             }
 			break;
@@ -365,7 +365,7 @@ void VS1003_handle(void) {
             if (StreamState == STREAM_FILE_PLAY_REST) break;
             StreamState = STREAM_FILE_GET_DATA;
             #ifdef USE_LCD_UI
-            ui_update_state_info("Playing file");
+            ui_update_state_info(VS1003_get_state_description());
             #endif
             break;
             
@@ -406,7 +406,7 @@ void VS1003_handle(void) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
-                    ui_update_state_info(NULL);
+                    ui_clear_state_info();
                     #endif
                     break;
                 case RECONNECT_IMMEDIATELY:
@@ -418,7 +418,7 @@ void VS1003_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
-                        ui_update_state_info(NULL);
+                        ui_clear_state_info();
                         #endif
                     }
                     break;
@@ -432,7 +432,7 @@ void VS1003_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
-                        ui_update_state_info(NULL);
+                        ui_clear_state_info();
                         #endif
                     }
                     break;
@@ -607,6 +607,7 @@ static void VS1003_handle_end_of_file (void) {
             mediainfo_clean();
             #ifdef USE_LCD_UI
             ui_clear_content_info();
+            ui_clear_state_info();
             #endif
             StreamState = STREAM_HOME;
         }
@@ -849,6 +850,7 @@ void VS1003_stop(void) {
     mediainfo_clean();
     #ifdef USE_LCD_UI
     ui_clear_content_info();
+    ui_clear_state_info();
     #endif
     StreamState = STREAM_HOME;
 }
@@ -872,6 +874,28 @@ void VS1003_send_cmd_thread_safe(uint8_t cmd, uint32_t param) {
 	if (xQueueSend(vsQueueHandle, (void*)&command, portMAX_DELAY)) {
 		SYS_CONSOLE_PRINT("Sending thread safe command to VS1003: %d\r\n", command.cmd);
 	}
+}
+
+const char* VS1003_get_state_description(void) {
+    switch(StreamState) {
+//        case STREAM_HTTP_NAME_RESOLVE:
+//        case STREAM_HTTP_OBTAIN_SOCKET:            
+//        case STREAM_HTTP_SOCKET_OBTAINED:
+//        case STREAM_HTTP_SEND_REQUEST:
+//        case STREAM_HTTP_PROCESS_HEADER:
+        case STREAM_HTTP_FILL_BUFFER:
+        case STREAM_HTTP_GET_DATA:
+            return "Playing stream";
+        case STREAM_FILE_FILL_BUFFER:
+        case STREAM_FILE_PLAY_REST:
+        case STREAM_FILE_GET_DATA:
+            return "Playing file";
+        default:
+            return NULL;
+//        case STREAM_HTTP_CLOSE:
+//        case STREAM_HTTP_RECONNECT_WAIT:     
+    }
+    return NULL;
 }
 
 

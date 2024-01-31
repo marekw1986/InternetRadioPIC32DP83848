@@ -13,21 +13,7 @@
 #define LCD_ROWS 4
 #define LCD_COLS 20
 
-#define USE_RW 1
-#define PCF8574_LCD_ADDR 0x38
-
-//#define LCD_LED_ON i2c_send_byte(0x0F | (i2c_rcv_byte(PCF8574_IO_ADDR) & 0xE0) | 0x10, PCF8574_IO_ADDR);
-//#define LCD_LED_OFF i2c_send_byte(0x0F | (i2c_rcv_byte(PCF8574_IO_ADDR) & 0xE0), PCF8574_IO_ADDR);
-
-#define LCD_D7 	7
-#define LCD_D6 	6
-#define LCD_D5 	5
-#define LCD_D4 	4
-
-#define LCD_RS 	3
-#define LCD_RW 	2
-#define LCD_E 	1
-#define LCD_BACKLIGHT 0
+#define USE_RW 0
 
 #if ( (LCD_ROWS == 4) && (LCD_COLS == 20) )
 #define LCD_LINE1 0x00		// adres 1 znaku 1 wiersza
@@ -40,10 +26,6 @@
 #define LCD_LINE3 0x10  	// adres 1 znaku 3 wiersza
 #define LCD_LINE4 0x50  	// adres 1 znaku 4 wiersza
 #endif
-
-#define SEND_I2C 		i2c_send_byte(mpxLCD, PCF8574_LCD_ADDR)
-
-#define RECEIVE_I2C  	i2c_rcv_byte(PCF8574_LCD_ADDR)
 
 #define LCDC_CLS					0x01
 #define LCDC_HOME					0x02
@@ -74,7 +56,7 @@
 extern "C" {
 #endif
     
-#define lcd_flush_buffer() while(lcd_handle())
+//#define lcd_flush_buffer() while(lcd_handle())
 
 void lcd_init(void);
 void lcd_cls(void);
@@ -87,7 +69,6 @@ void lcd_utf8str_padd_rest(const char* str, const uint16_t len, char padd);
 void lcd_locate(uint8_t y, uint8_t x);
 void lcd_home(void);
 void lcd_set_backlight_state(bool state);
-bool lcd_handle(void);
 
 
 #ifdef	__cplusplus

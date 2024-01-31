@@ -91,8 +91,14 @@ function showDir(path) {
 				if (data.parent !== "root" && data.parent !== "streams") {
 					opt.value = data.parent + "/"
 				}
-                opt.value += data.dirs[i];
-                opt.innerHTML = "&#128193 " + data.dirs[i];
+				if (data.parent == "root") {
+					opt.value += data.dirs[i];
+					opt.innerHTML = "&#128193 " + data.dirs[i];
+				}
+				else {
+					opt.value += data.dirs[i].sn;
+					opt.innerHTML = "&#128193 " + data.dirs[i].ln;
+				}
                 opt.dataset.type = "dir";
                 select.appendChild(opt);
             }
@@ -109,8 +115,8 @@ function showDir(path) {
 			else {
 				for (i=0; i<data.files.length; i++) {
 					var opt = document.createElement('option');
-					opt.value = data.parent + "/" + data.files[i];
-					opt.innerHTML = "&#9834 " + data.files[i];
+					opt.value = data.parent + "/" + data.files[i].sn;
+					opt.innerHTML = "&#9834 " + data.files[i].ln;
 					opt.dataset.type = "file";
 					select.appendChild(opt);
 				}
