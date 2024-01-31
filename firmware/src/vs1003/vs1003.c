@@ -26,6 +26,7 @@
 #include "vs1003_low_level.h"
 #include "mediainfo.h"
 #include "ringbuffer.h"
+#include "http_header_parser.h"
 #include "../common.h"
 #ifdef USE_LCD_UI
 #include "../lcd/ui.h"
@@ -241,18 +242,20 @@ void VS1003_handle(void) {
                         // Need to be regenerated
                         char* url = get_station_url_from_file(current_stream_ind, NULL, 0);
                         parse_url(url, strlen(url), &uri);
-                        prepare_http_parser();
+                        release_http_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
                         SYS_CONSOLE_PRINT("It is 200 OK\r\n");
+                        release_http_parser();
                         timer = millis();
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
                         VS1003_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
+                        release_http_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
