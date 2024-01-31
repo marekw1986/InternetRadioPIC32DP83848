@@ -6,6 +6,7 @@
 #include "../io/buttons.h"
 #include "../io/rotary.h"
 #include "../common.h"
+#include "../stream_list.h"
 
 #define BACKLIGHT_DURATION 10000
 

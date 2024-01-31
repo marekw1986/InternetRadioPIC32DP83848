@@ -28,6 +28,7 @@
 #include "ringbuffer.h"
 #include "http_header_parser.h"
 #include "../common.h"
+#include "../stream_list.h"
 #ifdef USE_LCD_UI
 #include "../lcd/ui.h"
 #endif

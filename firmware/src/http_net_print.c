@@ -41,6 +41,7 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "system_config.h"
 #include "internal.h"
 #include "common.h"
+#include "stream_list.h"
 #include "vs1003/vs1003.h"
 #include "vs1003/mediainfo.h"
 
