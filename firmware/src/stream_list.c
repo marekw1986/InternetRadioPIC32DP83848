@@ -3,6 +3,7 @@
 #include "definitions.h"
 
 #define WORKING_BUFFER_SIZE 512
+char working_buffer[WORKING_BUFFER_SIZE];
 
 static uint16_t max_stream_id = 0;
 
@@ -17,8 +18,6 @@ void initialize_stream_list(void) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return;
     }
-    
-    char working_buffer[WORKING_BUFFER_SIZE];
     
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         if (working_buffer[strlen(working_buffer)] == '\n') {
@@ -83,7 +82,6 @@ char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, siz
 
 char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_name, size_t stream_name_len) {
 	char* result = NULL;
-    char working_buffer[WORKING_BUFFER_SIZE];
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         if (working_buffer[strlen(working_buffer)-1] == '\n') {
             working_buffer[strlen(working_buffer)-1] = '\0';
