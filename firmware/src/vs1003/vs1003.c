@@ -239,8 +239,11 @@ void VS1003_handle(void) {
                         SYS_CONSOLE_PRINT("Parsing headers error code: %d\r\n", http_get_err_code());
                         // We have rubbish in uri from unsuccessful parsing attempt
                         // Need to be regenerated
-                        char* url = get_station_url_from_file(current_stream_ind, NULL, 0);
-                        parse_url(url, strlen(url), &uri);
+                        {
+                            char working_buffer[512];
+                            char* url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), NULL, 0);
+                            parse_url(url, strlen(url), &uri);
+                        }
                         http_release_parser();
                         ReconnectStrategy = RECONNECT_IMMEDIATELY;
                         StreamState = STREAM_HTTP_CLOSE;
@@ -682,9 +685,9 @@ void VS1003_play_http_stream(const char* url) {
 
 bool VS1003_play_http_stream_by_id(uint16_t id) {
     char name[32];
-    
+    char working_buffer[512];
     memset(name, 0x00, sizeof(name));
-	char* url = get_station_url_from_file(id, name, sizeof(name)-1);
+	char* url = get_station_url_from_file(id, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
 	if (url) {
 		VS1003_stop();
         mediainfo_title_set(name);
@@ -701,15 +704,16 @@ bool VS1003_play_http_stream_by_id(uint16_t id) {
 
 void VS1003_play_next_http_stream_from_list(void) {
     char name[32];
+    char working_buffer[512];
     
     memset(name, 0x00, sizeof(name));
     current_stream_ind++;
-    char* url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
+    char* url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
     if (url == NULL) {
         //Function returned NULL, there is no stream with such ind
         //Try again from the beginning
         current_stream_ind = 1;
-        url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
+        url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
         if (url == NULL) return;
     }
     VS1003_stop();
@@ -723,11 +727,12 @@ void VS1003_play_next_http_stream_from_list(void) {
 
 void VS1003_play_prev_http_stream_from_list(void) {
     char name[32];
+    char working_buffer[512];
     
     memset(name, 0x00, sizeof(name));
     current_stream_ind--;
     if (current_stream_ind < 1) { current_stream_ind = get_max_stream_id(); }
-    char* url = get_station_url_from_file(current_stream_ind, name, sizeof(name)-1);
+    char* url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
     if (url == NULL) return;
     VS1003_stop();
     mediainfo_title_set(name);

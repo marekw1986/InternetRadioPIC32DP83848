@@ -220,7 +220,8 @@ static void ui_handle_scrollable_list(void) {
         char name[22];
         char buf[24];
         char* url = NULL;
-        url = get_station_url_from_file_use_seek(stream_at_first_line+currently_drawn_line, name, sizeof(name), &cur_pos);
+        char working_buffer[512];
+        url = get_station_url_from_file_use_seek(stream_at_first_line+currently_drawn_line, working_buffer, sizeof(working_buffer), name, sizeof(name), &cur_pos);
         if (url != NULL) {
             int bytes_in_buffer;
             if (currently_drawn_line == selected_line) {

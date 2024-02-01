@@ -2,12 +2,9 @@
 #include "stream_list.h"
 #include "definitions.h"
 
-#define WORKING_BUFFER_SIZE 512
-char working_buffer[WORKING_BUFFER_SIZE];
-
 static uint16_t max_stream_id = 0;
 
-static char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_name, size_t stream_name_len);
+static char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len);
 
 void initialize_stream_list(void) {
     SYS_FS_HANDLE file;
@@ -19,6 +16,7 @@ void initialize_stream_list(void) {
         return;
     }
     
+    char working_buffer[32];
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         if (working_buffer[strlen(working_buffer)] == '\n') {
             working_buffer[strlen(working_buffer)] = '\0';
@@ -38,11 +36,11 @@ uint16_t get_max_stream_id(void) {
     return max_stream_id;
 }
 
-char* get_station_url_from_file(uint16_t number, char* stream_name, size_t stream_name_len) {
-    return get_station_url_from_file_use_seek(number, stream_name, stream_name_len, NULL);
+char* get_station_url_from_file(uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len) {
+    return get_station_url_from_file_use_seek(number, workbuf, workbuf_len, stream_name, stream_name_len, NULL);
 }
 
-char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, size_t stream_name_len, int32_t* cur_pos) {
+char* get_station_url_from_file_use_seek(uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len, int32_t* cur_pos) {
     SYS_FS_HANDLE file;
     char* result = NULL;
     
@@ -60,7 +58,7 @@ char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, siz
         }
     }
     
-    result = find_station_in_file(file, number, stream_name, stream_name_len);
+    result = find_station_in_file(file, number, workbuf, workbuf_len, stream_name, stream_name_len);
     if (cur_pos && (*cur_pos > 0) && (result == NULL)) {
         // It is possible stream is located somewhere earlier in file
         // Look again, just i case if we missed it
@@ -69,7 +67,7 @@ char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, siz
             SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
             return NULL;
         }
-        result = find_station_in_file(file, number, stream_name, stream_name_len);
+        result = find_station_in_file(file, number, workbuf, workbuf_len, stream_name, stream_name_len);
     }
     
     if (cur_pos) {
@@ -80,15 +78,15 @@ char* get_station_url_from_file_use_seek(uint16_t number, char* stream_name, siz
     return result;
 }
 
-char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_name, size_t stream_name_len) {
+char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number,  char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len) {
 	char* result = NULL;
-    while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
-        if (working_buffer[strlen(working_buffer)-1] == '\n') {
-            working_buffer[strlen(working_buffer)-1] = '\0';
+    while (SYS_FS_FileStringGet(file, workbuf, workbuf_len) == SYS_FS_RES_SUCCESS) {
+        if (workbuf[strlen(workbuf)-1] == '\n') {
+            workbuf[strlen(workbuf)-1] = '\0';
         }
-        int ret = parse_stream_data_line(working_buffer, strlen(working_buffer), stream_name, stream_name_len, working_buffer, sizeof(working_buffer));
+        int ret = parse_stream_data_line(workbuf, strlen(workbuf), stream_name, stream_name_len, workbuf, sizeof(workbuf));
         if (ret && ret == number) {
-            result = working_buffer;
+            result = workbuf;
             break;
         }
     }
