@@ -95,7 +95,7 @@ char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* stream_nam
     return result;
 }
 
-uint8_t parse_stream_data_line(char* line, size_t line_len, char* stream_name, size_t stream_name_len, char* stream_url, size_t stream_url_len) {
+uint16_t parse_stream_data_line(char* line, size_t line_len, char* stream_name, size_t stream_name_len, char* stream_url, size_t stream_url_len) {
     int line_number = atoi(line);
     
     if (line_number > 0) {

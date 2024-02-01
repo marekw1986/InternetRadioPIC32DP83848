@@ -15,6 +15,8 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/configuration.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/ui.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/stream_list.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/stream_list.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_header_parser.c</file>
         </group>
     </open-files>
 </project-private>
