@@ -951,6 +951,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                 *firstOne = 1;
                 TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, 0x01);
             }
+            HTTP_APP_DYNVAR_BUFFER *pDynBuffer = HTTP_APP_GetDynamicBuffer();
+            if(pDynBuffer == 0) { 
+                // failed to get a buffer; retry
+                return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
+            }
             char line[512];
             if (SYS_FS_FileStringGet(fileHandle, line, sizeof(line)-1) == SYS_FS_RES_SUCCESS) {
                 if (line[strlen(line)-1] == '\n') {
@@ -958,17 +963,13 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                 }
                 char name[64];    
                 char url[256];
-                int id;
-                if ( (id = parse_stream_data_line(line, strlen(line), name, sizeof(name)-1, url, sizeof(url)-1)) ) {
-                    HTTP_APP_DYNVAR_BUFFER *pDynBuffer = HTTP_APP_GetDynamicBuffer();
-                    if(pDynBuffer == 0) { 
-                        // failed to get a buffer; retry
-                        return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
-                    }
+                int id = TCPIP_HTTP_NET_ConnectionCallbackPosGet(connHandle);
+                if (parse_stream_data_line(line, strlen(line), name, sizeof(name), url, sizeof(url))) {
                     snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"id\": \"%d\", \"name\": \"%s\", \"url\": \"%s\"}", *firstOne ? "" : ", ", id, name, url);
                     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
                     *firstOne = 0;                
                 }
+                TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, id+1);
             }
             else {
                 SYS_FS_FileClose(fileHandle);
