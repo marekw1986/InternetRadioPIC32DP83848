@@ -14,7 +14,7 @@ void initialize_stream_list(void) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return;
     }
-    char working_buffer[32];
+    char working_buffer[512];
     uint16_t number = 0;
     while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
         number++;
@@ -22,6 +22,7 @@ void initialize_stream_list(void) {
     if (number > 0) {
         max_stream_id = number;
     }
+    SYS_CONSOLE_PRINT("%d streams found\r\n", max_stream_id);
     SYS_FS_FileClose(file);
 }
 
