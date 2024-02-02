@@ -84,7 +84,7 @@ char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number,  char* workbuf, 
         if (workbuf[strlen(workbuf)-1] == '\n') {
             workbuf[strlen(workbuf)-1] = '\0';
         }
-        int ret = parse_stream_data_line(workbuf, strlen(workbuf), stream_name, stream_name_len, workbuf, sizeof(workbuf));
+        int ret = parse_stream_data_line(workbuf, strlen(workbuf), stream_name, stream_name_len, workbuf, workbuf_len);
         if (ret && ret == number) {
             result = workbuf;
             break;
