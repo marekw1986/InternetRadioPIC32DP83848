@@ -200,7 +200,7 @@ extern "C" {
 #define DRV_MIIM_DRIVER_OBJECT              DRV_MIIM_OBJECT_BASE_Default            
 
 /* MIIM RTOS Configurations*/
-#define DRV_MIIM_RTOS_STACK_SIZE                1024
+#define DRV_MIIM_RTOS_STACK_SIZE                1280
 #define DRV_MIIM_RTOS_TASK_PRIORITY             1
 
 
