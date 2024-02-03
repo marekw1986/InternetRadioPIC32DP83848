@@ -2036,13 +2036,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 15AB6693CC2E1EE7AB845EE42A6AC762
-- generatedChecksum: AA39E135CB0CE6D2604D0FA136462A60
+- generatedChecksum: 8D3B60E03E085C2531BA8135148A2E8F
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: AA39E135CB0CE6D2604D0FA136462A60
+  userChecksum: 8D3B60E03E085C2531BA8135148A2E8F
 - generatedChecksum: 66CDC9B1DAB0393100A835676816E8BF
   logicalPath: wolfcrypt
   name: cpuid.h
