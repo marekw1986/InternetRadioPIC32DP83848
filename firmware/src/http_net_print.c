@@ -1193,13 +1193,6 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_configToken(TCPIP_HTTP_NET_CONN_HANDLE
     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
 }
 
-void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj, DRV_HANDLE handle) {
-    SYS_CONSOLE_PRINT("Reseting PHY\r\n");
-    DP_RST_Clear();
-    CORETIMER_DelayUs(10);
-    DP_RST_Set();
-}
-
 static bool is_local_url_valid(const char* url) {
     if ( (strstr(url, "/mnt/myDrive0") == url) || (strstr(url, "/mnt/myDrive1/music") == url) ) {
         return true;

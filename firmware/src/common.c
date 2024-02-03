@@ -28,6 +28,12 @@ SYS_FS_RESULT FormatSpiFlashDisk (void) {
     return res;
 }
 
+void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj, DRV_HANDLE handle) {
+    SYS_CONSOLE_PRINT("Reseting PHY\r\n");
+    DP_RST_Clear();
+    CORETIMER_DelayUs(10);
+    DP_RST_Set();
+}
 
 unsigned char BcdToByte(unsigned char bcd) {
     return ((bcd & 0xF0) >> 4) * 10 + (bcd & 0x0F);
