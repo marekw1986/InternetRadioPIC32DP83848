@@ -314,12 +314,12 @@ extern "C" {
 #define NO_OLD_TLS
 
 /*** TCPIP MAC Configuration ***/
-#define TCPIP_EMAC_TX_DESCRIPTORS				    8
-#define TCPIP_EMAC_RX_DESCRIPTORS				    8
-#define TCPIP_EMAC_RX_DEDICATED_BUFFERS				4
-#define TCPIP_EMAC_RX_INIT_BUFFERS				    0
-#define TCPIP_EMAC_RX_LOW_THRESHOLD				    1
-#define TCPIP_EMAC_RX_LOW_FILL				        2
+#define TCPIP_EMAC_TX_DESCRIPTORS				    16
+#define TCPIP_EMAC_RX_DESCRIPTORS				    16
+#define TCPIP_EMAC_RX_DEDICATED_BUFFERS				10
+#define TCPIP_EMAC_RX_INIT_BUFFERS				    2
+#define TCPIP_EMAC_RX_LOW_THRESHOLD				    2
+#define TCPIP_EMAC_RX_LOW_FILL				        3
 #define TCPIP_EMAC_MAX_FRAME		    			1536
 #define TCPIP_EMAC_LINK_MTU		    			    1500
 #define TCPIP_EMAC_RX_BUFF_SIZE		    			1536
@@ -514,7 +514,7 @@ extern "C" {
 
 /*** TCPIP Heap Configuration ***/
 #define TCPIP_STACK_USE_INTERNAL_HEAP
-#define TCPIP_STACK_DRAM_SIZE                       39250
+#define TCPIP_STACK_DRAM_SIZE                       43008
 #define TCPIP_STACK_DRAM_RUN_LIMIT                  2048
 
 #define TCPIP_STACK_MALLOC_FUNC                     malloc
