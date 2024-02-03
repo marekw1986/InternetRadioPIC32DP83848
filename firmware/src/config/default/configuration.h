@@ -196,7 +196,7 @@ extern "C" {
 #define DRV_MIIM_INSTANCE_OPERATIONS        4
 #define DRV_MIIM_INSTANCE_CLIENTS           2
 #define DRV_MIIM_CLIENT_OP_PROTECTION   false
-#define DRV_MIIM_COMMANDS   false
+#define DRV_MIIM_COMMANDS   true
 #define DRV_MIIM_DRIVER_OBJECT              DRV_MIIM_OBJECT_BASE_Default            
 
 /* MIIM RTOS Configurations*/
@@ -243,7 +243,7 @@ extern "C" {
 #define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15
 #define TCPIP_HTTP_NET_CACHE_LEN		        		"600"
 #define TCPIP_HTTP_NET_TIMEOUT		            		45
-#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		2
+#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		4
 #define TCPIP_HTTP_NET_DEFAULT_FILE		        		"index.htm"
 #define TCPIP_HTTP_NET_FILENAME_MAX_LEN			        25
 #define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive1/www/"
@@ -314,20 +314,18 @@ extern "C" {
 #define NO_OLD_TLS
 
 /*** TCPIP MAC Configuration ***/
-#define TCPIP_EMAC_TX_DESCRIPTORS				    16
-#define TCPIP_EMAC_RX_DESCRIPTORS				    16
-#define TCPIP_EMAC_RX_DEDICATED_BUFFERS				10
-#define TCPIP_EMAC_RX_INIT_BUFFERS				    2
-#define TCPIP_EMAC_RX_LOW_THRESHOLD				    2
-#define TCPIP_EMAC_RX_LOW_FILL				        3
+#define TCPIP_EMAC_TX_DESCRIPTORS				    8
+#define TCPIP_EMAC_RX_DESCRIPTORS				    8
+#define TCPIP_EMAC_RX_DEDICATED_BUFFERS				4
+#define TCPIP_EMAC_RX_INIT_BUFFERS				    0
+#define TCPIP_EMAC_RX_LOW_THRESHOLD				    1
+#define TCPIP_EMAC_RX_LOW_FILL				        2
 #define TCPIP_EMAC_MAX_FRAME		    			1536
 #define TCPIP_EMAC_LINK_MTU		    			    1500
 #define TCPIP_EMAC_RX_BUFF_SIZE		    			1536
 #define TCPIP_EMAC_RX_FRAGMENTS		    			1
 
 #define TCPIP_EMAC_RX_FILTERS                       \
-                                                    TCPIP_MAC_RX_FILTER_TYPE_BCAST_ACCEPT |\
-                                                    TCPIP_MAC_RX_FILTER_TYPE_MCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_UCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_RUNT_REJECT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_CRC_ERROR_REJECT |\
@@ -371,7 +369,7 @@ extern "C" {
 #define TCPIP_TCP_MAX_SYN_RETRIES		        	3
 #define TCPIP_TCP_AUTO_TRANSMIT_TIMEOUT_VAL			40
 #define TCPIP_TCP_WINDOW_UPDATE_TIMEOUT_VAL			200
-#define TCPIP_TCP_MAX_SOCKETS		                8
+#define TCPIP_TCP_MAX_SOCKETS		                10
 #define TCPIP_TCP_TASK_TICK_RATE		        	5
 #define TCPIP_TCP_MSL_TIMEOUT		        	    0
 #define TCPIP_TCP_QUIET_TIME		        	    0
@@ -600,7 +598,7 @@ extern "C" {
 
 /*** UDP Configuration ***/
 #define TCPIP_UDP_MAX_SOCKETS		                	5
-#define TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE		    	256
+#define TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE		    	512
 #define TCPIP_UDP_SOCKET_DEFAULT_TX_QUEUE_LIMIT    	 	3
 #define TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT			3
 #define TCPIP_UDP_USE_POOL_BUFFERS   false

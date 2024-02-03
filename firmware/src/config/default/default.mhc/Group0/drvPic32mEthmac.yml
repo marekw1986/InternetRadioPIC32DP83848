@@ -16,7 +16,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '16128'}
+        attributes: {id: drvPic32mEthmac, value: '6528'}
   - type: String
     attributes: {id: DRV_INTMAC_PHY_TYPE}
     children:
@@ -24,6 +24,20 @@ children:
       children:
       - type: Dynamic
         attributes: {id: drvPic32mEthmac, value: DP83848}
+  - type: Boolean
+    attributes: {id: TCPIP_EMAC_ETH_FILTER_BCAST_ACCEPT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: TCPIP_EMAC_ETH_FILTER_MCAST_ACCEPT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_BUFF_SIZE}
     children:
@@ -37,49 +51,42 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '10'}
+        attributes: {id: drvPic32mEthmac, value: '4'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_DESCRIPTORS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '16'}
+        attributes: {id: drvPic32mEthmac, value: '8'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_INIT_BUFFERS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '2'}
+        attributes: {id: drvPic32mEthmac, value: '0'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_LOW_FILL}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '3'}
+        attributes: {id: drvPic32mEthmac, value: '2'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_LOW_THRESHOLD}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '2'}
-  - type: Combo
-    attributes: {id: TCPIP_EMAC_TRAFFIC}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: High}
+        attributes: {id: drvPic32mEthmac, value: '1'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_TX_DESCRIPTORS}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drvPic32mEthmac, value: '16'}
+        attributes: {id: drvPic32mEthmac, value: '8'}
 - type: Attachments
   children:
   - type: DirectDependency
