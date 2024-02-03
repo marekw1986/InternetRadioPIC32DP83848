@@ -400,8 +400,6 @@ void VS1003_handle(void) {
         	break;            
 	
 		case STREAM_HTTP_CLOSE:
-            // Restore default size of RX buffer. Is it required?
-            TCPIP_TCP_FifoSizeAdjust(VS_Socket, 512, 512, TCP_ADJUST_RX_ONLY);
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			if (!TCPIP_TCP_Disconnect(VS_Socket)) {
@@ -836,8 +834,6 @@ void VS1003_stop(void) {
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {
-                // Restore default size of RX buffer. Is it required?
-                TCPIP_TCP_FifoSizeAdjust(VS_Socket, 512, 512, TCP_ADJUST_RX_ONLY);
                 if (!TCPIP_TCP_Disconnect(VS_Socket)) {
                     TCPIP_TCP_Abort(VS_Socket, true);
                 }
