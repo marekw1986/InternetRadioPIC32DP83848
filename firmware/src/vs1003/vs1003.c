@@ -63,6 +63,7 @@ static void VS1003_startPlaying(void);
 static void VS1003_stopPlaying(void);
 static void VS1003_soft_stop (void);
 static void VS1003_handle_end_of_file (void);
+static void get_uri_from_stream_id(uint16_t id, uri_t* uri);
 
 void VS1003_init(void) {
     VS1003_low_level_init();
@@ -145,7 +146,7 @@ void VS1003_handle(void) {
                 TCPIP_Helper_IPAddressToString(&ServerAddress.v4Add, (char*)data, 32);        
                 SYS_CONSOLE_PRINT("IP address: %s\r\n", data);
                 SYS_CONSOLE_PRINT("Obtaining socket\r\n");
-                TCPIP_DNS_RemoveEntry(uri.server);
+//                TCPIP_DNS_RemoveEntry(uri.server);
                 break;
             }
             SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved: something went wrong\r\n");
@@ -174,7 +175,7 @@ void VS1003_handle(void) {
             else {
                 SYS_CONSOLE_PRINT("Can't resize RX buffer!\r\n");
 				StreamState = STREAM_HTTP_CLOSE;
-                ReconnectStrategy = RECONNECT_IMMEDIATELY;
+                ReconnectStrategy = RECONNECT_WAIT_SHORT;
             }
             break;            
 
@@ -239,17 +240,16 @@ void VS1003_handle(void) {
                         SYS_CONSOLE_PRINT("Parsing headers error code: %d\r\n", http_get_err_code());
                         // We have rubbish in uri from unsuccessful parsing attempt
                         // Need to be regenerated
-                        {
-                            char working_buffer[512];
-                            char* url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), NULL, 0);
-                            parse_url(url, strlen(url), &uri);
-                        }
+                        get_uri_from_stream_id(current_stream_ind, &uri);
                         http_release_parser();
-                        ReconnectStrategy = RECONNECT_IMMEDIATELY;
+                        ReconnectStrategy = RECONNECT_WAIT_SHORT;
                         StreamState = STREAM_HTTP_CLOSE;
                         break;
                     case HTTP_HEADER_OK:
                         SYS_CONSOLE_PRINT("It is 200 OK\r\n");
+                        // uri had been cleaned during parsin, so we need to regenerate it
+                        // in case of reconnect
+                        get_uri_from_stream_id(current_stream_ind, &uri);
                         http_release_parser();
                         timer = millis();
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
@@ -905,6 +905,12 @@ const char* VS1003_get_state_description(void) {
     return NULL;
 }
 
+
+static void get_uri_from_stream_id(uint16_t id, uri_t* uri) {
+    char working_buffer[512];
+    char* url = get_station_url_from_file(id, working_buffer, sizeof(working_buffer), NULL, 0);
+    parse_url(url, strlen(url), uri);
+}
 
 //#define BASE 0x1800
 //
