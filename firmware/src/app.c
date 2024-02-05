@@ -269,7 +269,7 @@ void APP_Tasks ( void )
             }
             else if (tcpipStat == SYS_STATUS_READY) {
                 //TCP/IP stack is ready
-                HTTP_APP_Initialize();
+//                HTTP_APP_Initialize();
                 appData.state = APP_STATE_INIT_FINALIZE;
             }
             break;

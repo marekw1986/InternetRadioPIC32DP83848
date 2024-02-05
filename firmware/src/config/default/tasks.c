@@ -127,16 +127,6 @@ void _DRV_MIIM_Task(  void *pvParameters  )
 }
 
 
-void _NET_PRES_Tasks(  void *pvParameters  )
-{
-    while(1)
-    {
-        NET_PRES_Tasks(sysObj.netPres);
-        vTaskDelay(1 / portTICK_PERIOD_MS);
-    }
-}
-
-
 void _SYS_FS_Tasks(  void *pvParameters  )
 {
     while(1)
@@ -225,16 +215,6 @@ void SYS_Tasks ( void )
         TCPIP_RTOS_STACK_SIZE,
         (void*)NULL,
         TCPIP_RTOS_PRIORITY,
-        (TaskHandle_t*)NULL
-    );
-
-
-
-    xTaskCreate( _NET_PRES_Tasks,
-        "NET_PRES_Tasks",
-        NET_PRES_RTOS_STACK_SIZE,
-        (void*)NULL,
-        NET_PRES_RTOS_TASK_PRIORITY,
         (TaskHandle_t*)NULL
     );
 

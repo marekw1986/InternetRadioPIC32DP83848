@@ -13,13 +13,6 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'false'}
-  - type: Integer
-    attributes: {id: TCPIP_STACK_DRAM_SIZE}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: '42928'}
   - type: Boolean
     attributes: {id: TCPIP_STACK_HEAP_CALC_MASK}
     children:
@@ -33,7 +26,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipStack, value: '25'}
+        attributes: {id: tcpipStack, value: '21'}
   - type: Boolean
     attributes: {id: TCPIP_STACK_INTERFACE_CHANGE_SIGNALING}
     children:
@@ -71,13 +64,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipStack, value: '40000000'}
-  - type: String
-    attributes: {id: TCPIP_STACK_MALLOC_FUNC}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: malloc}
   - type: String
     attributes: {id: TCPIP_STACK_MII_MODE_IDX0}
     children:

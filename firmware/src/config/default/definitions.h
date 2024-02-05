@@ -48,7 +48,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "crypto/crypto.h"
 #include "peripheral/spi/spi_master/plib_spi4_master.h"
 #include "driver/ethmac/drv_ethmac.h"
 #include "driver/sdspi/drv_sdspi.h"
@@ -79,11 +78,6 @@
 #include "peripheral/evic/plib_evic.h"
 #include "peripheral/wdt/plib_wdt.h"
 #include "driver/miim/drv_miim.h"
-#include "wolfssl/wolfcrypt/port/pic32/crypt_wolfcryptcb.h"
-#include "net_pres/pres/net_pres.h"
-#include "net_pres/pres/net_pres_encryptionproviderapi.h"
-#include "net_pres/pres/net_pres_transportapi.h"
-#include "net_pres/pres/net_pres_socketapi.h"
 #include "system/fs/sys_fs.h"
 #include "system/fs/sys_fs_media_manager.h"
 #include "system/fs/sys_fs_fat_interface.h"
@@ -238,8 +232,6 @@ typedef struct
    SYS_MODULE_OBJ  drvMiim_0;
 
     SYS_MODULE_OBJ  sysDebug;
-
-    SYS_MODULE_OBJ  netPres;
 
 
 } SYSTEM_OBJECTS;

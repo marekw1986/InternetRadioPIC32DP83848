@@ -10,7 +10,7 @@
 #include "tcpip/tcpip.h"
 #include "system/fs/sys_fs.h"
 #include "system/debug/sys_debug.h"
-#include "wolfcrypt/hash.h"
+//#include "wolfcrypt/hash.h"
 
 #define NTP_TIMESTAMP_DIFF     (2208988800)    // 1900 to 1970 in seconds
 

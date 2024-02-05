@@ -237,82 +237,6 @@ extern "C" {
 #define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
 
 
-
-/*** HTTP NET Configuration ***/
-#define TCPIP_STACK_USE_HTTP_NET_SERVER
-#define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15
-#define TCPIP_HTTP_NET_CACHE_LEN		        		"600"
-#define TCPIP_HTTP_NET_TIMEOUT		            		45
-#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		2
-#define TCPIP_HTTP_NET_DEFAULT_FILE		        		"index.htm"
-#define TCPIP_HTTP_NET_FILENAME_MAX_LEN			        25
-#define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive1/www/"
-#define TCPIP_HTTP_NET_USE_POST
-#define TCPIP_HTTP_NET_USE_COOKIES
-#define TCPIP_HTTP_NET_USE_AUTHENTICATION
-#define TCPIP_HTTP_NET_MAX_DATA_LEN		        		256
-#define TCPIP_HTTP_NET_SKT_TX_BUFF_SIZE		    		512
-#define TCPIP_HTTP_NET_SKT_RX_BUFF_SIZE		    		512
-#define TCPIP_HTTP_NET_LISTEN_PORT		    		    80
-#define TCPIP_HTTP_NET_CONFIG_FLAGS                       \
-                                                        TCPIP_HTTP_NET_MODULE_FLAG_SECURE_DEFAULT |\
-                                                        TCPIP_HTTP_NET_MODULE_FLAG_DEFAULT
-#define TCPIP_HTTP_NET_TASK_RATE					    33
-#define TCPIP_HTTP_NET_RESPONSE_BUFFER_SIZE				300
-#define TCPIP_HTTP_NET_COOKIE_BUFFER_SIZE				200
-#define TCPIP_HTTP_NET_FIND_PEEK_BUFF_SIZE				512
-#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFER_SIZE         512
-#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFERS_NUMBER      4
-#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFER_RETRIES      10
-#define TCPIP_HTTP_NET_CHUNKS_NUMBER                    10
-#define TCPIP_HTTP_NET_CHUNK_RETRIES                    10
-#define TCPIP_HTTP_NET_MAX_RECURSE_LEVEL				3
-#define TCPIP_HTTP_NET_DYNVAR_PROCESS           		1
-#define TCPIP_HTTP_NET_DYNVAR_DESCRIPTORS_NUMBER		10
-#define TCPIP_HTTP_NET_DYNVAR_MAX_LEN					50
-#define TCPIP_HTTP_NET_DYNVAR_ARG_MAX_NUMBER			4
-#define TCPIP_HTTP_NET_DYNVAR_PROCESS_RETRIES			10
-#define TCPIP_HTTP_NET_SSI_PROCESS           			1
-#define TCPIP_HTTP_NET_SSI_ATTRIBUTES_MAX_NUMBER        4
-#define TCPIP_HTTP_NET_SSI_STATIC_ATTTRIB_NUMBER        2
-#define TCPIP_HTTP_NET_SSI_CMD_MAX_LEN                  100
-#define TCPIP_HTTP_NET_SSI_VARIABLES_NUMBER             13
-#define TCPIP_HTTP_NET_SSI_VARIABLE_NAME_MAX_LENGTH     10
-#define TCPIP_HTTP_NET_SSI_VARIABLE_STRING_MAX_LENGTH   10
-#define TCPIP_HTTP_NET_SSI_ECHO_NOT_FOUND_MESSAGE       "SSI Echo - Not Found: "
-#define TCPIP_HTTP_NET_CONNECTION_TIMEOUT          	0
-#define TCPIP_HTTP_NET_MALLOC_FUNC                  malloc
-#define TCPIP_HTTP_NET_FREE_FUNC                    free
-#define TCPIP_HTTP_NET_CONSOLE_CMD           		false
-
-
-
-/*** NBNS Configuration ***/
-#define TCPIP_STACK_USE_NBNS
-#define TCPIP_NBNS_TASK_TICK_RATE   110
-
-
-/******************************************************************************/
-/*wolfSSL TLS Layer Configuration*/
-/******************************************************************************/
-
-#define WOLFSSL_ALT_NAMES
-#define WOLFSSL_DER_LOAD
-#define KEEP_OUR_CERT
-#define KEEP_PEER_CERT
-#define HAVE_CRL_IO
-#define HAVE_IO_TIMEOUT
-#define TFM_NO_ASM
-#define WOLFSSL_NO_ASM
-#define SIZEOF_LONG_LONG 8
-#define WOLFSSL_USER_IO
-#define NO_WRITEV
-#define MICROCHIP_TCPIP
-#define WOLFSSL_DTLS
-#define NO_PWDBASED
-#define NO_ERROR_STRINGS
-#define NO_OLD_TLS
-
 /*** TCPIP MAC Configuration ***/
 #define TCPIP_EMAC_TX_DESCRIPTORS				    8
 #define TCPIP_EMAC_RX_DESCRIPTORS				    8
@@ -375,7 +299,7 @@ extern "C" {
 #define TCPIP_TCP_QUIET_TIME		        	    0
 #define TCPIP_TCP_COMMANDS   false
 #define TCPIP_TCP_EXTERN_PACKET_PROCESS   false
-#define TCPIP_TCP_DISABLE_CRYPTO_USAGE		        	    false
+#define TCPIP_TCP_DISABLE_CRYPTO_USAGE		        	    true
 
 
 
@@ -512,7 +436,7 @@ extern "C" {
 
 /*** TCPIP Heap Configuration ***/
 #define TCPIP_STACK_USE_INTERNAL_HEAP
-#define TCPIP_STACK_DRAM_SIZE                       42928
+#define TCPIP_STACK_DRAM_SIZE                       39250
 #define TCPIP_STACK_DRAM_RUN_LIMIT                  2048
 
 #define TCPIP_STACK_MALLOC_FUNC                     malloc
@@ -608,56 +532,6 @@ extern "C" {
 #define TCPIP_UDP_EXTERN_PACKET_PROCESS   false
 
 
-
-/*** wolfCrypt Library Configuration ***/
-#define MICROCHIP_PIC32
-#define MICROCHIP_MPLAB_HARMONY
-#define MICROCHIP_MPLAB_HARMONY_3
-#define HAVE_MCAPI
-#define SIZEOF_LONG_LONG 8
-#define WOLFSSL_USER_IO
-#define NO_WRITEV
-#define NO_FILESYSTEM
-#define USE_FAST_MATH
-#define NO_PWDBASED
-#define HAVE_MCAPI
-#define WOLF_CRYPTO_CB  // provide call-back support
-#if (__XC32_VERSION > 100000000)
-#define WOLFSSL_HAVE_MIN
-#define WOLFSSL_HAVE_MAX
-#endif
-// ---------- FUNCTIONAL CONFIGURATION START ----------
-#define WOLFSSL_AES_SMALL_TABLES
-#define NO_MD4
-#define WOLFSSL_SHA224
-#define WOLFSSL_AES_128
-#define WOLFSSL_AES_192
-#define WOLFSSL_AES_256
-#define WOLFSSL_AES_DIRECT
-#define HAVE_AES_DECRYPT
-#define HAVE_AES_ECB
-#define HAVE_AES_CBC
-#define WOLFSSL_AES_COUNTER
-#define WOLFSSL_AES_OFB
-#define HAVE_AESGCM
-#define HAVE_AESCCM
-#define NO_RC4
-#define NO_HC128
-#define NO_RABBIT
-#define HAVE_ECC
-#define NO_DH
-#define NO_DSA
-#define FP_MAX_BITS 4096
-#define USE_CERT_BUFFERS_2048
-#define NO_DEV_RANDOM
-#define HAVE_HASHDRBG
-#define WC_NO_HARDEN
-#define FREERTOS
-#define NO_SIG_WRAPPER
-#define NO_ERROR_STRINGS
-#define NO_WOLFSSL_MEMORY
-// ---------- FUNCTIONAL CONFIGURATION END ----------
-
 #define DRV_DP83848_PHY_CONFIG_FLAGS       ( 0 \
                                                     | DRV_ETHPHY_CFG_RMII \
                                                     | DRV_ETHPHY_CFG_AUTO \
@@ -669,16 +543,6 @@ extern "C" {
 #define DRV_ETHPHY_DP83848_NEG_INIT_TMO            1
 #define DRV_ETHPHY_DP83848_NEG_DONE_TMO            2000
 #define DRV_ETHPHY_DP83848_RESET_CLR_TMO           500
-
-
-/* MPLAB Harmony Net Presentation Layer Definitions*/
-#define NET_PRES_NUM_INSTANCE 1
-#define NET_PRES_NUM_SOCKETS 10
-
-/* Net Pres RTOS Configurations*/
-#define NET_PRES_RTOS_STACK_SIZE                1024
-#define NET_PRES_RTOS_TASK_PRIORITY             1
-	
 
 
 #define TCPIP_STACK_NETWORK_INTERAFCE_COUNT  	1
