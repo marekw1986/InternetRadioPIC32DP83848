@@ -146,7 +146,7 @@ void VS1003_handle(void) {
                 TCPIP_Helper_IPAddressToString(&ServerAddress.v4Add, (char*)data, 32);        
                 SYS_CONSOLE_PRINT("IP address: %s\r\n", data);
                 SYS_CONSOLE_PRINT("Obtaining socket\r\n");
-//                TCPIP_DNS_RemoveEntry(uri.server);
+                TCPIP_DNS_RemoveEntry(uri.server);
                 break;
             }
             SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved: something went wrong\r\n");
