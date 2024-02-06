@@ -567,6 +567,7 @@
                 <itemPath>../src/config/default/library/tcpip/src/sntp.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/udp.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_internal.c</itemPath>
+                <itemPath>../src/config/default/library/tcpip/src/nbns.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
@@ -774,6 +775,7 @@
           <itemPath>../src/config/default/default.mhc/Group0/tcpipUdp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/drvPic32mEthmac.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/drvExtPhyDp83848.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipNbns.yml</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="Group1" projectFiles="true">
           <itemPath>../src/config/default/default.mhc/Group1/spi4.yml</itemPath>
@@ -1047,7 +1049,6 @@
         <property key="debugoptions.useswbreakpoints" value="false"/>
         <property key="event.recorder.enabled" value="false"/>
         <property key="event.recorder.scvd.files" value=""/>
-        <property key="firmware.download.all" value="false"/>
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="lastid" value=""/>
         <property key="memories.aux" value="false"/>
