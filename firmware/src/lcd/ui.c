@@ -221,7 +221,7 @@ static void ui_handle_scrollable_list(void) {
         char buf[24];
         char* url = NULL;
         char working_buffer[512];
-        url = get_station_url_from_file_use_seek(stream_at_first_line+currently_drawn_line, working_buffer, sizeof(working_buffer), name, sizeof(name), &cur_pos);
+        url = get_station_url_from_file(stream_at_first_line+currently_drawn_line, working_buffer, sizeof(working_buffer), name, sizeof(name));
         if (url != NULL) {
             int bytes_in_buffer;
             if (currently_drawn_line == selected_line) {
