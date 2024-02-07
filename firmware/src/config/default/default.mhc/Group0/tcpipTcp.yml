@@ -5,6 +5,13 @@ children:
 - type: Symbols
   children:
   - type: Boolean
+    attributes: {id: TCPIP_TCP_COMMANDS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'true'}
+  - type: Boolean
     attributes: {id: TCPIP_TCP_DISABLE_CRYPTO_USAGE}
     children:
     - type: Values
@@ -32,7 +39,14 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipTcp, value: '11560'}
+        attributes: {id: tcpipTcp, value: '9952'}
+  - type: Integer
+    attributes: {id: TCPIP_TCP_MAX_SOCKETS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '8'}
 - type: Attachments
   children:
   - type: GenericDependency
@@ -45,4 +59,4 @@ children:
         children:
         - {type: Value, value: 'false'}
 - type: ElementPosition
-  attributes: {x: '634', y: '235', id: tcpipTcp}
+  attributes: {x: '484', y: '236', id: tcpipTcp}

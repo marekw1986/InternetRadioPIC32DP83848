@@ -91,7 +91,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '512'}
+        attributes: {value: '128'}
   - type: File
     attributes: {id: UART_SOURCE}
     children:
@@ -113,7 +113,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '512'}
+        attributes: {value: '1024'}
   - type: Hex
     attributes: {id: UMODE_VALUE}
     children:

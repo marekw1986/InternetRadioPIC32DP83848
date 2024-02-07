@@ -402,7 +402,7 @@ void VS1003_handle(void) {
 		case STREAM_HTTP_CLOSE:
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
-			if (!TCPIP_TCP_Disconnect(VS_Socket)) {
+			if (!TCPIP_TCP_Close(VS_Socket)) {
                 TCPIP_TCP_Abort(VS_Socket, true);
             }
 			VS_Socket = INVALID_SOCKET;
@@ -834,7 +834,7 @@ void VS1003_stop(void) {
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
             if(VS_Socket != INVALID_SOCKET) {
-                if (!TCPIP_TCP_Disconnect(VS_Socket)) {
+                if (!TCPIP_TCP_Close(VS_Socket)) {
                     TCPIP_TCP_Abort(VS_Socket, true);
                 }
                 VS_Socket = INVALID_SOCKET;       

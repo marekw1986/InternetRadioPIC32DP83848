@@ -232,9 +232,52 @@ extern "C" {
 
 
 
-/*** ICMPv4 Server Configuration ***/
-#define TCPIP_STACK_USE_ICMP_SERVER
-#define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
+/*** HTTP NET Configuration ***/
+#define TCPIP_STACK_USE_HTTP_NET_SERVER
+#define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15
+#define TCPIP_HTTP_NET_CACHE_LEN		        		"600"
+#define TCPIP_HTTP_NET_TIMEOUT		            		45
+#define TCPIP_HTTP_NET_MAX_CONNECTIONS		    		4
+#define TCPIP_HTTP_NET_DEFAULT_FILE		        		"index.htm"
+#define TCPIP_HTTP_NET_FILENAME_MAX_LEN			        25
+#define TCPIP_HTTP_NET_WEB_DIR		        		    "/mnt/myDrive1/www/"
+#define TCPIP_HTTP_NET_USE_POST
+#define TCPIP_HTTP_NET_USE_COOKIES
+#define TCPIP_HTTP_NET_USE_AUTHENTICATION
+#define TCPIP_HTTP_NET_MAX_DATA_LEN		        		256
+#define TCPIP_HTTP_NET_SKT_TX_BUFF_SIZE		    		512
+#define TCPIP_HTTP_NET_SKT_RX_BUFF_SIZE		    		512
+#define TCPIP_HTTP_NET_LISTEN_PORT		    		    80
+#define TCPIP_HTTP_NET_CONFIG_FLAGS                       \
+                                                        TCPIP_HTTP_NET_MODULE_FLAG_SECURE_DEFAULT |\
+                                                        TCPIP_HTTP_NET_MODULE_FLAG_DEFAULT
+#define TCPIP_HTTP_NET_TASK_RATE					    33
+#define TCPIP_HTTP_NET_RESPONSE_BUFFER_SIZE				300
+#define TCPIP_HTTP_NET_COOKIE_BUFFER_SIZE				200
+#define TCPIP_HTTP_NET_FIND_PEEK_BUFF_SIZE				512
+#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFER_SIZE         512
+#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFERS_NUMBER      4
+#define TCPIP_HTTP_NET_FILE_PROCESS_BUFFER_RETRIES      10
+#define TCPIP_HTTP_NET_CHUNKS_NUMBER                    10
+#define TCPIP_HTTP_NET_CHUNK_RETRIES                    10
+#define TCPIP_HTTP_NET_MAX_RECURSE_LEVEL				3
+#define TCPIP_HTTP_NET_DYNVAR_PROCESS           		1
+#define TCPIP_HTTP_NET_DYNVAR_DESCRIPTORS_NUMBER		10
+#define TCPIP_HTTP_NET_DYNVAR_MAX_LEN					50
+#define TCPIP_HTTP_NET_DYNVAR_ARG_MAX_NUMBER			4
+#define TCPIP_HTTP_NET_DYNVAR_PROCESS_RETRIES			10
+#define TCPIP_HTTP_NET_SSI_PROCESS           			1
+#define TCPIP_HTTP_NET_SSI_ATTRIBUTES_MAX_NUMBER        4
+#define TCPIP_HTTP_NET_SSI_STATIC_ATTTRIB_NUMBER        2
+#define TCPIP_HTTP_NET_SSI_CMD_MAX_LEN                  100
+#define TCPIP_HTTP_NET_SSI_VARIABLES_NUMBER             13
+#define TCPIP_HTTP_NET_SSI_VARIABLE_NAME_MAX_LENGTH     10
+#define TCPIP_HTTP_NET_SSI_VARIABLE_STRING_MAX_LENGTH   10
+#define TCPIP_HTTP_NET_SSI_ECHO_NOT_FOUND_MESSAGE       "SSI Echo - Not Found: "
+#define TCPIP_HTTP_NET_CONNECTION_TIMEOUT          	0
+#define TCPIP_HTTP_NET_MALLOC_FUNC                  malloc
+#define TCPIP_HTTP_NET_FREE_FUNC                    free
+#define TCPIP_HTTP_NET_CONSOLE_CMD           		false
 
 
 /*** TCPIP MAC Configuration ***/
@@ -293,11 +336,11 @@ extern "C" {
 #define TCPIP_TCP_MAX_SYN_RETRIES		        	3
 #define TCPIP_TCP_AUTO_TRANSMIT_TIMEOUT_VAL			40
 #define TCPIP_TCP_WINDOW_UPDATE_TIMEOUT_VAL			200
-#define TCPIP_TCP_MAX_SOCKETS		                10
+#define TCPIP_TCP_MAX_SOCKETS		                8
 #define TCPIP_TCP_TASK_TICK_RATE		        	5
 #define TCPIP_TCP_MSL_TIMEOUT		        	    0
 #define TCPIP_TCP_QUIET_TIME		        	    0
-#define TCPIP_TCP_COMMANDS   false
+#define TCPIP_TCP_COMMANDS   true
 #define TCPIP_TCP_EXTERN_PACKET_PROCESS   false
 #define TCPIP_TCP_DISABLE_CRYPTO_USAGE		        	    true
 
@@ -521,14 +564,14 @@ extern "C" {
 
 
 /*** UDP Configuration ***/
-#define TCPIP_UDP_MAX_SOCKETS		                	10
+#define TCPIP_UDP_MAX_SOCKETS		                	6
 #define TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE		    	512
 #define TCPIP_UDP_SOCKET_DEFAULT_TX_QUEUE_LIMIT    	 	3
 #define TCPIP_UDP_SOCKET_DEFAULT_RX_QUEUE_LIMIT			3
 #define TCPIP_UDP_USE_POOL_BUFFERS   false
 #define TCPIP_UDP_USE_TX_CHECKSUM             			true
 #define TCPIP_UDP_USE_RX_CHECKSUM             			true
-#define TCPIP_UDP_COMMANDS   false
+#define TCPIP_UDP_COMMANDS   true
 #define TCPIP_UDP_EXTERN_PACKET_PROCESS   false
 
 
@@ -543,6 +586,16 @@ extern "C" {
 #define DRV_ETHPHY_DP83848_NEG_INIT_TMO            1
 #define DRV_ETHPHY_DP83848_NEG_DONE_TMO            2000
 #define DRV_ETHPHY_DP83848_RESET_CLR_TMO           500
+
+
+/* MPLAB Harmony Net Presentation Layer Definitions*/
+#define NET_PRES_NUM_INSTANCE 1
+#define NET_PRES_NUM_SOCKETS 10
+
+/* Net Pres RTOS Configurations*/
+#define NET_PRES_RTOS_STACK_SIZE                1024
+#define NET_PRES_RTOS_TASK_PRIORITY             1
+	
 
 
 #define TCPIP_STACK_NETWORK_INTERAFCE_COUNT  	1
