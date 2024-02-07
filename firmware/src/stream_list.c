@@ -31,10 +31,6 @@ uint16_t get_max_stream_id(void) {
 }
 
 char* get_station_url_from_file(uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len) {
-    return get_station_url_from_file_use_seek(number, workbuf, workbuf_len, stream_name, stream_name_len, NULL);
-}
-
-char* get_station_url_from_file_use_seek(uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len, int32_t* cur_pos) {
     SYS_FS_HANDLE file;
     char* result = NULL;
     
@@ -43,31 +39,8 @@ char* get_station_url_from_file_use_seek(uint16_t number, char* workbuf, size_t 
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
         return NULL;
     }
-    
-    if (cur_pos && (*cur_pos > 0)) {
-        int32_t seek_result = SYS_FS_FileSeek(file, *cur_pos, SYS_FS_SEEK_SET);
-        if (seek_result == -1) {
-            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
-            return NULL;
-        }
-    }
-    
     result = find_station_in_file(file, number, workbuf, workbuf_len, stream_name, stream_name_len);
-    if (cur_pos && (*cur_pos > 0) && (result == NULL)) {
-        // It is possible stream is located somewhere earlier in file
-        // Look again, just i case if we missed it
-        int32_t seek_result = SYS_FS_FileSeek(file, 0, SYS_FS_SEEK_SET);
-        if (seek_result == -1) {
-            SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't seek to provided value\r\n");
-            return NULL;
-        }
-        result = find_station_in_file(file, number, workbuf, workbuf_len, stream_name, stream_name_len);
-    }
     
-    if (cur_pos) {
-        int32_t tmp = SYS_FS_FileTell(file);
-        if (tmp > 0) { *cur_pos = tmp; }
-    }
     SYS_FS_FileClose(file);
     return result;
 }
