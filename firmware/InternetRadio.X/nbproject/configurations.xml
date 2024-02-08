@@ -576,6 +576,7 @@
                 <itemPath>../src/config/default/library/tcpip/src/udp.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_internal.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/http_net.c</itemPath>
+                <itemPath>../src/config/default/library/tcpip/src/icmp.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>
@@ -784,6 +785,7 @@
           <itemPath>../src/config/default/default.mhc/Group0/tcpipNetConfig.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipSntp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipHttpNet.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/tcpipIcmp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipDns.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipArp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/Group0.yml</itemPath>

@@ -23,6 +23,12 @@ children:
   - type: Integer
     attributes: {id: TCPIP_HTTP_NET_HEAP_SIZE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -81,7 +87,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE1}
     children:
@@ -90,7 +96,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE10}
     children:
@@ -99,7 +105,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE11}
     children:
@@ -108,7 +114,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE12}
     children:
@@ -117,7 +123,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE13}
     children:
@@ -126,7 +132,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE14}
     children:
@@ -135,7 +141,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE15}
     children:
@@ -144,7 +150,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE16}
     children:
@@ -153,7 +159,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE17}
     children:
@@ -162,7 +168,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE18}
     children:
@@ -171,7 +177,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE19}
     children:
@@ -180,7 +186,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE2}
     children:
@@ -189,7 +195,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE20}
     children:
@@ -198,7 +204,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE21}
     children:
@@ -207,7 +213,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE22}
     children:
@@ -216,7 +222,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE3}
     children:
@@ -225,7 +231,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE4}
     children:
@@ -234,7 +240,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE5}
     children:
@@ -243,7 +249,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE6}
     children:
@@ -252,7 +258,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE7}
     children:
@@ -261,7 +267,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE8}
     children:
@@ -270,7 +276,7 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
   - type: File
     attributes: {id: WEBPAGE_LIST_FILE9}
     children:
@@ -279,6 +285,6 @@ children:
       - type: Boolean
         attributes: {id: enabled}
         children:
-        - {type: Value, value: 'false'}
+        - {type: Value, value: 'true'}
 - type: ElementPosition
   attributes: {x: '789', y: '247', id: tcpipHttpNet}
