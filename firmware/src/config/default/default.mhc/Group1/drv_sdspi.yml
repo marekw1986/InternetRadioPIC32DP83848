@@ -26,7 +26,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: drv_sdspi, value: '23'}
+        attributes: {id: drv_sdspi, value: '24'}
   - type: File
     attributes: {id: DRV_SDSPI_FS_SOURCE}
     children:

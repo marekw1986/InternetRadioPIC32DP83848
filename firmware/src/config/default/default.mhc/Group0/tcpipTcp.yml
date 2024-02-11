@@ -39,7 +39,7 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipTcp, value: '9952'}
+        attributes: {id: tcpipTcp, value: '11648'}
   - type: Integer
     attributes: {id: TCPIP_TCP_MAX_SOCKETS}
     children:

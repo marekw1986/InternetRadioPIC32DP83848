@@ -199,7 +199,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionGetDirJson(TCPIP_HTTP_NET_CONN
                 strncpy(tmpbuf, (const char*)ptr, sizeof(tmpbuf)-1);
             }
             strncpy(parent, tmpbuf, TCPIP_HTTP_NET_ConnectionDataBufferSizeGet(connHandle)-5);
-            SYS_CONSOLE_PRINT("Parent: %s\r\n", parent);
+//            SYS_CONSOLE_PRINT("Parent: %s\r\n", parent);
             httpDataBuff[0] = DIR_OK;
             httpDataBuff[1] = DIR_MODE_PRINT_FS;
             return TCPIP_HTTP_NET_IO_RES_DONE;
@@ -911,10 +911,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
                     size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
-                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
-                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                        *firstOne = 0;
+                    if (res >= HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        SYS_CONSOLE_PRINT("DynPrintBuffer not large enough.\r\n");
                     }
+                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                    *firstOne = 0;
                 }
             }
             else {
@@ -947,16 +948,13 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                     SYS_CONSOLE_PRINT("Can't open radio.txt file!\r\n");
                     return TCPIP_HTTP_DYN_PRINT_RES_DONE;                    
                 }
-                SYS_CONSOLE_PRINT("radio.txt file opened, handle: %lu\r\n", fileHandle);
+//                SYS_CONSOLE_PRINT("radio.txt file opened, handle: %lu\r\n", fileHandle);
                 *firstOne = 1;
                 TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, 0x01);
             }
-            HTTP_APP_DYNVAR_BUFFER *pDynBuffer = HTTP_APP_GetDynamicBuffer();
-            if(pDynBuffer == 0) { 
-                // failed to get a buffer; retry
-                return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
-            }
             char line[512];
+            // Save current file position
+            int32_t current_file_pos = SYS_FS_FileTell(fileHandle);
             if (SYS_FS_FileStringGet(fileHandle, line, sizeof(line)-1) == SYS_FS_RES_SUCCESS) {
                 if (line[strlen(line)-1] == '\n') {
                     line[strlen(line)-1] = '\0';
@@ -965,6 +963,15 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                 char url[256];
                 int id = TCPIP_HTTP_NET_ConnectionCallbackPosGet(connHandle);
                 if (parse_stream_data_line(line, strlen(line), name, sizeof(name), url, sizeof(url))) {
+                    HTTP_APP_DYNVAR_BUFFER *pDynBuffer = HTTP_APP_GetDynamicBuffer();
+                    if(pDynBuffer == 0) { 
+                        // failed to get a buffer; retry
+                        // Restore old position to try again
+                        if (current_file_pos >= 0) {
+                            SYS_FS_FileSeek(fileHandle, current_file_pos, SYS_FS_SEEK_SET);
+                        }
+                        return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
+                    }
                     snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"id\": \"%d\", \"name\": \"%s\", \"url\": \"%s\"}", *firstOne ? "" : ", ", id, name, url);
                     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
                     *firstOne = 0;                
@@ -990,7 +997,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                     SYS_CONSOLE_PRINT("Can't open dir!\r\n");
                     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
                 }
-                SYS_CONSOLE_PRINT("Dir opened, handle: %lu\r\n", dirHandle);
+//                SYS_CONSOLE_PRINT("Dir opened, handle: %lu\r\n", dirHandle);
                 *firstOne = 1;
                 TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, 0x01);
                 return TCPIP_HTTP_DYN_PRINT_RES_DONE;
@@ -1014,10 +1021,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
                     size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
-                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
-                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                        *firstOne = 0;
+                    if (res >= HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        SYS_CONSOLE_PRINT("DynPrintBuffer not large enough.\r\n");
                     }
+                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                    *firstOne = 0;
                 }
             }
             else {
