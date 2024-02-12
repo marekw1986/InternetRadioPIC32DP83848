@@ -574,9 +574,9 @@
                 <itemPath>../src/config/default/library/tcpip/src/tcpip_packet.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/sntp.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/udp.c</itemPath>
-                <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_internal.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/http_net.c</itemPath>
                 <itemPath>../src/config/default/library/tcpip/src/icmp.c</itemPath>
+                <itemPath>../src/config/default/library/tcpip/src/tcpip_heap_external.c</itemPath>
               </logicalFolder>
             </logicalFolder>
           </logicalFolder>

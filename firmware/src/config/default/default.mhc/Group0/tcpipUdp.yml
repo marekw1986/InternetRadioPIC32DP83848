@@ -23,13 +23,13 @@ children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipUdp, value: '9816'}
+        attributes: {id: tcpipUdp, value: '8180'}
   - type: Integer
     attributes: {id: TCPIP_UDP_MAX_SOCKETS}
     children:
     - type: Values
       children:
       - type: User
-        attributes: {value: '6'}
+        attributes: {value: '5'}
 - type: ElementPosition
   attributes: {x: '359', y: '234', id: tcpipUdp}
