@@ -867,13 +867,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: C0F34020BFE4A8185F282064E89AB3D2
-- generatedChecksum: 78303460DBEC4A43BBC5F1D80C55CE2D
+- generatedChecksum: 53A0F9396AB30D3CAA31BFAB5BA51B2B
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: 78303460DBEC4A43BBC5F1D80C55CE2D
+  userChecksum: 53A0F9396AB30D3CAA31BFAB5BA51B2B
 - generatedChecksum: 4B11D1A616E95BDD37123685C8434FCF
   logicalPath: FreeRTOS/Source/include
   name: croutine.h

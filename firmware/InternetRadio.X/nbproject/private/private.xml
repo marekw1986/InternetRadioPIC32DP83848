@@ -12,6 +12,12 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/stream_list.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/stream_list.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_net_print.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/library/tcpip/tcpip_mac.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/osal/osal.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/osal/osal_freertos.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/osal/osal_freertos.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/third_party/rtos/FreeRTOS/Source/portable/MemMang/heap_3.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_header_parser.c</file>
         </group>
     </open-files>
 </project-private>

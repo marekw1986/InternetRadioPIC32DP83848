@@ -31,13 +31,6 @@ children:
       children:
       - type: User
         attributes: {value: 'false'}
-  - type: Boolean
-    attributes: {id: TCPIP_EMAC_ETH_FILTER_MCAST_ACCEPT}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_EMAC_RX_BUFF_SIZE}
     children:

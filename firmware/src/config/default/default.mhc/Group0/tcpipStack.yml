@@ -11,15 +11,6 @@ children:
       children:
       - type: User
         attributes: {value: '5120'}
-  - type: String
-    attributes: {id: TCPIP_STACK_CALLOC_FUNC}
-    children:
-    - type: Attributes
-      children:
-      - type: Boolean
-        attributes: {id: visible}
-        children:
-        - {type: Value, value: 'true'}
   - type: Integer
     attributes: {id: TCPIP_STACK_DRAM_RUN_LIMIT}
     children:

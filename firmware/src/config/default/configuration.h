@@ -299,6 +299,7 @@ extern "C" {
 #define TCPIP_EMAC_RX_FRAGMENTS		    			1
 
 #define TCPIP_EMAC_RX_FILTERS                       \
+                                                    TCPIP_MAC_RX_FILTER_TYPE_MCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_UCAST_ACCEPT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_RUNT_REJECT |\
                                                     TCPIP_MAC_RX_FILTER_TYPE_CRC_ERROR_REJECT |\
