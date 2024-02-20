@@ -17,7 +17,10 @@ bool http_prepare_parser(void) {
     http_code = 0;
     error_code = HTTP_ERR_UNKNOWN;
     working_buffer = (char*)pvPortMalloc(WORKING_BUFFER_SIZE*sizeof(char));
-    if (working_buffer == NULL) return false;
+    if (working_buffer == NULL) {
+        error_code = HTTP_ERR_ALOC;
+        return false;
+    }
     memset(working_buffer, 0x00, WORKING_BUFFER_SIZE);
     return true;
 }
@@ -38,8 +41,8 @@ http_err_t http_get_err_code(void) {
 static http_res_t http_finalize_parsing(uri_t* uri) {
     switch(http_code) {
         case 200:
-        return HTTP_HEADER_OK;
         error_code = HTTP_NO_ERR;
+        return HTTP_HEADER_OK;
         break;
         
         case 301:
@@ -48,13 +51,13 @@ static http_res_t http_finalize_parsing(uri_t* uri) {
             error_code = HTTP_ERR_NO_DATA;
             return HTTP_HEADER_ERROR;
         }
-        return HTTP_HEADER_REDIRECTED;
         error_code = HTTP_NO_ERR;
+        return HTTP_HEADER_REDIRECTED;
         break;
         
         default:
-        return HTTP_HEADER_ERROR;
         error_code = HTTP_ERR_UNKNOWN;
+        return HTTP_HEADER_ERROR;
         break;
     }
     
