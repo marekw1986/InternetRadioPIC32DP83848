@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #include "http_header_parser.h"
+#include "vs1003/mediainfo.h"
 #include "FreeRTOS.h"
 
 #define WORKING_BUFFER_SIZE 512
@@ -10,6 +11,7 @@ static uint16_t http_code = 0;
 static http_err_t error_code = HTTP_ERR_UNKNOWN;
 
 static void analyze_line(char* line, uint16_t len, uri_t* uri);
+static void analyze_icy_param(const char* param);
 static http_res_t http_finalize_parsing(uri_t* uri);
 
 bool http_prepare_parser(void) {
@@ -73,6 +75,28 @@ static void analyze_line(char* line, uint16_t len, uri_t* uri) {
     tok += 2;
     if (strncmp(line, "Location", strlen(line)) == 0) {
         parse_url(tok, strlen(tok), uri);
+    }
+    else if (strncmp(line, "icy-", 4) == 0) {
+        const char* icy_param = line+5;
+        analyze_icy_param(icy_param);
+    }
+}
+
+static void analyze_icy_param(const char* param_name) {
+    char* param = strchr(param_name, ':');
+    if (param == NULL) {
+        return;
+    }
+    *param = '\0';
+    param++;
+    if (strncmp(param_name, "name", strlen(param_name)) == 0) {
+        mediainfo_title_set(param);
+    }
+    else if (strncmp(param_name, "br", strlen(param_name)) == 0) {
+        
+    }
+    else if (strncmp(param_name, "sr", strlen(param_name)) == 0) {
+        
     }
 }
 
