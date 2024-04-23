@@ -24,6 +24,8 @@ Internet radio based on PIC32
 - [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
 - [ ] Controll LCD backlight brightness with soft PWM
+- [ ] Analyze ICY headers
+	- [x] Implement basic funcionality
 
 ### Completed Column ✓
 - [x] Debug SD card
