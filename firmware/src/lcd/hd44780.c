@@ -289,10 +289,10 @@ void lcd_home(void) {
 
 void lcd_set_backlight_state(bool state) {
     if (state == true) {
-        CLR_BACKLIGHT;
+        SET_BACKLIGHT;
     }
     else {
-        SET_BACKLIGHT;
+        CLR_BACKLIGHT;
     }
 }
 
