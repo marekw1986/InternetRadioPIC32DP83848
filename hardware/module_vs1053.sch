@@ -18480,6 +18480,8 @@ SOurce: www.abracon.com</description>
 <part name="L3" library="dp_devices" deviceset="FERRITE" device="-0805"/>
 <part name="R16" library="rcl" deviceset="R-EU_" device="R0603"/>
 <part name="U3" library="vlsi-web" deviceset="VS1053" device="-L"/>
+<part name="R17" library="rcl" deviceset="R-EU_" device="R0402" value="100k"/>
+<part name="GND35" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -18680,6 +18682,8 @@ SOurce: www.abracon.com</description>
 <instance part="R16" gate="G$1" x="248.92" y="99.06" rot="R90"/>
 <instance part="U3" gate="G$1" x="485.14" y="165.1"/>
 <instance part="U3" gate="P" x="622.3" y="88.9"/>
+<instance part="R17" gate="G$1" x="439.42" y="109.22" rot="R270"/>
+<instance part="GND35" gate="1" x="439.42" y="99.06"/>
 </instances>
 <busses>
 </busses>
@@ -19167,6 +19171,11 @@ SOurce: www.abracon.com</description>
 <pinref part="C2" gate="G$1" pin="2"/>
 <pinref part="GND3" gate="1" pin="GND"/>
 <wire x1="0" y1="538.48" x2="0" y2="541.02" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R17" gate="G$1" pin="2"/>
+<pinref part="GND35" gate="1" pin="GND"/>
+<wire x1="439.42" y1="101.6" x2="439.42" y2="104.14" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3V" class="0">
@@ -20454,7 +20463,15 @@ SOurce: www.abracon.com</description>
 <pinref part="R29" gate="G$1" pin="1"/>
 <pinref part="U3" gate="G$1" pin="GPIO3/SDATA"/>
 <wire x1="464.82" y1="127" x2="459.74" y2="127" width="0.1524" layer="91"/>
-<wire x1="459.74" y1="127" x2="459.74" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="459.74" y1="127" x2="459.74" y2="119.38" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="GPIO6/I2S_SCLK"/>
+<wire x1="459.74" y1="119.38" x2="459.74" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="459.74" y1="116.84" x2="459.74" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="464.82" y1="119.38" x2="459.74" y2="119.38" width="0.1524" layer="91"/>
+<junction x="459.74" y="119.38"/>
+<pinref part="U3" gate="G$1" pin="GPIO7/I2S_DATA"/>
+<wire x1="464.82" y1="116.84" x2="459.74" y2="116.84" width="0.1524" layer="91"/>
+<junction x="459.74" y="116.84"/>
 </segment>
 </net>
 <net name="VS_N$27" class="0">
@@ -20470,7 +20487,11 @@ SOurce: www.abracon.com</description>
 <pinref part="R27" gate="G$1" pin="1"/>
 <pinref part="U3" gate="G$1" pin="GPIO1"/>
 <wire x1="464.82" y1="132.08" x2="449.58" y2="132.08" width="0.1524" layer="91"/>
-<wire x1="449.58" y1="132.08" x2="449.58" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="449.58" y1="132.08" x2="449.58" y2="124.46" width="0.1524" layer="91"/>
+<pinref part="U3" gate="G$1" pin="GPIO4/I2S_LROUT"/>
+<wire x1="449.58" y1="124.46" x2="449.58" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="464.82" y1="124.46" x2="449.58" y2="124.46" width="0.1524" layer="91"/>
+<junction x="449.58" y="124.46"/>
 </segment>
 </net>
 <net name="VS_N$30" class="0">
@@ -20960,6 +20981,14 @@ SOurce: www.abracon.com</description>
 <pinref part="IC3" gate="G$1" pin="RA15/INT4/SDA1/AETXEN"/>
 <wire x1="20.32" y1="406.4" x2="15.24" y2="406.4" width="0.1524" layer="91"/>
 <label x="15.24" y="406.4" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="U3" gate="G$1" pin="GPIO5/I2S_MCLK"/>
+<pinref part="R17" gate="G$1" pin="1"/>
+<wire x1="464.82" y1="121.92" x2="439.42" y2="121.92" width="0.1524" layer="91"/>
+<wire x1="439.42" y1="121.92" x2="439.42" y2="114.3" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
