@@ -14,6 +14,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "peripheral/coretimer/plib_coretimer.h"
+#include "../common.h"
 
 #ifndef min
 #define min(a,b) ((a<b) ?a:b)
@@ -124,7 +125,8 @@ void VS1003_low_level_init(void) {
     VS1003_write_register(SCI_MODE, (1 << SM_SDINEW) | (1 << SM_RESET) );
     vTaskDelay(1);
     await_data_request();
-    VS1003_write_register(SCI_CLOCKF,0xF800); // Experimenting with highest clock settings
+    // VS1003_write_register(SCI_CLOCKF,0xF800); // Experimenting with highest clock settings (it was from VS1003)
+    VS1003_write_register(SCI_CLOCKF,0xE800); // New setting for VS1053
     vTaskDelay(1);
     await_data_request();
 
@@ -204,6 +206,7 @@ feed_ret_t VS1003_feed_from_buffer (void) {
         return FEED_RET_NO_DATA_NEEDED;
     }
 
+    uint32_t timeout = millis();
     do {
         if (get_num_of_bytes_in_ringbuffer() < 32) return FEED_RET_BUFFER_EMPTY;
 
@@ -212,6 +215,9 @@ feed_ret_t VS1003_feed_from_buffer (void) {
         asm("nop");
         asm("nop");
         asm("nop");
+        if ((uint32_t)(millis()-timeout) > 100) {
+            return FEED_RET_ERR_TMOUT;
+        }
     } while(VS_DREQ_PIN);
 
     return FEED_RET_OK;

@@ -67,6 +67,8 @@ static void get_uri_from_stream_id(uint16_t id, uri_t* uri);
 
 void VS1003_init(void) {
     VS1003_low_level_init();
+    VS1053B_apply_patch();
+    while ( !VS_DREQ_PIN ) {};
     vsQueueHandle = xQueueCreate(16, sizeof(vs1003cmd_t));
     if (vsQueueHandle == NULL) {
         SYS_CONSOLE_PRINT("ERROR: Can't create VS queue\r\n");
@@ -330,10 +332,17 @@ void VS1003_handle(void) {
                 }
                 if (VS_DREQ_PIN) break;
             }
-                
-            if (VS1003_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
+            
+            feed_ret_t feed_ret = VS1003_feed_from_buffer();
+            if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 StreamState = STREAM_HTTP_FILL_BUFFER;
                 timer = millis();
+                break;
+            }
+            else if (feed_ret == FEED_RET_ERR_TMOUT) {
+                StreamState = STREAM_HTTP_CLOSE;
+                timer = millis();
+                ReconnectStrategy = DO_NOT_RECONNECT;
                 break;
             }
 			if(TCPIP_TCP_WasReset(VS_Socket))
@@ -573,7 +582,7 @@ static void VS1003_stopPlaying(void) {
 }
  
 uint8_t is_audio_file (char* name) {
-    if (strstr(name, ".MP3") || strstr(name, ".WMA") || strstr(name, ".MID") || strstr(name, ".mp3") || strstr(name, ".wma") || strstr(name, ".mid")) {
+    if (strstr(name, ".MP3") || strstr(name, ".AAC") || strstr(name, ".FLAC") || strstr(name, ".WMA") || strstr(name, ".MID") || strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid")) {
         return 1;
     }
     return 0;

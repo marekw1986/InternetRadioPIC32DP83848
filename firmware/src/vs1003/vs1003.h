@@ -75,6 +75,7 @@ void VS1003_activate_spectrum_analyzer(void);
 void VS1003_read_spectrum_analyzer(void);
 void VS1003_send_cmd_thread_safe(uint8_t cmd, uint32_t param);
 const char* VS1003_get_state_description(void);
+void VS1053B_apply_patch(void);
 
 
 #ifdef	__cplusplus

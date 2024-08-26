@@ -51,7 +51,8 @@
 typedef enum {
     FEED_RET_NO_DATA_NEEDED = 0,
     FEED_RET_OK,
-    FEED_RET_BUFFER_EMPTY
+    FEED_RET_BUFFER_EMPTY,
+    FEED_RET_ERR_TMOUT
 } feed_ret_t;
 
 void VS1003_low_level_init(void);
