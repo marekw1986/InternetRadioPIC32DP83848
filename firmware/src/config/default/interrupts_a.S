@@ -114,6 +114,37 @@ _TIMER_2_Handler:
     nop
     portRESTORE_CONTEXT
     .end    _TIMER_2_Handler
+   .extern  I2C_1_Handler
+
+   .section .vector_25,code, keep
+   .equ     __vector_dispatch_25, IntVectorI2C_1_Handler
+   .global  __vector_dispatch_25
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  IntVectorI2C_1_Handler
+
+IntVectorI2C_1_Handler:
+    la    $26,  _I2C_1_Handler
+    jr    $26
+    nop
+    .end    IntVectorI2C_1_Handler
+
+   .section .I2C_1_Handler_vector_text, code, keep
+   .set     nomicromips
+   .set     noreorder
+   .set     nomips16
+   .set     noat
+   .ent  _I2C_1_Handler
+
+_I2C_1_Handler:
+    portSAVE_CONTEXT
+    la    s6,  I2C_1_Handler
+    jalr  s6
+    nop
+    portRESTORE_CONTEXT
+    .end    _I2C_1_Handler
    .extern  SPI_4_Handler
 
    .section .vector_32,code, keep

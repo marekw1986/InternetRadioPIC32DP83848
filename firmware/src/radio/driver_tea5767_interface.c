@@ -35,6 +35,11 @@
  */
 
 #include "driver_tea5767_interface.h"
+#include "i2c.h"
+#include "lcd/i2c.h"
+#include "system/debug/sys_debug.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /**
  * @brief  interface iic bus init
@@ -72,6 +77,11 @@ uint8_t tea5767_interface_iic_deinit(void)
  */
 uint8_t tea5767_interface_iic_write_cmd(uint8_t addr, uint8_t *buf, uint16_t len)
 {
+    while(len) {
+        i2c_send_byte(addr, *buf);
+        len--;
+        buf++;
+    }
     return 0;
 }
 
@@ -87,6 +97,11 @@ uint8_t tea5767_interface_iic_write_cmd(uint8_t addr, uint8_t *buf, uint16_t len
  */
 uint8_t tea5767_interface_iic_read_cmd(uint8_t addr, uint8_t *buf, uint16_t len)
 {
+    while (len) {
+        i2c_send_byte(addr, *buf);
+        len--;
+        buf++;
+    }
     return 0;
 }
 
@@ -97,7 +112,7 @@ uint8_t tea5767_interface_iic_read_cmd(uint8_t addr, uint8_t *buf, uint16_t len)
  */
 void tea5767_interface_delay_ms(uint32_t ms)
 {
-
+    vTaskDelay(ms);
 }
 
 /**
@@ -107,5 +122,5 @@ void tea5767_interface_delay_ms(uint32_t ms)
  */
 void tea5767_interface_debug_print(const char *const fmt, ...)
 {
-    
+    SYS_CONSOLE_PRINT(fmt);
 }

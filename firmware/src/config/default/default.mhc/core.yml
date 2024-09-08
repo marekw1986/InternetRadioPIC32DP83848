@@ -2092,6 +2092,27 @@ children:
       - type: Dynamic
         attributes: {id: core, value: I2C_3_Handler}
   - type: Boolean
+    attributes: {id: EVIC_25_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: Boolean
+    attributes: {id: EVIC_25_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'true'}
+  - type: String
+    attributes: {id: EVIC_25_INTERRUPT_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: I2C_1_InterruptHandler}
+  - type: Boolean
     attributes: {id: EVIC_32_1_ENABLE}
     children:
     - type: Values
@@ -2408,13 +2429,20 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: 'false'}
+  - type: Boolean
+    attributes: {id: I2C1_CLOCK_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: i2c1, value: 'true'}
   - type: Integer
     attributes: {id: I2C1_CLOCK_FREQUENCY}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: core, value: '0'}
+        attributes: {id: core, value: '40000000'}
   - type: Integer
     attributes: {id: I2C2_CLOCK_FREQUENCY}
     children:
@@ -2443,6 +2471,34 @@ children:
       children:
       - type: Dynamic
         attributes: {id: core, value: '0'}
+  - type: Boolean
+    attributes: {id: I2C_1_INTERRUPT_ENABLE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: i2c1, value: 'true'}
+  - type: Boolean
+    attributes: {id: I2C_1_INTERRUPT_ENABLE_UPDATE}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: core, value: 'false'}
+  - type: String
+    attributes: {id: I2C_1_INTERRUPT_HANDLER}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: i2c1, value: I2C_1_InterruptHandler}
+  - type: Boolean
+    attributes: {id: I2C_1_INTERRUPT_HANDLER_LOCK}
+    children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: i2c1, value: 'true'}
   - type: Boolean
     attributes: {id: I2C_3_INTERRUPT_ENABLE_UPDATE}
     children:

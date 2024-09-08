@@ -338,6 +338,12 @@
             <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="f10" displayName="i2c" projectFiles="true">
+              <logicalFolder name="f1" displayName="master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c1_master.h</itemPath>
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c_master_common.h</itemPath>
+              </logicalFolder>
+            </logicalFolder>
             <logicalFolder name="f7" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/rtcc/plib_rtcc.h</itemPath>
             </logicalFolder>
@@ -482,6 +488,11 @@
         <itemPath>../src/lcd/hd44780.h</itemPath>
         <itemPath>../src/lcd/ui.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="radio" projectFiles="true">
+        <itemPath>../src/radio/driver_tea5767.h</itemPath>
+        <itemPath>../src/radio/driver_tea5767_interface.h</itemPath>
+        <itemPath>../src/radio/i2c.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.h</itemPath>
         <itemPath>../src/vs1003/ringbuffer.h</itemPath>
@@ -606,6 +617,11 @@
             <logicalFolder name="f5" displayName="gpio" projectFiles="true">
               <itemPath>../src/config/default/peripheral/gpio/plib_gpio.c</itemPath>
             </logicalFolder>
+            <logicalFolder name="f10" displayName="i2c" projectFiles="true">
+              <logicalFolder name="f1" displayName="master" projectFiles="true">
+                <itemPath>../src/config/default/peripheral/i2c/master/plib_i2c1_master.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
             <logicalFolder name="f7" displayName="rtcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/rtcc/plib_rtcc.c</itemPath>
             </logicalFolder>
@@ -718,6 +734,11 @@
         <itemPath>../src/lcd/hd44780.c</itemPath>
         <itemPath>../src/lcd/ui.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="radio" projectFiles="true">
+        <itemPath>../src/radio/driver_tea5767.c</itemPath>
+        <itemPath>../src/radio/i2c.c</itemPath>
+        <itemPath>../src/radio/driver_tea5767_interface.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
         <itemPath>../src/vs1003/mediainfo.c</itemPath>
         <itemPath>../src/vs1003/ringbuffer.c</itemPath>
@@ -812,6 +833,7 @@
         <itemPath>../src/config/default/default.mhc/sys_debug.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sys_console.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/sys_time.yml</itemPath>
+        <itemPath>../src/config/default/default.mhc/i2c1.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/spi1.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/HarmonyCore.yml</itemPath>
         <itemPath>../src/config/default/default.mhc/project.yml</itemPath>
@@ -878,6 +900,20 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <item path="../src/vs1003/specana1003b.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>
