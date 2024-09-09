@@ -40,6 +40,7 @@
 #include "system/debug/sys_debug.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "peripheral/i2c/master/plib_i2c1_master.h"
 
 /**
  * @brief  interface iic bus init
@@ -77,12 +78,7 @@ uint8_t tea5767_interface_iic_deinit(void)
  */
 uint8_t tea5767_interface_iic_write_cmd(uint8_t addr, uint8_t *buf, uint16_t len)
 {
-    while(len) {
-        i2c_send_byte(addr, *buf);
-        len--;
-        buf++;
-    }
-    return 0;
+    return I2C1_Write(addr, buf, len);
 }
 
 /**
@@ -97,12 +93,7 @@ uint8_t tea5767_interface_iic_write_cmd(uint8_t addr, uint8_t *buf, uint16_t len
  */
 uint8_t tea5767_interface_iic_read_cmd(uint8_t addr, uint8_t *buf, uint16_t len)
 {
-    while (len) {
-        i2c_send_byte(addr, *buf);
-        len--;
-        buf++;
-    }
-    return 0;
+    return I2C1_Read(addr, buf, len);
 }
 
 /**

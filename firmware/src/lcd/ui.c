@@ -56,7 +56,7 @@ void ui_init(void) {
     button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1003_play_prev, NULL);
     button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1003_play_next, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
-    button_init(&rotary_button, &PORTA, _PORTA_RA15_MASK, NULL, NULL);
+    button_init(&rotary_button, &PORTF, _PORTF_RF2_MASK, NULL, NULL);
     button_register_global_callback(ui_button_update_backlight);
     rotary_register_callback(ui_rotary_change_volume);
     

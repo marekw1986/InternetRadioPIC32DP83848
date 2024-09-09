@@ -1672,13 +1672,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 37436424B3DFA2A4948662880FFD2E29
-- generatedChecksum: 8B19B696C92B0FA587D14556690B74E7
+- generatedChecksum: 2283CA653AAC60A6A5D8F69EDCE9DE51
   logicalPath: config/default/peripheral/gpio
   name: plib_gpio.h
   physicalPath: peripheral/gpio
   security: NON_SECURE
   type: HEADER
-  userChecksum: A2C84A4AE4FE446A434577FC22F72523
+  userChecksum: E8E0FA502DBC7377D5AD46008B7BB18C
 - generatedChecksum: 62FBC878743DB699BADD3CF9BC5D10AD
   logicalPath: config/default/peripheral/i2c/master
   name: plib_i2c1_master.h
