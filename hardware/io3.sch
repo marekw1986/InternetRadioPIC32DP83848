@@ -16547,7 +16547,7 @@ Based on the following sources:
 <instance part="PAD6" gate="1" x="218.44" y="190.5" rot="R180"/>
 <instance part="PAD2" gate="1" x="144.78" y="195.58"/>
 <instance part="PAD3" gate="1" x="144.78" y="193.04"/>
-<instance part="PAD9" gate="1" x="152.4" y="167.64"/>
+<instance part="PAD9" gate="1" x="152.4" y="162.56"/>
 <instance part="C5" gate="G$1" x="279.4" y="251.46"/>
 <instance part="GND4" gate="1" x="279.4" y="241.3"/>
 <instance part="C6" gate="G$1" x="279.4" y="289.56" rot="MR0"/>
@@ -16713,18 +16713,11 @@ Based on the following sources:
 <pinref part="T1" gate="G$1" pin="B"/>
 </segment>
 </net>
-<net name="SDA_3V" class="0">
+<net name="RF8" class="0">
 <segment>
-<wire x1="185.42" y1="162.56" x2="200.66" y2="162.56" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="162.56" x2="193.04" y2="162.56" width="0.1524" layer="91"/>
 <pinref part="JP1" gate="A" pin="1"/>
-<label x="200.66" y="162.56" size="1.4224" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="SCL_3V" class="0">
-<segment>
-<wire x1="177.8" y1="162.56" x2="162.56" y2="162.56" width="0.1524" layer="91"/>
-<label x="162.56" y="162.56" size="1.4224" layer="95" rot="R180" xref="yes"/>
-<pinref part="JP1" gate="A" pin="2"/>
+<label x="193.04" y="162.56" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -16886,13 +16879,13 @@ Based on the following sources:
 </net>
 <net name="ROT_SW" class="0">
 <segment>
-<pinref part="JP1" gate="A" pin="6"/>
-<wire x1="177.8" y1="167.64" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
 <pinref part="R14" gate="G$1" pin="1"/>
-<wire x1="157.48" y1="167.64" x2="154.94" y2="167.64" width="0.1524" layer="91"/>
-<wire x1="157.48" y1="172.72" x2="157.48" y2="167.64" width="0.1524" layer="91"/>
-<junction x="157.48" y="167.64"/>
+<wire x1="157.48" y1="162.56" x2="154.94" y2="162.56" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="172.72" x2="157.48" y2="162.56" width="0.1524" layer="91"/>
 <pinref part="PAD9" gate="1" pin="P"/>
+<pinref part="JP1" gate="A" pin="2"/>
+<wire x1="157.48" y1="162.56" x2="177.8" y2="162.56" width="0.1524" layer="91"/>
+<junction x="157.48" y="162.56"/>
 </segment>
 </net>
 <net name="ROT_B_CLK" class="0">
@@ -17114,6 +17107,20 @@ Based on the following sources:
 <pinref part="T1" gate="G$1" pin="C"/>
 <wire x1="48.26" y1="101.6" x2="25.4" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="25.4" y1="101.6" x2="25.4" y2="96.52" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="SCL1" class="0">
+<segment>
+<pinref part="JP1" gate="A" pin="3"/>
+<wire x1="185.42" y1="165.1" x2="193.04" y2="165.1" width="0.1524" layer="91"/>
+<label x="193.04" y="165.1" size="1.4224" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="SDA1" class="0">
+<segment>
+<pinref part="JP1" gate="A" pin="6"/>
+<wire x1="177.8" y1="167.64" x2="170.18" y2="167.64" width="0.1524" layer="91"/>
+<label x="170.18" y="167.64" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>
