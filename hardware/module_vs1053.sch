@@ -20662,13 +20662,6 @@ SOurce: www.abracon.com</description>
 <label x="320.04" y="246.38" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="RF2" class="0">
-<segment>
-<pinref part="IC3" gate="G$1" pin="SDA1A/SDI1A/U1ARX/RF2"/>
-<wire x1="114.3" y1="383.54" x2="119.38" y2="383.54" width="0.1524" layer="91"/>
-<label x="119.38" y="383.54" size="1.4224" layer="95" xref="yes"/>
-</segment>
-</net>
 <net name="A3V" class="0">
 <segment>
 <pinref part="R5" gate="G$1" pin="2"/>
@@ -20756,6 +20749,11 @@ SOurce: www.abracon.com</description>
 <pinref part="SV1" gate="G$1" pin="2"/>
 <wire x1="325.12" y1="243.84" x2="320.04" y2="243.84" width="0.1524" layer="91"/>
 <label x="320.04" y="243.84" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC3" gate="G$1" pin="SDA1A/SDI1A/U1ARX/RF2"/>
+<wire x1="114.3" y1="383.54" x2="119.38" y2="383.54" width="0.1524" layer="91"/>
+<label x="119.38" y="383.54" size="1.4224" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
