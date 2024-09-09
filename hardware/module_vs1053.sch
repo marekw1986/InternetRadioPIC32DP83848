@@ -20016,8 +20016,8 @@ SOurce: www.abracon.com</description>
 <part name="J1" library="SparkFun-Connectors" deviceset="AUDIO_JACK_TRRS" device="SMD_RA"/>
 <part name="C61" library="rcl" deviceset="C-EU" device="C0603" value="10n"/>
 <part name="C62" library="rcl" deviceset="C-EU" device="C0603" value="10n"/>
-<part name="R12" library="rcl" deviceset="R-EU_" device="0204/5" value="470"/>
-<part name="R37" library="rcl" deviceset="R-EU_" device="0204/5" value="470"/>
+<part name="R12" library="rcl" deviceset="R-EU_" device="0204/7" value="470"/>
+<part name="R37" library="rcl" deviceset="R-EU_" device="0204/7" value="470"/>
 <part name="C63" library="rcl" deviceset="C-EU" device="C0603" value="1u"/>
 <part name="C64" library="rcl" deviceset="C-EU" device="C0603" value="1u"/>
 <part name="JP1" library="pinhead" deviceset="PINHD-1X3" device=""/>
