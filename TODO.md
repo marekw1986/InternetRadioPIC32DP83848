@@ -26,6 +26,13 @@ Internet radio based on PIC32
 - [ ] Controll LCD backlight brightness with soft PWM
 - [ ] Analyze ICY headers
 	- [x] Implement basic funcionality
+- [ ] Implement analogue radio funcionality
+	- [ ] Design RF board
+	- [ ] Integrate Si5531 library with the project
+	- [ ] Integrate TEA5767 library with the project
+	- [ ] Write code controlling analog switch, depending if we are using FM (TEA5767), AM/SSB/CW (SDR) or neither of them.
+	- [ ] Write code responsible for controlling VS1053 line input.
+	- [ ] Write/integrate code responsible for AM/SSB/CW demodulation of digitized IQ signal from Tayloe circuit.
 
 ### Completed Column ✓
 - [x] Debug SD card
