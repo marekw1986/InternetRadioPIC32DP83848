@@ -8050,6 +8050,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="558.8" y1="302.26" x2="551.18" y2="302.26" width="0.1524" layer="91"/>
 <label x="551.18" y="302.26" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="2.CLK"/>
+<wire x1="436.88" y1="396.24" x2="426.72" y2="396.24" width="0.1524" layer="91"/>
+<label x="426.72" y="396.24" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="VS_AGND" class="0">
 <segment>
@@ -8169,6 +8174,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="558.8" y1="304.8" x2="551.18" y2="304.8" width="0.1524" layer="91"/>
 <label x="551.18" y="304.8" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="1.DATA"/>
+<wire x1="436.88" y1="401.32" x2="426.72" y2="401.32" width="0.1524" layer="91"/>
+<label x="426.72" y="401.32" size="1.4224" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="RF2_ROT_SW" class="0">
 <segment>
@@ -8184,20 +8194,6 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="510.54" y1="342.9" x2="510.54" y2="337.82" width="0.1524" layer="91"/>
 <pinref part="U$2" gate="G$1" pin="COM2"/>
 <wire x1="480.06" y1="337.82" x2="510.54" y2="337.82" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="SDA" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="1.DATA"/>
-<wire x1="436.88" y1="401.32" x2="426.72" y2="401.32" width="0.1524" layer="91"/>
-<label x="426.72" y="401.32" size="1.4224" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
-<net name="SCL" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="2.CLK"/>
-<wire x1="436.88" y1="396.24" x2="426.72" y2="396.24" width="0.1524" layer="91"/>
-<label x="426.72" y="396.24" size="1.4224" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="CLK2" class="0">
