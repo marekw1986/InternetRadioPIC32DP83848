@@ -31,6 +31,7 @@
 #include "../stream_list.h"
 #ifdef USE_LCD_UI
 #include "../lcd/ui.h"
+#include "peripheral/gpio/plib_gpio.h"
 #endif
 
 #define RECONNECT_LIMIT 3
@@ -869,6 +870,22 @@ void VS1003_stop(void) {
     ui_clear_state_info();
     #endif
     StreamState = STREAM_HOME;
+}
+
+void VS1003_startRecordingPCM(void) {
+    VS1003_soft_reset();
+    while (!VS_DREQ_PIN) {}
+    VS1003_write_register(SCI_AICTRL0, 48000); // Sample rate
+    VS1003_write_register(SCI_AICTRL1, 0); // Recording gain : 1024 : 1.If 0, use AGC
+    VS1003_write_register(SCI_AICTRL2, 4096); // Maximum AGC level: 1024 = 1. Only used if SCI_AICTRL1 is set to 0.
+    VS1003_write_register(SCI_AICTRL3, 4); //joint stereo AGC + LINEAR PCM
+    while (!VS_DREQ_PIN) {}
+    VS1003_write_register(SCI_MODE, (1 << SM_RESET) | (1 << SM_ADPCM) | (1 << SM_LINE_IN) | (1 << SM_SDINEW));
+    while (!VS_DREQ_PIN) {}
+}
+
+void VS1003_stopRecordingPCM(void) {
+    VS1003_write_register(SCI_AICTRL3, 1);
 }
 
 void VS1003_setLoop(bool val) {

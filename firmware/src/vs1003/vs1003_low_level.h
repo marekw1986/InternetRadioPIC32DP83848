@@ -56,6 +56,7 @@ typedef enum {
 } feed_ret_t;
 
 void VS1003_low_level_init(void);
+void VS1003_soft_reset(void);
 uint16_t VS1003_read_register(uint8_t _reg);
 void VS1003_write_register(uint8_t _reg,uint16_t _value);
 void VS1003_sdi_send_buffer(const uint8_t* data, int len);

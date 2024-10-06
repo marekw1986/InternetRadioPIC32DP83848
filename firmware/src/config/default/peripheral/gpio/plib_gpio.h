@@ -105,7 +105,7 @@
 #define VS_DREQ_OutputEnable()      (TRISCCLR = (1<<1))
 #define VS_DREQ_InputEnable()       (TRISCSET = (1<<1))
 #define VS_DREQ_Get()               ((PORTC >> 1) & 0x1)
-#define VS_DREQ_PIN                  GPIO_PIN_RC1
+//#define VS_DREQ_PIN                  GPIO_PIN_RC1
 
 /*** Macros for VS_XRST pin ***/
 #define VS_XRST_Set()               (LATCSET = (1<<2))

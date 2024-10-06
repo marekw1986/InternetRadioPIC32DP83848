@@ -139,6 +139,12 @@ void VS1003_low_level_init(void) {
     SYS_CONSOLE_PRINT("VS1003 OK\r\n");
 }
 
+void VS1003_soft_reset(void) {
+    VS1003_write_register(SCI_MODE, (1 << SM_RESET));
+    CORETIMER_DelayUs(2);
+    while(!VS_DREQ_PIN) {}
+}
+
 uint16_t VS1003_read_register(uint8_t _reg) {
     uint16_t result;
     control_mode_on();
