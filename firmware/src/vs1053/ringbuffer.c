@@ -11,7 +11,7 @@
 #include <xc.h>
 
 #include "ringbuffer.h"
-#include "vs1003.h"
+#include "vs1053.h"
 #include "../common.h"
 
 static uint8_t buffer[RING_BUFFER_SIZE];

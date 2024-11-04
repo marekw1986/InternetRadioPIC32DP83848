@@ -36,7 +36,7 @@
 #include "task.h"
 #include "usb/usb_host.h"
 #include "usb/usb_host_msd.h"
-#include "vs1003/vs1003.h"
+#include "vs1053/vs1053.h"
 #include "io/buttons.h"
 #include "io/rotary.h"
 #include "system/fs/sys_fs.h"
@@ -225,8 +225,8 @@ void APP_Tasks ( void )
             lcd_cls();
             ui_init();          
             
-            VS1003_init();
-            VS1003_setVolume(100);
+            VS1053_init();
+            VS1053_setVolume(100);
             vTaskDelay(100);
             SYS_FS_EventHandlerSet((void *)APP_SYSFSEventHandler, (uintptr_t)NULL);
             USB_HOST_EventHandlerSet(APP_USBHostEventHandler, 0);            
@@ -300,7 +300,7 @@ void APP_Tasks ( void )
             }
             //static uint16_t i = 0;
             //SYS_DEBUG_PRINT(SYS_ERROR_DEBUG, "Print from user task %d\r\n", i++);
-            VS1003_handle();
+            VS1053_handle();
             
             ui_handle();
             

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "hd44780.h"
 #include "ui.h"
-#include "../vs1003/vs1003.h"
-#include "../vs1003/mediainfo.h"
+#include "../vs1053/vs1053.h"
+#include "../vs1053/mediainfo.h"
 #include "../io/buttons.h"
 #include "../io/rotary.h"
 #include "../common.h"
@@ -53,8 +53,8 @@ static void ui_button_update_backlight();
 
 void ui_init(void) {
     rotary_init();
-    button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1003_play_prev, NULL);
-    button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1003_play_next, NULL);
+    button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1053_play_prev, NULL);
+    button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1053_play_next, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
     button_init(&rotary_button, &PORTF, _PORTF_RF2_MASK, NULL, NULL);
     button_register_global_callback(ui_button_update_backlight);
@@ -72,8 +72,8 @@ void ui_switch_state(ui_state_t new_state) {
 		case UI_HANDLE_MAIN_SCREEN:
         ui_state = new_state;
         rotary_register_callback(ui_rotary_change_volume);
-        button_register_push_callback(&prev_btn, VS1003_play_prev);
-        button_register_push_callback(&next_btn, VS1003_play_next);
+        button_register_push_callback(&prev_btn, VS1053_play_prev);
+        button_register_push_callback(&next_btn, VS1053_play_next);
         button_register_push_callback(&rotary_button, NULL);
 		ui_draw_main_screen();
 		break;
@@ -104,7 +104,7 @@ static void ui_draw_main_screen(void) {
 	if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
     lcd_cls();
 	ui_update_content_info(mediainfo_title_get());
-    const char* state_description = VS1003_get_state_description();
+    const char* state_description = VS1053_get_state_description();
     if (state_description == NULL) {
         ui_clear_state_info();
     }
@@ -134,7 +134,7 @@ void ui_update_volume(void) {
     char supbuf[16];
     
     if (ui_state != UI_HANDLE_MAIN_SCREEN) { return; }
-    uint8_t volume = VS1003_getVolume();
+    uint8_t volume = VS1053_getVolume();
     snprintf(supbuf, sizeof(supbuf)-1, "%d%s", volume, (volume < 100) ? " " : "");
     lcd_locate(3, 8);
     lcd_str_part(supbuf, 3);
@@ -319,11 +319,11 @@ void ui_handle_updating_time(void) {
 
 // Button functions
 static void ui_rotary_change_volume(int8_t new_vol) {
-    int8_t volume = VS1003_getVolume();
+    int8_t volume = VS1053_getVolume();
     volume += new_vol;
     if (volume > 100) volume = 100;
     if (volume < 0) volume = 0;
-    VS1003_setVolume(volume);
+    VS1053_setVolume(volume);
 }
 
 static void ui_rotary_move_cursor(int8_t val) {
@@ -358,7 +358,7 @@ static void ui_button_switch_state(void) {
 static void ui_button_play_selected_stream(void) {
     if (ui_state != UI_HANDLE_SCROLLABLE_LIST) { return; }
     ui_switch_state(UI_HANDLE_MAIN_SCREEN);
-    VS1003_play_http_stream_by_id(selected_stream_id);
+    VS1053_play_http_stream_by_id(selected_stream_id);
 }
 
 static void ui_button_stream_list_next_page(void) {

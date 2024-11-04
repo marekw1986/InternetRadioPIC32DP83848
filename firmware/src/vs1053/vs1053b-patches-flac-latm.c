@@ -1,6 +1,6 @@
 /* VS1053b flac patch */
-#include "vs1003.h"
-#include "vs1003_low_level.h"
+#include "vs1053.h"
+#include "vs1053_low_level.h"
 
 const unsigned short plugin[] = { /* Compressed plugin */
 	0x0007,0x0001, /*copy 1*/
@@ -1129,12 +1129,12 @@ void VS1053B_apply_patch(void) {
       n &= 0x7FFF;
       val = plugin[i++];
       while (n--) {
-        VS1003_write_register(addr, val);
+        VS1053_write_register(addr, val);
       }
     } else {           /* Copy run, copy n samples */
       while (n--) {
         val = plugin[i++];
-        VS1003_write_register(addr, val);
+        VS1053_write_register(addr, val);
       }
     }
   }

@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include "http_header_parser.h"
-#include "vs1003/mediainfo.h"
+#include "vs1053/mediainfo.h"
 #include "FreeRTOS.h"
 
 #define WORKING_BUFFER_SIZE 512

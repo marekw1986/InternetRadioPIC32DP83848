@@ -42,8 +42,8 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 //#include "internal.h"
 #include "common.h"
 #include "stream_list.h"
-#include "vs1003/vs1003.h"
-#include "vs1003/mediainfo.h"
+#include "vs1053/vs1053.h"
+#include "vs1053/mediainfo.h"
 
 
 /****************************************************************************
@@ -455,23 +455,23 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
             }
             SYS_CONSOLE_PRINT("POSTPlay: token ok\r\n");
             if (newVol) {
-                VS1003_send_cmd_thread_safe(VS_MSG_SET_VOL, (uint32_t)newVol);
+                VS1053_send_cmd_thread_safe(VS_MSG_SET_VOL, (uint32_t)newVol);
             }
             if (newLoop >= 0) {
-                VS1003_send_cmd_thread_safe(VS_MSG_LOOP, newLoop);
+                VS1053_send_cmd_thread_safe(VS_MSG_LOOP, newLoop);
             }
             if (strlen(newurl)) {
                 if (strncmp(newurl, "stop", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: stop\r\n");
-                    VS1003_send_cmd_thread_safe(VS_MSG_STOP, 0);
+                    VS1053_send_cmd_thread_safe(VS_MSG_STOP, 0);
                 }
                 else if (strncmp(newurl, "next", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: playing next song/stream\r\n");
-                     VS1003_send_cmd_thread_safe(VS_MSG_NEXT, 0);
+                     VS1053_send_cmd_thread_safe(VS_MSG_NEXT, 0);
                 }
                 else if (strncmp(newurl, "prev", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: playing prev song/stream\r\n");
-                    VS1003_send_cmd_thread_safe(VS_MSG_PREV, 0);
+                    VS1053_send_cmd_thread_safe(VS_MSG_PREV, 0);
                 }
                 else {
                     switch(playsrc) {
@@ -481,7 +481,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                                 break;
                             }
                             SYS_CONSOLE_PRINT("POSTPlay: playing file %s\r\n", newurl);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_FILE, (uint32_t)newurl);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_FILE, (uint32_t)newurl);
                             break;
                         case PLAY_SRC_DIR:
                             if (!is_local_url_valid(newurl)) {
@@ -489,12 +489,12 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                                 break;
                             }                            
                             SYS_CONSOLE_PRINT("POSTPlay: playing dir %s\r\n", newurl);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_DIR, (uint32_t)newurl);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_DIR, (uint32_t)newurl);
                             break;
                         case PLAY_SRC_ID:;
                             uint16_t streamid = strtol(newurl, NULL, 10);
                             SYS_CONSOLE_PRINT("POSTPlay: playing stream by id %d\r\n", streamid);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_STREAM_BY_ID, streamid);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_STREAM_BY_ID, streamid);
                             break;
                         default:
                             break;
@@ -1074,7 +1074,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_playInfo(TCPIP_HTTP_NET_CONN_HANDLE co
             {   // failed to get a buffer; retry
                 return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
             }
-            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "{\"volume\": \"%d\", ", VS1003_getVolume());
+            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "{\"volume\": \"%d\", ", VS1053_getVolume());
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
             TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, INFO_LOOP);
             break;
@@ -1084,7 +1084,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_playInfo(TCPIP_HTTP_NET_CONN_HANDLE co
             {   // failed to get a buffer; retry
                 return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
             }
-            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "\"loop\": \"%s\", ", VS1003_getLoop() ? "true" : "false");
+            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "\"loop\": \"%s\", ", VS1053_getLoop() ? "true" : "false");
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
             TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, INFO_TYPE);
             break;

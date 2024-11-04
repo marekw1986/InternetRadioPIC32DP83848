@@ -8,7 +8,7 @@
  */
 
 #include <string.h>
-#include "vs1003_low_level.h"
+#include "vs1053_low_level.h"
 #include "ringbuffer.h"
 #include "system/debug/sys_debug.h"
 #include "FreeRTOS.h"
@@ -20,12 +20,12 @@
 #define min(a,b) ((a<b) ?a:b)
 #endif
 
-#define vs1003_chunk_size 32
+#define vs1053_chunk_size 32
 
-// VS1003 SCI Write Command byte is 0x02
+// VS1053 SCI Write Command byte is 0x02
 #define VS_WRITE_COMMAND 0x02
 
-// VS1003 SCI Read COmmand byte is 0x03
+// VS1053 SCI Read COmmand byte is 0x03
 #define VS_READ_COMMAND  0x03
 
 // Register names
@@ -68,16 +68,16 @@ const char * register_names[] =
     "AICTRL3",
 };
 
-static void VS1003_print_byte_register(uint8_t reg);
-static void VS1003_printDetails(void);
+static void VS1053_print_byte_register(uint8_t reg);
+static void VS1053_printDetails(void);
 static inline void await_data_request(void);
 static inline void control_mode_on(void);
 static inline void control_mode_off(void);
 static inline void data_mode_on(void);
 static inline void data_mode_off(void);
-static uint8_t VS1003_SPI_transfer(uint8_t outB);
+static uint8_t VS1053_SPI_transfer(uint8_t outB);
 
-void VS1003_low_level_init(void) {
+void VS1053_low_level_init(void) {
     // Keep the chip in reset until we are ready
     VS_RESET_TRIS = 0;
     VS_RESET_PIN = 0;
@@ -91,8 +91,8 @@ void VS1003_low_level_init(void) {
     // DREQ is an input
     VS_DREQ_TRIS = 1;
 
-    // Boot VS1003
-    SYS_CONSOLE_PRINT("Booting VS1003...\r\n");
+    // Boot VS1053
+    SYS_CONSOLE_PRINT("Booting VS1053...\r\n");
 
     vTaskDelay(1);
 
@@ -105,28 +105,28 @@ void VS1003_low_level_init(void) {
     VS_RESET_PIN = 1;
 
     // Declick: Immediately switch analog off
-    VS1003_write_register(SCI_VOL,0xffff); // VOL
+    VS1053_write_register(SCI_VOL,0xffff); // VOL
 
     /* Declick: Slow sample rate for slow analog part startup */
-    VS1003_write_register(SCI_AUDATA,10);
+    VS1053_write_register(SCI_AUDATA,10);
 
     vTaskDelay(100);
 
     /* Switch on the analog parts */
-    VS1003_write_register(SCI_VOL,0xfefe); // VOL
+    VS1053_write_register(SCI_VOL,0xfefe); // VOL
 
-    SYS_CONSOLE_PRINT("VS1003 still booting\r\n");
+    SYS_CONSOLE_PRINT("VS1053 still booting\r\n");
 
-    VS1003_write_register(SCI_AUDATA,44101); // 44.1kHz stereo
+    VS1053_write_register(SCI_AUDATA,44101); // 44.1kHz stereo
 
-    VS1003_write_register(SCI_VOL,0x2020); // VOL
+    VS1053_write_register(SCI_VOL,0x2020); // VOL
 
     // soft reset
-    VS1003_write_register(SCI_MODE, (1 << SM_SDINEW) | (1 << SM_RESET) );
+    VS1053_write_register(SCI_MODE, (1 << SM_SDINEW) | (1 << SM_RESET) );
     vTaskDelay(1);
     await_data_request();
-    // VS1003_write_register(SCI_CLOCKF,0xF800); // Experimenting with highest clock settings (it was from VS1003)
-    VS1003_write_register(SCI_CLOCKF,0xE800); // New setting for VS1053
+    // VS1053_write_register(SCI_CLOCKF,0xF800); // Experimenting with highest clock settings (it was from VS1053)
+    VS1053_write_register(SCI_CLOCKF,0xE800); // New setting for VS1053
     vTaskDelay(1);
     await_data_request();
 
@@ -134,78 +134,78 @@ void VS1003_low_level_init(void) {
     SPI1CON = (_SPI1CON_ON_MASK  | _SPI1CON_CKE_MASK | _SPI1CON_MSTEN_MASK);    //8 bit master mode, CKE=1, CKP=0
     SPI1BRG = 2; //8MHz
 
-    SYS_CONSOLE_PRINT("VS1003 Set\r\n");
-    VS1003_printDetails();
-    SYS_CONSOLE_PRINT("VS1003 OK\r\n");
+    SYS_CONSOLE_PRINT("VS1053 Set\r\n");
+    VS1053_printDetails();
+    SYS_CONSOLE_PRINT("VS1053 OK\r\n");
 }
 
-void VS1003_soft_reset(void) {
-    VS1003_write_register(SCI_MODE, (1 << SM_RESET));
+void VS1053_soft_reset(void) {
+    VS1053_write_register(SCI_MODE, (1 << SM_RESET));
     CORETIMER_DelayUs(2);
     while(!VS_DREQ_PIN) {}
 }
 
-uint16_t VS1003_read_register(uint8_t _reg) {
+uint16_t VS1053_read_register(uint8_t _reg) {
     uint16_t result;
     control_mode_on();
     CORETIMER_DelayUs(1); // tXCSS
-    VS1003_SPI_transfer(VS_READ_COMMAND); // Read operation
-    VS1003_SPI_transfer(_reg); // Which register
-    result = VS1003_SPI_transfer(0xff) << 8; // read high byte
-    result |= VS1003_SPI_transfer(0xff); // read low byte
+    VS1053_SPI_transfer(VS_READ_COMMAND); // Read operation
+    VS1053_SPI_transfer(_reg); // Which register
+    result = VS1053_SPI_transfer(0xff) << 8; // read high byte
+    result |= VS1053_SPI_transfer(0xff); // read low byte
     CORETIMER_DelayUs(1); // tXCSH
     await_data_request();
     control_mode_off();
     return result;
 }
 
-void VS1003_write_register(uint8_t _reg,uint16_t _value) {
+void VS1053_write_register(uint8_t _reg,uint16_t _value) {
     control_mode_on();
     CORETIMER_DelayUs(1); //delay_us(1); // tXCSS
-    VS1003_SPI_transfer(VS_WRITE_COMMAND); // Write operation
-    VS1003_SPI_transfer(_reg); // Which register
-    VS1003_SPI_transfer(_value >> 8); // Send hi byte
-    VS1003_SPI_transfer(_value & 0xff); // Send lo byte
+    VS1053_SPI_transfer(VS_WRITE_COMMAND); // Write operation
+    VS1053_SPI_transfer(_reg); // Which register
+    VS1053_SPI_transfer(_value >> 8); // Send hi byte
+    VS1053_SPI_transfer(_value & 0xff); // Send lo byte
     CORETIMER_DelayUs(1); //delay_us(1); // tXCSH
     await_data_request();
     control_mode_off();
 }
 
-void VS1003_sdi_send_buffer(const uint8_t* data, int len) {
+void VS1053_sdi_send_buffer(const uint8_t* data, int len) {
     int chunk_length;
 
     data_mode_on();
     while ( len ) {
         await_data_request();
         CORETIMER_DelayUs(3); //delay_us(3);
-        chunk_length = min(len, vs1003_chunk_size);
+        chunk_length = min(len, vs1053_chunk_size);
         len -= chunk_length;
-        while ( chunk_length-- ) VS1003_SPI_transfer(*data++);
+        while ( chunk_length-- ) VS1053_SPI_transfer(*data++);
     }
     data_mode_off();
 }
 
-void VS1003_sdi_send_chunk(const uint8_t* data, int len) {
+void VS1053_sdi_send_chunk(const uint8_t* data, int len) {
     if (len > 32) return;
     data_mode_on();
     await_data_request();
-    while ( len-- ) VS1003_SPI_transfer(*data++);
+    while ( len-- ) VS1053_SPI_transfer(*data++);
     data_mode_off();
 }
 
-void VS1003_sdi_send_zeroes(int len) {
+void VS1053_sdi_send_zeroes(int len) {
     int chunk_length;  
     data_mode_on();
     while ( len ) {
         await_data_request();
-        chunk_length = min(len,vs1003_chunk_size);
+        chunk_length = min(len,vs1053_chunk_size);
         len -= chunk_length;
-        while ( chunk_length-- ) VS1003_SPI_transfer(0);
+        while ( chunk_length-- ) VS1053_SPI_transfer(0);
     }
     data_mode_off();
 }
 
-feed_ret_t VS1003_feed_from_buffer (void) {
+feed_ret_t VS1053_feed_from_buffer (void) {
     uint8_t data[32];
 
     if (!VS_DREQ_PIN) {
@@ -217,7 +217,7 @@ feed_ret_t VS1003_feed_from_buffer (void) {
         if (get_num_of_bytes_in_ringbuffer() < 32) return FEED_RET_BUFFER_EMPTY;
 
         uint16_t w = read_array_from_ringbuffer(data, 32);
-        if (w == 32) VS1003_sdi_send_chunk(data, 32);
+        if (w == 32) VS1053_sdi_send_chunk(data, 32);
         asm("nop");
         asm("nop");
         asm("nop");
@@ -229,16 +229,16 @@ feed_ret_t VS1003_feed_from_buffer (void) {
     return FEED_RET_OK;
 }
 
-static void VS1003_print_byte_register(uint8_t reg) {
+static void VS1053_print_byte_register(uint8_t reg) {
     char extra_tab = strlen(register_names[reg]) < 5 ? '\t' : 0;
-    SYS_CONSOLE_PRINT("%02x %s\t%c = 0x%02x\r\n", reg, register_names[reg], extra_tab, VS1003_read_register(reg));
+    SYS_CONSOLE_PRINT("%02x %s\t%c = 0x%02x\r\n", reg, register_names[reg], extra_tab, VS1053_read_register(reg));
 }
 
-static void VS1003_printDetails(void) {
-    SYS_CONSOLE_PRINT("VS1003 Configuration:\r\n");
+static void VS1053_printDetails(void) {
+    SYS_CONSOLE_PRINT("VS1053 Configuration:\r\n");
     int i = 0;
     while ( i <= SCI_num_registers ) {
-        VS1003_print_byte_register(i++);
+        VS1053_print_byte_register(i++);
     }
 }
 
@@ -264,14 +264,14 @@ static inline void data_mode_off(void) {
     VS_DCS_PIN = 1;
 }
 
-static uint8_t VS1003_SPI_transfer(uint8_t outB) {
+static uint8_t VS1053_SPI_transfer(uint8_t outB) {
     SPI1BUF = outB;
     while (SPI1STATbits.SPITBF);
     while (!SPI1STATbits.SPIRBF);
     return SPI1BUF;
 }
 
-//void VS1003_loadUserCode(const uint16_t* buf, size_t len) {
+//void VS1053_loadUserCode(const uint16_t* buf, size_t len) {
 //  while (len) {
 //    uint16_t addr = *buf++; len--;
 //    uint16_t n = *buf++; len--;
@@ -280,13 +280,13 @@ static uint8_t VS1003_SPI_transfer(uint8_t outB) {
 //      uint16_t val = *buf++; len--;
 //      while (n--) {
 //	    SYS_CONSOLE_PRINT("W %02x: %04x\r\n", addr, val);
-//        VS1003_write_register(addr, val);
+//        VS1053_write_register(addr, val);
 //      }
 //    } else {           /* Copy run, copy n samples */
 //      while (n--) {
 //        uint16_t val = *buf++; len--;
 //        SYS_CONSOLE_PRINT("W %02x: %04x\r\n", addr, val);
-//        VS1003_write_register(addr, val);
+//        VS1053_write_register(addr, val);
 //      }
 //    }
 //  }

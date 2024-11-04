@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2023 Marek Wiecek
- High level driver for VS1003 chip, designed to operate with
+ High level driver for VS1053 chip, designed to operate with
  low level written by Andy Karpov.
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@
 #include "task.h"
 #include "system/debug/sys_debug.h"
 #include "system/fs/sys_fs.h"
-#include "vs1003.h"
-#include "vs1003_low_level.h"
+#include "vs1053.h"
+#include "vs1053_low_level.h"
 #include "mediainfo.h"
 #include "ringbuffer.h"
 #include "http_header_parser.h"
@@ -60,31 +60,31 @@ typedef enum {
 
 static ReconnectStrategy_t ReconnectStrategy = DO_NOT_RECONNECT;
 
-static void VS1003_startPlaying(void);
-static void VS1003_stopPlaying(void);
-static void VS1003_soft_stop (void);
-static void VS1003_handle_end_of_file (void);
+static void VS1053_startPlaying(void);
+static void VS1053_stopPlaying(void);
+static void VS1053_soft_stop (void);
+static void VS1053_handle_end_of_file (void);
 static void get_uri_from_stream_id(uint16_t id, uri_t* uri);
 
-void VS1003_init(void) {
-    VS1003_low_level_init();
+void VS1053_init(void) {
+    VS1053_low_level_init();
     VS1053B_apply_patch();
     while ( !VS_DREQ_PIN ) {};
-    vsQueueHandle = xQueueCreate(16, sizeof(vs1003cmd_t));
+    vsQueueHandle = xQueueCreate(16, sizeof(vs1053cmd_t));
     if (vsQueueHandle == NULL) {
         SYS_CONSOLE_PRINT("ERROR: Can't create VS queue\r\n");
         while(1);
     }
 }
 
-void VS1003_handle(void) {   
+void VS1053_handle(void) {   
 	static uint32_t	timer;
     static IP_MULTI_ADDRESS ServerAddress;
     TCPIP_DNS_RESULT dnsres;
     int w; // to_load;
     uint8_t data[32];
     int br;
-    vs1003cmd_t rcv;
+    vs1053cmd_t rcv;
     //SYS_FS_RESULT fres;
     
 	switch(StreamState)
@@ -162,7 +162,7 @@ void VS1003_handle(void) {
                 StreamState=STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Socket fail\r\n");
 				break;
@@ -256,7 +256,7 @@ void VS1003_handle(void) {
                         http_release_parser();
                         timer = millis();
                         StreamState = STREAM_HTTP_FILL_BUFFER;     //STREAM_HTTP_GET_DATA
-                        VS1003_startPlaying();
+                        VS1053_startPlaying();
                         break;
                     case HTTP_HEADER_REDIRECTED:
                         SYS_CONSOLE_PRINT("Stream redirected\r\n");
@@ -277,7 +277,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
             }            
             break;
@@ -297,7 +297,7 @@ void VS1003_handle(void) {
                 timer = millis();
                 StreamState = STREAM_HTTP_GET_DATA;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
                 break;
             }
@@ -307,7 +307,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -319,7 +319,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
             }                        
             break;
@@ -334,7 +334,7 @@ void VS1003_handle(void) {
                 if (VS_DREQ_PIN) break;
             }
             
-            feed_ret_t feed_ret = VS1003_feed_from_buffer();
+            feed_ret_t feed_ret = VS1053_feed_from_buffer();
             if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 StreamState = STREAM_HTTP_FILL_BUFFER;
                 timer = millis();
@@ -351,7 +351,7 @@ void VS1003_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
                 SYS_CONSOLE_PRINT("Internet radio: socket disconnected - reseting\r\n");
 				// Do not break;  We might still have data in the TCP RX FIFO waiting for us
@@ -362,7 +362,7 @@ void VS1003_handle(void) {
                 ReconnectStrategy = RECONNECT_WAIT_LONG;
                 StreamState = STREAM_HTTP_CLOSE;
                 #ifdef USE_LCD_UI
-                ui_update_state_info(VS1003_get_state_description());
+                ui_update_state_info(VS1053_get_state_description());
                 #endif
             }
 			break;
@@ -380,7 +380,7 @@ void VS1003_handle(void) {
             if (StreamState == STREAM_FILE_PLAY_REST) break;
             StreamState = STREAM_FILE_GET_DATA;
             #ifdef USE_LCD_UI
-            ui_update_state_info(VS1003_get_state_description());
+            ui_update_state_info(VS1053_get_state_description());
             #endif
             break;
             
@@ -396,16 +396,16 @@ void VS1003_handle(void) {
                 }
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
-            if (VS1003_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
+            if (VS1053_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
                 StreamState = STREAM_FILE_FILL_BUFFER;
             }            
             break;
             
         case STREAM_FILE_PLAY_REST:
-            if (VS1003_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
+            if (VS1053_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
-            	VS1003_handle_end_of_file();
+            	VS1053_handle_end_of_file();
             }
         	break;            
 	
@@ -416,7 +416,7 @@ void VS1003_handle(void) {
                 TCPIP_TCP_Abort(VS_Socket, true);
             }
 			VS_Socket = INVALID_SOCKET;
-            VS1003_stopPlaying();
+            VS1053_stopPlaying();
             switch(ReconnectStrategy) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
@@ -470,37 +470,37 @@ void VS1003_handle(void) {
 		SYS_CONSOLE_PRINT("Received command %d from queque\r\n", rcv.cmd);
 		switch(rcv.cmd) {
 			case VS_MSG_NEXT:
-				VS1003_play_next();
+				VS1053_play_next();
 				break;
             case VS_MSG_PREV:
-                VS1003_play_prev();
+                VS1053_play_prev();
                 break;
 			case VS_MSG_STOP:
-				VS1003_stop();
+				VS1053_stop();
 				break;
 			case VS_MSG_PLAY_STREAM_BY_ID:
-				VS1003_play_http_stream_by_id(rcv.param);
+				VS1053_play_http_stream_by_id(rcv.param);
 				break;
 			case VS_MSG_PLAY_FILE:;
                 char* file = (char*)rcv.param;
                 SYS_CONSOLE_PRINT("Playing file %s\r\n", file);
-                VS1003_stop();
-                VS1003_play_file(file);
+                VS1053_stop();
+                VS1053_play_file(file);
 				break;
 			case VS_MSG_PLAY_DIR:;
                 char* dir = (char*)rcv.param;
                 SYS_CONSOLE_PRINT("Playing direcotry %s\r\n", dir);
-                VS1003_stop();
-                VS1003_play_dir(dir);                
+                VS1053_stop();
+                VS1053_play_dir(dir);                
 				break;
 			case VS_MSG_SET_VOL:
 				if ( (rcv.param >= 1) && (rcv.param <= 100) ) {
-                    VS1003_setVolume(rcv.param);
+                    VS1053_setVolume(rcv.param);
 				}
 				break;
             case VS_MSG_LOOP:
-                if (rcv.param) { VS1003_setLoop(true); }
-                else { VS1003_setLoop(false); }
+                if (rcv.param) { VS1053_setLoop(true); }
+                else { VS1053_setLoop(false); }
                 break;
 			default:
 				break;
@@ -508,7 +508,7 @@ void VS1003_handle(void) {
 	}    
 }
 
-void VS1003_setVolume(uint8_t vol) {
+void VS1053_setVolume(uint8_t vol) {
   if ((vol < 1) || (vol > 100)) return;
   int x = log10f(vol)*1000;
   uint8_t new_reg_value = map(x, 0, 2000, 0xFE, 0x00);//vol;
@@ -517,68 +517,68 @@ void VS1003_setVolume(uint8_t vol) {
   value <<= 8;
   value |= new_reg_value;
 
-  VS1003_write_register(SCI_VOL,value); // VOL
+  VS1053_write_register(SCI_VOL,value); // VOL
   
   #ifdef USE_LCD_UI
   ui_update_volume();
   #endif
 }
 
-uint8_t VS1003_getVolume(void) {
+uint8_t VS1053_getVolume(void) {
     return last_volume;
 }
 
 /****************************************************************************/
 
-void VS1003_playChunk(const uint8_t* data, size_t len) {
-  VS1003_sdi_send_buffer(data,len);
+void VS1053_playChunk(const uint8_t* data, size_t len) {
+  VS1053_sdi_send_buffer(data,len);
 }
 
-void VS1003_play_next(void) {
+void VS1053_play_next(void) {
     switch (StreamState) {
         case STREAM_FILE_FILL_BUFFER:
         case STREAM_FILE_GET_DATA:
             if (dir_flag) {
-                VS1003_play_next_audio_file_from_directory();
+                VS1053_play_next_audio_file_from_directory();
             }
             break;
         case STREAM_HOME:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
-            VS1003_stop();
-            VS1003_play_next_http_stream_from_list();
+            VS1053_stop();
+            VS1053_play_next_http_stream_from_list();
             break;
         default:
             break;
     }
 }
 
-void VS1003_play_prev(void) {
+void VS1053_play_prev(void) {
     switch (StreamState) {
         case STREAM_FILE_FILL_BUFFER:
         case STREAM_FILE_GET_DATA:
             if (dir_flag) {
                 //TODO: This need to be implemented
-                //VS1003_play_prev_audio_file_from_directory();
+                //VS1053_play_prev_audio_file_from_directory();
             }
             break;
         case STREAM_HOME:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
-            VS1003_stop();
-            VS1003_play_prev_http_stream_from_list();
+            VS1053_stop();
+            VS1053_play_prev_http_stream_from_list();
             break;
         default:
             break;
     }
 }
   
-static void VS1003_startPlaying(void) {
-    VS1003_sdi_send_zeroes(10);
+static void VS1053_startPlaying(void) {
+    VS1053_sdi_send_zeroes(10);
 }
   
-static void VS1003_stopPlaying(void) {
-    VS1003_sdi_send_zeroes(2048);
+static void VS1053_stopPlaying(void) {
+    VS1053_sdi_send_zeroes(2048);
     ringbuffer_clear();
 }
  
@@ -593,20 +593,20 @@ uint8_t is_audio_file (char* name) {
  and closes current file, but doesn't close directory and 
  leaves flag unchanged */
 
-static void VS1003_soft_stop (void) {
+static void VS1053_soft_stop (void) {
     //Can be used only if it is actually playing from file
     if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST || StreamState == STREAM_FILE_FILL_BUFFER) { 
         SYS_FS_FileClose(fsrc);
-        VS1003_stopPlaying();
+        VS1053_stopPlaying();
         StreamState = STREAM_HOME;        
     }
 }
 
-static void VS1003_handle_end_of_file (void) {
+static void VS1053_handle_end_of_file (void) {
     int32_t res;
     
     if (dir_flag) {
-        VS1003_play_next_audio_file_from_directory();   //it handles loops
+        VS1053_play_next_audio_file_from_directory();   //it handles loops
     }
     else {
         if (loop_flag) {
@@ -618,7 +618,7 @@ static void VS1003_handle_end_of_file (void) {
         else {
             SYS_CONSOLE_PRINT("Loop flag cleared - closing file\r\n");
             SYS_FS_FileClose(fsrc);
-            VS1003_stopPlaying();
+            VS1053_stopPlaying();
             mediainfo_clean();
             #ifdef USE_LCD_UI
             ui_clear_content_info();
@@ -630,7 +630,7 @@ static void VS1003_handle_end_of_file (void) {
 }
   
   
-void VS1003_play_next_audio_file_from_directory (void) {
+void VS1053_play_next_audio_file_from_directory (void) {
     SYS_FS_FSTAT info;
     char buf[257];
     char lfn_buf[300];
@@ -650,7 +650,7 @@ void VS1003_play_next_audio_file_from_directory (void) {
             }
             else {
                 SYS_CONSOLE_PRINT("Loop flag cleared - stop playback\r\n");
-                VS1003_stop();          //It handles closing dir and resetting dir_flag
+                VS1053_stop();          //It handles closing dir and resetting dir_flag
                 return;
             }
         }
@@ -658,8 +658,8 @@ void VS1003_play_next_audio_file_from_directory (void) {
             if (is_audio_file(info.fname)) {
                 int ret = snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, info.fname);
                 if (ret <= sizeof(buf)-1) {
-                    VS1003_soft_stop();
-                    VS1003_play_file(buf);
+                    VS1053_soft_stop();
+                    VS1053_play_file(buf);
                 }
                 return;
             }
@@ -674,8 +674,8 @@ void VS1003_play_next_audio_file_from_directory (void) {
     return;
 }
 
-/*Always call VS1003_stop() before calling that function*/
-void VS1003_play_http_stream(const char* url) {
+/*Always call VS1053_stop() before calling that function*/
+void VS1053_play_http_stream(const char* url) {
     if ((StreamState == STREAM_HOME) || (StreamState == STREAM_HTTP_RECONNECT_WAIT)) {
         if (parse_url(url, strlen(url), &uri)) {
             StreamState = STREAM_HTTP_BEGIN;
@@ -687,30 +687,30 @@ void VS1003_play_http_stream(const char* url) {
             ReconnectStrategy = DO_NOT_RECONNECT;
         }
         mediainfo_type_set(MEDIA_TYPE_STREAM);
-        VS1003_startPlaying();
+        VS1053_startPlaying();
     }
 }
 
-bool VS1003_play_http_stream_by_id(uint16_t id) {
+bool VS1053_play_http_stream_by_id(uint16_t id) {
     char name[32];
     char working_buffer[512];
     memset(name, 0x00, sizeof(name));
 	char* url = get_station_url_from_file(id, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
 	if (url) {
-		VS1003_stop();
+		VS1053_stop();
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
         ui_set_selected_stream_id(id);
         #endif
-		VS1003_play_http_stream(url);
+		VS1053_play_http_stream(url);
         current_stream_ind = id;
         return true;
 	}
     return false;
 }
 
-void VS1003_play_next_http_stream_from_list(void) {
+void VS1053_play_next_http_stream_from_list(void) {
     char name[32];
     char working_buffer[512];
     
@@ -724,16 +724,16 @@ void VS1003_play_next_http_stream_from_list(void) {
         url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
         if (url == NULL) return;
     }
-    VS1003_stop();
+    VS1053_stop();
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
     ui_set_selected_stream_id(current_stream_ind);
     #endif
-    VS1003_play_http_stream(url);
+    VS1053_play_http_stream(url);
 }
 
-void VS1003_play_prev_http_stream_from_list(void) {
+void VS1053_play_prev_http_stream_from_list(void) {
     char name[32];
     char working_buffer[512];
     
@@ -742,17 +742,17 @@ void VS1003_play_prev_http_stream_from_list(void) {
     if (current_stream_ind < 1) { current_stream_ind = get_max_stream_id(); }
     char* url = get_station_url_from_file(current_stream_ind, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
     if (url == NULL) return;
-    VS1003_stop();
+    VS1053_stop();
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
     ui_set_selected_stream_id(current_stream_ind);
     #endif
-    VS1003_play_http_stream(url);
+    VS1053_play_http_stream(url);
 }
 
-/*Always call VS1003_stop() or VS1003_soft_stop() before calling that function*/
-void VS1003_play_file (char* url) {
+/*Always call VS1053_stop() or VS1053_soft_stop() before calling that function*/
+void VS1053_play_file (char* url) {
     if (StreamState != STREAM_HOME) return;
     
     fsrc = SYS_FS_FileOpen(url, SYS_FS_FILE_OPEN_READ);
@@ -819,11 +819,11 @@ void VS1003_play_file (char* url) {
     #endif
     mediainfo_type_set(MEDIA_TYPE_FILE);
     StreamState = STREAM_FILE_FILL_BUFFER;
-    VS1003_startPlaying();         //Start playing song
+    VS1053_startPlaying();         //Start playing song
 }
 
 
-void VS1003_play_dir (const char* url) {
+void VS1053_play_dir (const char* url) {
     vsdir = SYS_FS_DirOpen(url);
     if (vsdir == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SYS_FS_DirOpen error\r\n");
@@ -831,10 +831,10 @@ void VS1003_play_dir (const char* url) {
     }
     dir_flag = true;
     strncpy(uri.server, url, sizeof(uri.server)-1);		//we use uri.server to store current directory path
-    VS1003_play_next_audio_file_from_directory();
+    VS1053_play_next_audio_file_from_directory();
 }
 
-void VS1003_stop(void) {
+void VS1053_stop(void) {
     //Can be stopped only if it is actually playing
     switch (StreamState) {
         case STREAM_HTTP_BEGIN:
@@ -863,7 +863,7 @@ void VS1003_stop(void) {
             return;
             break;
     }
-    VS1003_stopPlaying();
+    VS1053_stopPlaying();
     mediainfo_clean();
     #ifdef USE_LCD_UI
     ui_clear_content_info();
@@ -872,44 +872,44 @@ void VS1003_stop(void) {
     StreamState = STREAM_HOME;
 }
 
-void VS1003_startRecordingPCM(void) {
-    VS1003_soft_reset();
+void VS1053_startRecordingPCM(void) {
+    VS1053_soft_reset();
     while (!VS_DREQ_PIN) {}
-    VS1003_write_register(SCI_AICTRL0, 48000); // Sample rate
-    VS1003_write_register(SCI_AICTRL1, 0); // Recording gain : 1024 : 1.If 0, use AGC
-    VS1003_write_register(SCI_AICTRL2, 4096); // Maximum AGC level: 1024 = 1. Only used if SCI_AICTRL1 is set to 0.
-    VS1003_write_register(SCI_AICTRL3, 4); //joint stereo AGC + LINEAR PCM
+    VS1053_write_register(SCI_AICTRL0, 48000); // Sample rate
+    VS1053_write_register(SCI_AICTRL1, 0); // Recording gain : 1024 : 1.If 0, use AGC
+    VS1053_write_register(SCI_AICTRL2, 4096); // Maximum AGC level: 1024 = 1. Only used if SCI_AICTRL1 is set to 0.
+    VS1053_write_register(SCI_AICTRL3, 4); //joint stereo AGC + LINEAR PCM
     while (!VS_DREQ_PIN) {}
-    VS1003_write_register(SCI_MODE, (1 << SM_RESET) | (1 << SM_ADPCM) | (1 << SM_LINE_IN) | (1 << SM_SDINEW));
+    VS1053_write_register(SCI_MODE, (1 << SM_RESET) | (1 << SM_ADPCM) | (1 << SM_LINE_IN) | (1 << SM_SDINEW));
     while (!VS_DREQ_PIN) {}
 }
 
-void VS1003_stopRecordingPCM(void) {
-    VS1003_write_register(SCI_AICTRL3, 1);
+void VS1053_stopRecordingPCM(void) {
+    VS1053_write_register(SCI_AICTRL3, 1);
 }
 
-void VS1003_setLoop(bool val) {
+void VS1053_setLoop(bool val) {
     loop_flag = val;
 }
 
-bool VS1003_getLoop(void) {
+bool VS1053_getLoop(void) {
     return loop_flag;
 }
 
-StreamState_t VS1003_getStreamState(void) {
+StreamState_t VS1053_getStreamState(void) {
     return StreamState;
 }
 
-void VS1003_send_cmd_thread_safe(uint8_t cmd, uint32_t param) {
-	vs1003cmd_t command;
+void VS1053_send_cmd_thread_safe(uint8_t cmd, uint32_t param) {
+	vs1053cmd_t command;
 	command.cmd = cmd;
 	command.param = param;
 	if (xQueueSend(vsQueueHandle, (void*)&command, portMAX_DELAY)) {
-		SYS_CONSOLE_PRINT("Sending thread safe command to VS1003: %d\r\n", command.cmd);
+		SYS_CONSOLE_PRINT("Sending thread safe command to VS1053: %d\r\n", command.cmd);
 	}
 }
 
-const char* VS1003_get_state_description(void) {
+const char* VS1053_get_state_description(void) {
     switch(StreamState) {
 //        case STREAM_HTTP_NAME_RESOLVE:
 //        case STREAM_HTTP_OBTAIN_SOCKET:            
@@ -940,35 +940,35 @@ static void get_uri_from_stream_id(uint16_t id, uri_t* uri) {
 
 //#define BASE 0x1800
 //
-//void VS1003_read_spectrum_analyzer(void) {
+//void VS1053_read_spectrum_analyzer(void) {
 //    //SYS_CONSOLE_PRINT("Reading spectrum analyzer data: ");
-//    VS1003_write_register(SCI_WRAMADDR, BASE+2);
-//    int bands = VS1003_read_register(SCI_WRAM);
+//    VS1053_write_register(SCI_WRAMADDR, BASE+2);
+//    int bands = VS1053_read_register(SCI_WRAM);
 //    SYS_CONSOLE_PRINT("Bands: %d\r\n", bands);
-//    VS1003_write_register(SCI_WRAMADDR, BASE+4);
+//    VS1053_write_register(SCI_WRAMADDR, BASE+4);
 //    for (int i=0; i<bands; i++) {
-//        VS1003_read_register(SCI_WRAM);
+//        VS1053_read_register(SCI_WRAM);
 //        //SYS_CONSOLE_PRINT("%d, ", val);
 //    }
 //    //SYS_CONSOLE_PRINT("\r\n");
 //}
 //
 //
-//void VS1003_set_bands(void) {
+//void VS1053_set_bands(void) {
 //    int bands = 14;
 //    int i;
 //    
 //    static const short frequency[] = {50, 79, 126, 200, 317, 504, 800, 1270, 2016, 3200, 5080, 8063, 12800, 20319};
 //    /* send new frequencies */
-//    VS1003_write_register(SCI_WRAMADDR, BASE+0x68);
-//    VS1003_write_register(SCI_WRAMADDR, BASE+0x68);
+//    VS1053_write_register(SCI_WRAMADDR, BASE+0x68);
+//    VS1053_write_register(SCI_WRAMADDR, BASE+0x68);
 //    for (i=0;i<bands;i++) {
-//        VS1003_write_register(SCI_WRAM, frequency[i]);
+//        VS1053_write_register(SCI_WRAM, frequency[i]);
 //    }
 //    if (i < 23) {
-//        VS1003_write_register(SCI_WRAM, 25000);
+//        VS1053_write_register(SCI_WRAM, 25000);
 //    }
 //    /* activate */
-//    VS1003_write_register(SCI_WRAMADDR, BASE+1);
-//    VS1003_write_register(SCI_WRAM, 0);
+//    VS1053_write_register(SCI_WRAMADDR, BASE+1);
+//    VS1053_write_register(SCI_WRAM, 0);
 //}

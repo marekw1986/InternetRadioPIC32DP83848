@@ -28,13 +28,6 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/vs1003/vs1053b-patches-flac-latm.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/vs1003/vs1003.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/vs1003/vs1003_low_level.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/driver_tea5767.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/driver_tea5767.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/i2c.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/driver_tea5767_interface.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/i2c.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/si5351.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/si5351.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/io/rotary.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/main.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/io/buttons.c</file>
@@ -43,6 +36,9 @@
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/io/rotary.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/hd44780.h</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/ui.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/si4735.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/radio/si4735.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/common.h</file>
         </group>
     </open-files>
 </project-private>

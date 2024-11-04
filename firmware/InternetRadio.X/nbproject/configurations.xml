@@ -489,15 +489,13 @@
         <itemPath>../src/lcd/ui.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
-        <itemPath>../src/radio/driver_tea5767.h</itemPath>
-        <itemPath>../src/radio/driver_tea5767_interface.h</itemPath>
-        <itemPath>../src/radio/si5351.h</itemPath>
+        <itemPath>../src/radio/si4735.h</itemPath>
       </logicalFolder>
-      <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
-        <itemPath>../src/vs1003/mediainfo.h</itemPath>
-        <itemPath>../src/vs1003/ringbuffer.h</itemPath>
-        <itemPath>../src/vs1003/vs1003.h</itemPath>
-        <itemPath>../src/vs1003/vs1003_low_level.h</itemPath>
+      <logicalFolder name="f6" displayName="VS1053" projectFiles="true">
+        <itemPath>../src/vs1053/mediainfo.h</itemPath>
+        <itemPath>../src/vs1053/ringbuffer.h</itemPath>
+        <itemPath>../src/vs1053/vs1053.h</itemPath>
+        <itemPath>../src/vs1053/vs1053_low_level.h</itemPath>
       </logicalFolder>
       <itemPath>../src/app.h</itemPath>
       <itemPath>../src/common.h</itemPath>
@@ -735,17 +733,14 @@
         <itemPath>../src/lcd/ui.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
-        <itemPath>../src/radio/driver_tea5767.c</itemPath>
-        <itemPath>../src/radio/driver_tea5767_interface.c</itemPath>
-        <itemPath>../src/radio/si5351.c</itemPath>
+        <itemPath>../src/radio/si4735.c</itemPath>
       </logicalFolder>
-      <logicalFolder name="f6" displayName="VS1003" projectFiles="true">
-        <itemPath>../src/vs1003/mediainfo.c</itemPath>
-        <itemPath>../src/vs1003/ringbuffer.c</itemPath>
-        <itemPath>../src/vs1003/vs1003.c</itemPath>
-        <itemPath>../src/vs1003/specana1003b.c</itemPath>
-        <itemPath>../src/vs1003/vs1003_low_level.c</itemPath>
-        <itemPath>../src/vs1003/vs1053b-patches-flac-latm.c</itemPath>
+      <logicalFolder name="f6" displayName="VS1053" projectFiles="true">
+        <itemPath>../src/vs1053/mediainfo.c</itemPath>
+        <itemPath>../src/vs1053/ringbuffer.c</itemPath>
+        <itemPath>../src/vs1053/vs1053.c</itemPath>
+        <itemPath>../src/vs1053/vs1053_low_level.c</itemPath>
+        <itemPath>../src/vs1053/vs1053b-patches-flac-latm.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f8" displayName="web_pages" projectFiles="true">
         <logicalFolder name="f1" displayName="opt" projectFiles="true">
@@ -899,21 +894,9 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
-      <item path="../src/vs1003/specana1003b.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
+      <item path="../src/radio/si4735.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/radio/si4735.h" ex="true" overriding="false">
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>
