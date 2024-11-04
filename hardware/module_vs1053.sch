@@ -19811,6 +19811,64 @@ SOurce: www.abracon.com</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="con-molex">
+<description>&lt;b&gt;Molex Connectors&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="22-23-2021">
+<description>.100" (2.54mm) Center Headers - 2 Pin</description>
+<wire x1="-2.54" y1="3.175" x2="2.54" y2="3.175" width="0.254" layer="21"/>
+<wire x1="2.54" y1="3.175" x2="2.54" y2="1.27" width="0.254" layer="21"/>
+<wire x1="2.54" y1="1.27" x2="2.54" y2="-3.175" width="0.254" layer="21"/>
+<wire x1="2.54" y1="-3.175" x2="-2.54" y2="-3.175" width="0.254" layer="21"/>
+<wire x1="-2.54" y1="-3.175" x2="-2.54" y2="1.27" width="0.254" layer="21"/>
+<wire x1="-2.54" y1="1.27" x2="-2.54" y2="3.175" width="0.254" layer="21"/>
+<wire x1="-2.54" y1="1.27" x2="2.54" y2="1.27" width="0.254" layer="21"/>
+<pad name="1" x="-1.27" y="0" drill="1" shape="long" rot="R90"/>
+<pad name="2" x="1.27" y="0" drill="1" shape="long" rot="R90"/>
+<text x="-2.54" y="3.81" size="1.016" layer="25" ratio="10">&gt;NAME</text>
+<text x="-2.54" y="-5.08" size="1.016" layer="27" ratio="10">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="MV">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<text x="-0.762" y="1.397" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+<symbol name="M">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="22-23-2021" prefix="X">
+<description>.100" (2.54mm) Center Header - 2 Pin</description>
+<gates>
+<gate name="-1" symbol="MV" x="0" y="0" addlevel="always" swaplevel="1"/>
+<gate name="-2" symbol="M" x="0" y="-2.54" addlevel="always" swaplevel="1"/>
+</gates>
+<devices>
+<device name="" package="22-23-2021">
+<connects>
+<connect gate="-1" pin="S" pad="1"/>
+<connect gate="-2" pin="S" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="MOLEX" constant="no"/>
+<attribute name="MPN" value="22-23-2021" constant="no"/>
+<attribute name="OC_FARNELL" value="1462926" constant="no"/>
+<attribute name="OC_NEWARK" value="25C3832" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -20021,6 +20079,7 @@ SOurce: www.abracon.com</description>
 <part name="C63" library="rcl" deviceset="C-EU" device="C0603" value="1u"/>
 <part name="C64" library="rcl" deviceset="C-EU" device="C0603" value="1u"/>
 <part name="JP1" library="pinhead" deviceset="PINHD-1X3" device=""/>
+<part name="X1" library="con-molex" deviceset="22-23-2021" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -20090,7 +20149,7 @@ SOurce: www.abracon.com</description>
 <instance part="GND22" gate="1" x="-15.24" y="535.94" rot="MR0"/>
 <instance part="JP5" gate="G$1" x="-109.22" y="548.64" rot="MR0"/>
 <instance part="GND40" gate="1" x="-99.06" y="535.94"/>
-<instance part="F1" gate="G$1" x="-91.44" y="553.72" rot="R180"/>
+<instance part="F1" gate="G$1" x="-86.36" y="553.72" rot="R180"/>
 <instance part="C30" gate="G$1" x="-60.96" y="546.1"/>
 <instance part="GND49" gate="1" x="-60.96" y="535.94" rot="MR0"/>
 <instance part="R18" gate="G$1" x="50.8" y="520.7"/>
@@ -20228,6 +20287,8 @@ SOurce: www.abracon.com</description>
 <instance part="C63" gate="G$1" x="551.18" y="144.78" rot="R90"/>
 <instance part="C64" gate="G$1" x="551.18" y="139.7" rot="R90"/>
 <instance part="JP1" gate="A" x="571.5" y="142.24"/>
+<instance part="X1" gate="-1" x="-111.76" y="563.88" rot="R180"/>
+<instance part="X1" gate="-2" x="-111.76" y="561.34" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -20426,10 +20487,14 @@ SOurce: www.abracon.com</description>
 <wire x1="-15.24" y1="538.48" x2="-15.24" y2="541.02" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP5" gate="G$1" pin="GND"/>
 <pinref part="GND40" gate="1" pin="GND"/>
+<pinref part="JP5" gate="G$1" pin="GND"/>
 <wire x1="-101.6" y1="543.56" x2="-99.06" y2="543.56" width="0.1524" layer="91"/>
 <wire x1="-99.06" y1="543.56" x2="-99.06" y2="538.48" width="0.1524" layer="91"/>
+<pinref part="X1" gate="-2" pin="S"/>
+<wire x1="-109.22" y1="561.34" x2="-99.06" y2="561.34" width="0.1524" layer="91"/>
+<wire x1="-99.06" y1="561.34" x2="-99.06" y2="543.56" width="0.1524" layer="91"/>
+<junction x="-99.06" y="543.56"/>
 </segment>
 <segment>
 <pinref part="C30" gate="G$1" pin="-"/>
@@ -21090,7 +21155,7 @@ SOurce: www.abracon.com</description>
 <pinref part="C53" gate="G$1" pin="1"/>
 <wire x1="-38.1" y1="505.46" x2="-38.1" y2="508" width="0.1524" layer="91"/>
 <junction x="-38.1" y="508"/>
-<wire x1="-86.36" y1="553.72" x2="-78.74" y2="553.72" width="0.1524" layer="91"/>
+<wire x1="-81.28" y1="553.72" x2="-78.74" y2="553.72" width="0.1524" layer="91"/>
 <pinref part="F1" gate="G$1" pin="2"/>
 <pinref part="C12" gate="G$1" pin="+"/>
 <wire x1="-50.8" y1="553.72" x2="-53.34" y2="553.72" width="0.1524" layer="91"/>
@@ -21318,6 +21383,11 @@ SOurce: www.abracon.com</description>
 <pinref part="JP5" gate="G$1" pin="VCC"/>
 <pinref part="F1" gate="G$1" pin="1"/>
 <wire x1="-101.6" y1="553.72" x2="-96.52" y2="553.72" width="0.1524" layer="91"/>
+<pinref part="X1" gate="-1" pin="S"/>
+<wire x1="-96.52" y1="553.72" x2="-91.44" y2="553.72" width="0.1524" layer="91"/>
+<wire x1="-109.22" y1="563.88" x2="-96.52" y2="563.88" width="0.1524" layer="91"/>
+<wire x1="-96.52" y1="563.88" x2="-96.52" y2="553.72" width="0.1524" layer="91"/>
+<junction x="-96.52" y="553.72"/>
 </segment>
 </net>
 <net name="RC3" class="0">
