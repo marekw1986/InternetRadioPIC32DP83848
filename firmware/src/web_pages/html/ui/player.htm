@@ -5,6 +5,9 @@
 <link rel="stylesheet" type="text/css" href="/ui/style.css">
 <link rel="stylesheet" type="text/css" href="/ui/menu.css">
 <script type="text/javascript">
+
+let volumeChangeInProgress = false;
+	
 function preparePage() {
 	showDir('root');
 	loadInfo();
@@ -23,7 +26,7 @@ function loadInfo() {
 			else if (data.type = "file") {
 				playInf.value = data.artist + " - " + data.title;
 			}
-			if ( (data.volume >= 1) && (data.volume <= 100) ) {
+			if ( (data.volume >= 1) && (data.volume <= 100) && !volumeChangeInProgress) {
 				volume.value = data.volume;
 			}
 			if (data.loop === "true") {
@@ -224,6 +227,14 @@ function setLoop() {
 	return ret;
 }
 
+function setVolumeUpdateInPogress() {
+	volumeChangeInProgress = true;
+}
+
+function clearVolumeUpdateInPogress() {
+	volumeChangeInProgress = false;
+}
+
 </script>
 </head>
 <body onload="preparePage()">
@@ -240,7 +251,7 @@ function setLoop() {
 <label for="loop">Pętla:</label>
 <input type="checkbox" id="loop" name="loop" value="" onchange="setLoop()"><br>
 <label for="volume">Głośność:</label>
-<input type="range" min="1" max="100" value="50" class="slider" id="volume" onchange="setVolume()"><br>
+<input type="range" min="1" max="100" value="50" class="slider" id="volume" onmousedown="setVolumeUpdateInPogress()" onmouseup="clearVolumeUpdateInPogress()" onchange="setVolume()"><br>
 </div>
 </body>
 </html>
