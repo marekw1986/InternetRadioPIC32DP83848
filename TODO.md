@@ -32,7 +32,12 @@ Internet radio based on PIC32
 	- [ ] Integrate TEA5767 library with the project
 	- [ ] Write code controlling analog switch, depending if we are using FM (TEA5767), AM/SSB/CW (SDR) or neither of them.
 	- [ ] Write code responsible for controlling VS1053 line input.
-	- [ ] Write/integrate code responsible for AM/SSB/CW demodulation of digitized IQ signal from Tayloe circuit.
+	- [ ] Write/integrate code responsible for AM/SSB/CW demodulation of digitized IQ signal from Tayloe circuit
+- [ ] Add RF tuner funcionality.
+	- [x] Design RF board
+	- [ ] Port driver for si4735 chip
+	- [ ] Add RF tuner support to LCD UI
+	- [ ] Add RF tuner support to Web UI
 
 ### Completed Column ✓
 - [x] Debug SD card
