@@ -7,14 +7,21 @@
 <script type="text/javascript">
 
 let volumeChangeInProgress = false;
+let intervalId = 0;
 	
 function preparePage() {
 	showDir('root');
 	loadInfo();
-	window.setInterval(loadInfo, 5000);
+	if (intervalId == 0)
+	{
+		intervalId = window.setInterval(loadInfo, 5000);
+	}
 }
 
 function loadInfo() {
+	if (volumeChangeInProgress) {
+		return;
+	}
     getJSON("/ui/plinf.json", function(err, data) {
         var vol = document.getElementById('volume');
         var loop = document.getElementById('loop');
@@ -206,7 +213,11 @@ function setVolume() {
 	var token = document.getElementById('token');
 	var request ="token=" + token.value + "&vol=" + vol;
 	
+	if (intervalId != 0) {
+		clearInterval(intervalId);
+	}
 	var ret = sendToPlayCgi(request);
+	intervalId = window.setInterval(loadInfo, 5000);
 	return ret;		
 }
 
