@@ -701,7 +701,8 @@ bool VS1053_play_http_stream_by_id(uint16_t id) {
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
-        ui_set_selected_stream_id(id);
+        // TODO: Fix it
+        // ui_set_selected_stream_id(id); 
         #endif
 		VS1053_play_http_stream(url);
         current_stream_ind = id;
@@ -728,7 +729,8 @@ void VS1053_play_next_http_stream_from_list(void) {
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
-    ui_set_selected_stream_id(current_stream_ind);
+    //TODO: Fix it
+    //ui_set_selected_stream_id(current_stream_ind);
     #endif
     VS1053_play_http_stream(url);
 }
@@ -746,7 +748,8 @@ void VS1053_play_prev_http_stream_from_list(void) {
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
-    ui_set_selected_stream_id(current_stream_ind);
+    // TODO: Fix it
+    //ui_set_selected_stream_id(current_stream_ind);
     #endif
     VS1053_play_http_stream(url);
 }

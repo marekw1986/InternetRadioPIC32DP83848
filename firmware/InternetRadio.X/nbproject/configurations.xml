@@ -487,6 +487,8 @@
       <logicalFolder name="f8" displayName="LCD" projectFiles="true">
         <itemPath>../src/lcd/hd44780.h</itemPath>
         <itemPath>../src/lcd/ui.h</itemPath>
+        <itemPath>../src/lcd/main_list.h</itemPath>
+        <itemPath>../src/lcd/scrollable_list.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
         <itemPath>../src/radio/si4735.h</itemPath>
@@ -731,6 +733,8 @@
       <logicalFolder name="f9" displayName="LCD" projectFiles="true">
         <itemPath>../src/lcd/hd44780.c</itemPath>
         <itemPath>../src/lcd/ui.c</itemPath>
+        <itemPath>../src/lcd/main_list.c</itemPath>
+        <itemPath>../src/lcd/scrollable_list.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
         <itemPath>../src/radio/si4735.c</itemPath>
@@ -861,7 +865,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>4.35</languageToolchainVersion>
+        <languageToolchainVersion>4.21</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <packs>
@@ -895,8 +899,36 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <item path="../src/radio/si4735.c" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <item path="../src/radio/si4735.h" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-CO>
+        </C32-CO>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>
