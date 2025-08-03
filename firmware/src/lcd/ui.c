@@ -78,7 +78,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_MAIN_LIST:
 		ui_state = new_state;
-		scrollable_list_set_callbacks(main_list_get_content, main_list_get_max_id, NULL);
+		scrollable_list_set_config(main_list_get_content, main_list_get_max_id, false);
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, NULL);
         button_register_push_callback(&next_btn, NULL);
@@ -88,7 +88,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_STREAM_LIST:
         ui_state = new_state;
-        scrollable_list_set_callbacks(get_station_url_from_file, get_max_stream_id, NULL);
+        scrollable_list_set_config(get_station_url_from_file, get_max_stream_id, true);
         rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
