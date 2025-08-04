@@ -70,7 +70,6 @@ void VS1053_stop(void);
 void VS1053_setLoop(bool val);
 bool VS1053_getLoop(void);
 StreamState_t VS1053_getStreamState(void);
-uint8_t is_audio_file (char* name);
 void VS1053_activate_spectrum_analyzer(void);
 void VS1053_read_spectrum_analyzer(void);
 void VS1053_send_cmd_thread_safe(uint8_t cmd, uint32_t param);

@@ -581,13 +581,6 @@ static void VS1053_stopPlaying(void) {
     VS1053_sdi_send_zeroes(2048);
     ringbuffer_clear();
 }
- 
-uint8_t is_audio_file (char* name) {
-    if (strstr(name, ".MP3") || strstr(name, ".AAC") || strstr(name, ".FLAC") || strstr(name, ".WMA") || strstr(name, ".MID") || strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid")) {
-        return 1;
-    }
-    return 0;
- }
 
 /* This is needed for directory playing - it stops playing
  and closes current file, but doesn't close directory and 

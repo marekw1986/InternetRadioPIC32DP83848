@@ -10,6 +10,7 @@
 #include "tcpip/tcpip.h"
 #include "system/fs/sys_fs.h"
 #include "system/debug/sys_debug.h"
+#include "ff.h"
 //#include "wolfcrypt/hash.h"
 
 #define NTP_TIMESTAMP_DIFF     (2208988800)    // 1900 to 1970 in seconds
@@ -83,4 +84,122 @@ uint32_t get_fattime (void) {
          | ((DWORD)current_time->tm_min << 5)
          | ((DWORD)current_time->tm_sec >> 1);
 //    return 0xFFFFFFFF;
+}
+
+char* get_file_path_from_audio_file_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* stream_name, size_t stream_name_len) {
+	char* res = NULL;
+	switch(number) {
+		case 1:
+		strncpy(stream_name, "Queen - Kind of Magic.mp3", stream_name_len);
+		res = "jeden";
+		break;
+		
+		case 2:
+		strncpy(stream_name, "Creed - My Sacrifice.mp3", stream_name_len);
+		res = "dwa";
+		break;
+		
+		case 3:
+		strncpy(stream_name, "The Cranberries - Zombie.mp3", stream_name_len);
+		res = "trzy";
+		break;
+		
+		case 4:
+		strncpy(stream_name, "Pixies - Where is my mind.aac", stream_name_len);
+		res = "cztery";
+		break;
+		
+		case 5:
+		strncpy(stream_name, "Frank Turner - Ballad of me and my friends.mp3", stream_name_len);
+		res = "piec";
+		break;
+		
+		case 6:
+		strncpy(stream_name, "Czeslaw Niemen - Dziwny jest ten swiat.mp3", stream_name_len);
+		res = "szesc";
+		break;
+		
+		case 7:
+		strncpy(stream_name, "Against Me! - I was a teenage anarchist.mp3", stream_name_len);
+		res = "siedem";
+		break;
+		
+		case 8:
+		strncpy(stream_name, "Phantom Planet - California.mp3", stream_name_len);
+		res = "osiem";
+		break;
+		
+		case 9:
+		strncpy(stream_name, "SAMURAI - Never fade away.mp3", stream_name_len);
+		res = "dziewiec";
+		break;
+		
+		case 10:
+		strncpy(stream_name, "Lifehouse - Whatever it takes.mp3", stream_name_len);
+		res = "dziesiec";
+		break;
+		
+		case 11:
+		strncpy(stream_name, "Pearl Jam - Once.mp3", stream_name_len);
+		res = "jedenascie";
+		break;
+		
+		case 12:
+		strncpy(stream_name, "Bad Religion - Sorrow.mp3", stream_name_len);
+		res = "dwanascie";
+		break;										
+		
+		default:
+		strncpy(stream_name, "", stream_name_len);
+		res = NULL;
+		break;
+	}
+	return res;
+}
+
+// Convert string to lowercase for case-insensitive comparison
+void to_lower(char *str) {
+    while (*str) {
+        *str = (char)tolower((unsigned char)*str);
+        str++;
+    }
+}
+
+uint8_t is_audio_file (char* name) {
+    const char* ext = strrchr(name, '.');
+    if (!ext) { return 0; }
+    char ext_lower[5];
+    strncpy(ext_lower, ext, sizeof(ext_lower));
+    ext_lower[4] = '\0';
+    to_lower(ext_lower);
+    return (strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid"));
+ }
+
+uint16_t count_dirs_and_audio_files_in_dir(char* dir_path) {
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+    int count = 0;
+
+    res = f_opendir(&dir, dir_path);
+    if (res != FR_OK) {
+        SYS_CONSOLE_PRINT("Error opening directory: %d\n", res);
+        return -1;
+    }
+
+    while (1) {
+        res = f_readdir(&dir, &fno);
+        if (res != FR_OK || fno.fname[0] == 0) break;
+        if (fno.fattrib & AM_DIR) {
+            count++;
+            continue;
+        }
+
+        if (is_audio_file(fno.fname)) {
+            count++;
+        }
+    }
+
+    f_closedir(&dir);
+    return count;
 }

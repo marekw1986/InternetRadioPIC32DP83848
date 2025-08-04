@@ -3,8 +3,9 @@
 #include <time.h>
 #include <string.h>
 #include "ui.h"
-#include "main_list.h"
 #include "scrollable_list.h"
+#include "main_list.h"
+#include "dir_list.h"
 #ifdef PCDEBUG
 #include "low_level.h"
 #else
@@ -84,6 +85,15 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_push_callback(&next_btn, NULL);
         button_register_push_callback(&rotary_button, main_list_perform_action);
 		draw_scrollable_list();		
+		break;
+		
+		case UI_HANDLE_DIR_LIST:
+		ui_state = new_state;
+		scrollable_list_set_config(get_file_path_from_audio_file_id, dir_list_get_max_id, false);
+		rotary_register_callback(scrollable_list_move_cursor);
+        button_register_push_callback(&prev_btn, scrollable_list_prev_page);
+        button_register_push_callback(&next_btn, scrollable_list_next_page);
+        draw_scrollable_list();	
 		break;
 		
 		case UI_HANDLE_STREAM_LIST:
@@ -181,6 +191,7 @@ void ui_handle(void) {
 		break;
 		
 		case UI_HANDLE_MAIN_LIST:
+		case UI_HANDLE_DIR_LIST:
 		case UI_HANDLE_STREAM_LIST:
 		handle_scrollable_list();
 		break;
@@ -289,8 +300,8 @@ static void ui_button_switch_state(void) {
 
 static void play_selected_stream(void) {
     if (ui_state != UI_HANDLE_STREAM_LIST) { return; }
-    ui_switch_state(UI_HANDLE_PLAY_SCREEN);
     VS1053_play_http_stream_by_id(scrollable_list_get_selected_item_id());
+    ui_switch_state(UI_HANDLE_PLAY_SCREEN);
 }
 
 static void ui_button_update_backlight() {

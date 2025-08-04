@@ -36,9 +36,13 @@ uint16_t main_list_get_max_id(void) {
 void main_list_perform_action(void) {
 	switch (scrollable_list_get_selected_item_id()) {
 		case 1:
+		scrollable_list_set_selected_item_id(0);
+		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
 		case 2:
+		scrollable_list_set_selected_item_id(0);
+		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
 		case 3:
