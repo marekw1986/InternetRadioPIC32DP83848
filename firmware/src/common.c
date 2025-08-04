@@ -20,6 +20,9 @@ int time_zone = -120;
 static volatile uint32_t milliseconds = 0;
 static volatile uint32_t upt = 0;
 
+static char media_dir_path[512];
+static uint16_t number_of_items_in_media_dir = 0;
+
 SYS_FS_RESULT FormatSpiFlashDisk (void) {
     SYS_FS_RESULT res;
     SYS_FS_FORMAT_PARAM opt;
@@ -86,75 +89,106 @@ uint32_t get_fattime (void) {
 //    return 0xFFFFFFFF;
 }
 
-char* get_file_path_from_audio_file_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* stream_name, size_t stream_name_len) {
-	char* res = NULL;
-	switch(number) {
-		case 1:
-		strncpy(stream_name, "Queen - Kind of Magic.mp3", stream_name_len);
-		res = "jeden";
-		break;
-		
-		case 2:
-		strncpy(stream_name, "Creed - My Sacrifice.mp3", stream_name_len);
-		res = "dwa";
-		break;
-		
-		case 3:
-		strncpy(stream_name, "The Cranberries - Zombie.mp3", stream_name_len);
-		res = "trzy";
-		break;
-		
-		case 4:
-		strncpy(stream_name, "Pixies - Where is my mind.aac", stream_name_len);
-		res = "cztery";
-		break;
-		
-		case 5:
-		strncpy(stream_name, "Frank Turner - Ballad of me and my friends.mp3", stream_name_len);
-		res = "piec";
-		break;
-		
-		case 6:
-		strncpy(stream_name, "Czeslaw Niemen - Dziwny jest ten swiat.mp3", stream_name_len);
-		res = "szesc";
-		break;
-		
-		case 7:
-		strncpy(stream_name, "Against Me! - I was a teenage anarchist.mp3", stream_name_len);
-		res = "siedem";
-		break;
-		
-		case 8:
-		strncpy(stream_name, "Phantom Planet - California.mp3", stream_name_len);
-		res = "osiem";
-		break;
-		
-		case 9:
-		strncpy(stream_name, "SAMURAI - Never fade away.mp3", stream_name_len);
-		res = "dziewiec";
-		break;
-		
-		case 10:
-		strncpy(stream_name, "Lifehouse - Whatever it takes.mp3", stream_name_len);
-		res = "dziesiec";
-		break;
-		
-		case 11:
-		strncpy(stream_name, "Pearl Jam - Once.mp3", stream_name_len);
-		res = "jedenascie";
-		break;
-		
-		case 12:
-		strncpy(stream_name, "Bad Religion - Sorrow.mp3", stream_name_len);
-		res = "dwanascie";
-		break;										
-		
-		default:
-		strncpy(stream_name, "", stream_name_len);
-		res = NULL;
-		break;
-	}
-	return res;
+//char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* stream_name, size_t stream_name_len) {
+//	char* res = NULL;
+//	switch(number) {
+//		case 1:
+//		strncpy(stream_name, "Queen - Kind of Magic.mp3", stream_name_len);
+//		res = "jeden";
+//		break;
+//		
+//		case 2:
+//		strncpy(stream_name, "Creed - My Sacrifice.mp3", stream_name_len);
+//		res = "dwa";
+//		break;
+//		
+//		case 3:
+//		strncpy(stream_name, "The Cranberries - Zombie.mp3", stream_name_len);
+//		res = "trzy";
+//		break;
+//		
+//		case 4:
+//		strncpy(stream_name, "Pixies - Where is my mind.aac", stream_name_len);
+//		res = "cztery";
+//		break;
+//		
+//		case 5:
+//		strncpy(stream_name, "Frank Turner - Ballad of me and my friends.mp3", stream_name_len);
+//		res = "piec";
+//		break;
+//		
+//		case 6:
+//		strncpy(stream_name, "Czeslaw Niemen - Dziwny jest ten swiat.mp3", stream_name_len);
+//		res = "szesc";
+//		break;
+//		
+//		case 7:
+//		strncpy(stream_name, "Against Me! - I was a teenage anarchist.mp3", stream_name_len);
+//		res = "siedem";
+//		break;
+//		
+//		case 8:
+//		strncpy(stream_name, "Phantom Planet - California.mp3", stream_name_len);
+//		res = "osiem";
+//		break;
+//		
+//		case 9:
+//		strncpy(stream_name, "SAMURAI - Never fade away.mp3", stream_name_len);
+//		res = "dziewiec";
+//		break;
+//		
+//		case 10:
+//		strncpy(stream_name, "Lifehouse - Whatever it takes.mp3", stream_name_len);
+//		res = "dziesiec";
+//		break;
+//		
+//		case 11:
+//		strncpy(stream_name, "Pearl Jam - Once.mp3", stream_name_len);
+//		res = "jedenascie";
+//		break;
+//		
+//		case 12:
+//		strncpy(stream_name, "Bad Religion - Sorrow.mp3", stream_name_len);
+//		res = "dwanascie";
+//		break;										
+//		
+//		default:
+//		strncpy(stream_name, "", stream_name_len);
+//		res = NULL;
+//		break;
+//	}
+//	return res;
+//}
+
+char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+    uint16_t count = 0;
+    
+    res = f_opendir(&dir, media_dir_path);
+    if (res != FR_OK) {
+        SYS_CONSOLE_PRINT("Error opening directory: %d\n", res);
+        return NULL;
+    }
+
+    while (1) {
+        res = f_readdir(&dir, &fno);
+        if (res != FR_OK || fno.fname[0] == 0) break;
+        if ((fno.fattrib & AM_DIR) || (is_audio_file(fno.fname))) {
+            count++;
+        }
+        if (count == number) {
+            f_closedir(&dir);
+            strncpy(name, fno.fname, name_len);
+            // Current implementation doesn't require this function to return full path
+            // Return just a name to indicate we have valid data
+            return name;
+        }
+    }
+
+    f_closedir(&dir);
+    return NULL;    
 }
 
 // Convert string to lowercase for case-insensitive comparison
@@ -175,13 +209,26 @@ uint8_t is_audio_file (char* name) {
     return (strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid"));
  }
 
-uint16_t count_dirs_and_audio_files_in_dir(char* dir_path) {
+void set_media_dir_path(const char* dir_path) {
+    strncpy(media_dir_path, dir_path, sizeof(media_dir_path));
+    number_of_items_in_media_dir = count_dirs_and_audio_files_in_media_dir();
+}
+
+char* get_media_dir_path(void) {
+    return media_dir_path;
+}
+
+uint16_t get_number_of_items_in_media_dir() {
+    return number_of_items_in_media_dir;
+}
+
+uint16_t count_dirs_and_audio_files_in_media_dir(void) {
     FRESULT res;
     DIR dir;
     FILINFO fno;
     int count = 0;
 
-    res = f_opendir(&dir, dir_path);
+    res = f_opendir(&dir, media_dir_path);
     if (res != FR_OK) {
         SYS_CONSOLE_PRINT("Error opening directory: %d\n", res);
         return -1;

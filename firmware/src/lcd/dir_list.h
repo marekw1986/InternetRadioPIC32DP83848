@@ -8,8 +8,6 @@
 extern "C" {
 #endif
 
-void dir_list_set_dir(char* path);
-uint16_t dir_list_get_max_id(void);
 void dir_list_perform_action(void);
 
 #ifdef	__cplusplus

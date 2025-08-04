@@ -3,6 +3,7 @@
 #include "main_list.h"
 #include "ui.h"
 #include "scrollable_list.h"
+#include "common.h"
 
 char* main_list_get_content(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
 	switch(number) {
@@ -37,11 +38,13 @@ void main_list_perform_action(void) {
 	switch (scrollable_list_get_selected_item_id()) {
 		case 1:
 		scrollable_list_set_selected_item_id(0);
+        set_media_dir_path("0:/music");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
 		case 2:
 		scrollable_list_set_selected_item_id(0);
+        set_media_dir_path("1:");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
