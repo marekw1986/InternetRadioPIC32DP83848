@@ -10,7 +10,6 @@
 #include "tcpip/tcpip.h"
 #include "system/fs/sys_fs.h"
 #include "system/debug/sys_debug.h"
-#include "ff.h"
 //#include "wolfcrypt/hash.h"
 
 #define NTP_TIMESTAMP_DIFF     (2208988800)    // 1900 to 1970 in seconds
@@ -164,37 +163,52 @@ char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, siz
     return get_file_path_from_media_dir_id_is_dir(number, working_buffer, working_buffer_len, name, name_len, NULL);
 }
 
-char* get_file_path_from_media_dir_id_is_dir(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len, uint8_t* is_dir) {
-    FRESULT res;
-    DIR dir;
-    FILINFO fno;
+char* get_file_path_from_media_dir_id_is_dir(
+    uint16_t number,
+    char* working_buffer,
+    size_t working_buffer_len,
+    char* name,
+    size_t name_len,
+    uint8_t* is_dir
+) {
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
-    
-    res = f_opendir(&dir, media_dir_path);
-    if (res != FR_OK) {
-        SYS_CONSOLE_PRINT("Error opening directory: %d\n", res);
+
+    dirHandle = SYS_FS_DirOpen(media_dir_path);
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
         return NULL;
     }
 
-    while (1) {
-        res = f_readdir(&dir, &fno);
-        if (res != FR_OK || fno.fname[0] == 0) break;
-        if ((fno.fattrib & AM_DIR) || (is_audio_file(fno.fname))) {
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        // Skip invalid or empty entries
+        if (dirEntry.fname[0] == '\0') {
+            continue;
+        }
+
+        if ((dirEntry.fattrib & SYS_FS_ATTR_DIR) || is_audio_file(dirEntry.fname)) {
             count++;
         }
+
         if (count == number) {
-            f_closedir(&dir);
-            strncpy(name, fno.fname, name_len);
-            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, fno.altname);
-            if (is_dir) {
-                *is_dir = (fno.fattrib & AM_DIR);
+            SYS_FS_DirClose(dirHandle);
+
+            // Copy the display name
+            strncpy(name, dirEntry.fname, name_len);
+            name[name_len - 1] = '\0';  // Ensure null-termination
+            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, dirEntry.altname);
+
+            if (is_dir != NULL) {
+                *is_dir = (dirEntry.fattrib & SYS_FS_ATTR_DIR);
             }
+
             return working_buffer;
         }
     }
 
-    f_closedir(&dir);
-    return NULL;    
+    SYS_FS_DirClose(dirHandle);
+    return NULL;
 }
 
 // Convert string to lowercase for case-insensitive comparison
@@ -229,30 +243,29 @@ uint16_t get_number_of_items_in_media_dir() {
 }
 
 uint16_t count_dirs_and_audio_files_in_media_dir(void) {
-    FRESULT res;
-    DIR dir;
-    FILINFO fno;
-    int count = 0;
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
+    uint16_t count = 0;
 
-    res = f_opendir(&dir, media_dir_path);
-    if (res != FR_OK) {
-        SYS_CONSOLE_PRINT("Error opening directory: %d\n", res);
-        return -1;
+    dirHandle = SYS_FS_DirOpen(media_dir_path);
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
+        return 0;
     }
 
-    while (1) {
-        res = f_readdir(&dir, &fno);
-        if (res != FR_OK || fno.fname[0] == 0) break;
-        if (fno.fattrib & AM_DIR) {
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        // Check for directory
+        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
             count++;
             continue;
         }
 
-        if (is_audio_file(fno.fname)) {
+        // Check if it's an audio file
+        if (is_audio_file(dirEntry.fname)) {
             count++;
         }
     }
 
-    f_closedir(&dir);
+    SYS_FS_DirClose(dirHandle);
     return count;
 }
