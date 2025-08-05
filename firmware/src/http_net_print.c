@@ -895,7 +895,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
             SYS_FS_FSTAT stat;
             char longFileName[300];
             stat.lfname = longFileName;
-            stat.lfsize = 300;
+            stat.lfsize = sizeof(longFileName);
             if (SYS_FS_DirRead(dirHandle, &stat) == SYS_FS_RES_FAILURE) {
                 SYS_CONSOLE_PRINT("Can't read dir\r\n");
                 SYS_FS_DirClose(dirHandle);
@@ -1005,7 +1005,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
             SYS_FS_FSTAT stat;
             char longFileName[300];
             stat.lfname = longFileName;
-            stat.lfsize = 300;
+            stat.lfsize = sizeof(longFileName);
             if (SYS_FS_DirRead(dirHandle, &stat) == SYS_FS_RES_FAILURE) {
                 SYS_CONSOLE_PRINT("Can't read dir\r\n");
                 SYS_FS_DirClose(dirHandle);

@@ -19,7 +19,7 @@ int time_zone = -120;
 static volatile uint32_t milliseconds = 0;
 static volatile uint32_t upt = 0;
 
-static char media_dir_path[512];
+static char media_dir_path[128];
 static uint16_t number_of_items_in_media_dir = 0;
 
 SYS_FS_RESULT FormatSpiFlashDisk (void) {
@@ -174,6 +174,10 @@ char* get_file_path_from_media_dir_id_is_dir(
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
+    char lfn_buf[300];
+    
+    dirEntry.lfname = lfn_buf;
+    dirEntry.lfsize = sizeof(lfn_buf);
 
     dirHandle = SYS_FS_DirOpen(media_dir_path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
@@ -182,9 +186,8 @@ char* get_file_path_from_media_dir_id_is_dir(
     }
 
     while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
-        // Skip invalid or empty entries
-        if (dirEntry.fname[0] == '\0') {
-            continue;
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
         }
 
         if ((dirEntry.fattrib & SYS_FS_ATTR_DIR) || is_audio_file(dirEntry.fname)) {
@@ -193,17 +196,19 @@ char* get_file_path_from_media_dir_id_is_dir(
 
         if (count == number) {
             SYS_FS_DirClose(dirHandle);
-
-            // Copy the display name
-            strncpy(name, dirEntry.fname, name_len);
-            name[name_len - 1] = '\0';  // Ensure null-termination
-            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, dirEntry.altname);
-
             if (is_dir != NULL) {
                 *is_dir = (dirEntry.fattrib & SYS_FS_ATTR_DIR);
             }
-
-            return working_buffer;
+            if (name) {
+                // Copy the display name
+                strncpy(name, dirEntry.fname, name_len);
+                name[name_len - 1] = '\0';  // Ensure null-termination
+            }
+            if (working_buffer) {
+                char* file_name = dirEntry.altname[0] ? dirEntry.altname : dirEntry.fname;
+                snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, file_name);
+                return working_buffer;
+            }
         }
     }
 
@@ -246,6 +251,10 @@ uint16_t count_dirs_and_audio_files_in_media_dir(void) {
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
+    char lfn_buf[300];
+    
+    dirEntry.lfname = lfn_buf;
+    dirEntry.lfsize = sizeof(lfn_buf);
 
     dirHandle = SYS_FS_DirOpen(media_dir_path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
@@ -254,6 +263,10 @@ uint16_t count_dirs_and_audio_files_in_media_dir(void) {
     }
 
     while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
+        }
+        
         // Check for directory
         if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
             count++;
@@ -268,4 +281,38 @@ uint16_t count_dirs_and_audio_files_in_media_dir(void) {
 
     SYS_FS_DirClose(dirHandle);
     return count;
+}
+
+uint8_t dir_contains_audio_files(const char* path) {
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
+    char lfn_buf[300];
+    
+    dirEntry.lfname = lfn_buf;
+    dirEntry.lfsize = sizeof(lfn_buf);
+
+    dirHandle = SYS_FS_DirOpen(path);
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
+        return 0;
+    }
+
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
+        }
+        
+        // Check for directory
+        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
+            continue;
+        }
+
+        // Check if it's an audio file
+        if (is_audio_file(dirEntry.fname)) {
+            return 1;
+        }
+    }
+
+    SYS_FS_DirClose(dirHandle);
+    return 0;    
 }

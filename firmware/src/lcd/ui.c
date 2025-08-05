@@ -74,6 +74,7 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_push_callback(&prev_btn, VS1053_play_prev);
         button_register_push_callback(&next_btn, VS1053_play_next);
         button_register_push_callback(&rotary_button, NULL);
+        button_register_long_callback(&rotary_button, NULL);
 		ui_draw_main_screen();
 		break;
 		
@@ -84,6 +85,7 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_push_callback(&prev_btn, NULL);
         button_register_push_callback(&next_btn, NULL);
         button_register_push_callback(&rotary_button, main_list_perform_action);
+        button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();		
 		break;
 		
@@ -94,6 +96,7 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
         button_register_push_callback(&rotary_button, dir_list_perform_action);
+        button_register_long_callback(&rotary_button, dir_list_perform_alternate_action);
         draw_scrollable_list();	
 		break;
 		
@@ -104,6 +107,7 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
         button_register_push_callback(&rotary_button, play_selected_stream);
+        button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();
 		break;
 	}

@@ -820,6 +820,11 @@ void VS1053_play_file (char* url) {
 
 
 void VS1053_play_dir (const char* url) {
+//    if (!dir_contains_audio_files(url)) {
+////        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "No audio files in directory");
+//        SYS_CONSOLE_PRINT("No audio files in directory");
+//        return;       
+//    }
     vsdir = SYS_FS_DirOpen(url);
     if (vsdir == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SYS_FS_DirOpen error\r\n");

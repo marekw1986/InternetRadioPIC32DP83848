@@ -44,6 +44,7 @@ void set_media_dir_path(const char* dir_path);
 char* get_media_dir_path(void);
 uint16_t get_number_of_items_in_media_dir();
 uint16_t count_dirs_and_audio_files_in_media_dir(void);
+uint8_t dir_contains_audio_files(const char* path);
 #ifdef	__cplusplus
 }
 #endif

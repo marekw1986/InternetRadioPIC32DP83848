@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 void dir_list_perform_action(void);
+void dir_list_perform_alternate_action(void);
 
 #ifdef	__cplusplus
 }
