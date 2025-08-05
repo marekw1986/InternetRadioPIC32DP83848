@@ -185,7 +185,7 @@ char* get_file_path_from_media_dir_id_is_dir(uint16_t number, char* working_buff
         if (count == number) {
             f_closedir(&dir);
             strncpy(name, fno.fname, name_len);
-            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, fno.fname);
+            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, fno.altname);
             if (is_dir) {
                 *is_dir = (fno.fattrib & AM_DIR);
             }
