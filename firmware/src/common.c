@@ -161,6 +161,10 @@ uint32_t get_fattime (void) {
 //}
 
 char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
+    return get_file_path_from_media_dir_id_is_dir(number, working_buffer, working_buffer_len, name, name_len, NULL);
+}
+
+char* get_file_path_from_media_dir_id_is_dir(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len, uint8_t* is_dir) {
     FRESULT res;
     DIR dir;
     FILINFO fno;
@@ -181,9 +185,11 @@ char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, siz
         if (count == number) {
             f_closedir(&dir);
             strncpy(name, fno.fname, name_len);
-            // Current implementation doesn't require this function to return full path
-            // Return just a name to indicate we have valid data
-            return name;
+            snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, fno.fname);
+            if (is_dir) {
+                *is_dir = (fno.fattrib & AM_DIR);
+            }
+            return working_buffer;
         }
     }
 
