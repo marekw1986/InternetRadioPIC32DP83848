@@ -18,24 +18,20 @@ Internet radio based on PIC32
   - [x] Show currently played stream/file
   - [ ] Create interactive menu
 	- [x] Add option to select stream from list
-	- [ ] Add option to play file from local storage
+	- [x] Add option to play file from local storage
+    - [ ] Add option to play entire directory from local storage
 	- [ ] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
 - [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
+- [ ] Determine cause of reset after VS1053_play_dir() call
 - [ ] Controll LCD backlight brightness with soft PWM
 - [ ] Analyze ICY headers
 	- [x] Implement basic funcionality
-- [ ] Implement analogue radio funcionality
-	- [ ] Design RF board
-	- [ ] Integrate Si5531 library with the project
-	- [ ] Integrate TEA5767 library with the project
-	- [ ] Write code controlling analog switch, depending if we are using FM (TEA5767), AM/SSB/CW (SDR) or neither of them.
-	- [ ] Write code responsible for controlling VS1053 line input.
-	- [ ] Write/integrate code responsible for AM/SSB/CW demodulation of digitized IQ signal from Tayloe circuit
 - [ ] Add RF tuner funcionality.
 	- [x] Design RF board
 	- [ ] Port driver for si4735 chip
+	- [ ] Write code responsible for controlling VS1053 line input.
 	- [ ] Add RF tuner support to LCD UI
 	- [ ] Add RF tuner support to Web UI
 
