@@ -15,6 +15,7 @@ void dir_list_perform_action(void) {
             ui_switch_state(UI_HANDLE_DIR_LIST);
         }
         else {
+            VS1053_stop();
             VS1053_play_file(path);
             ui_switch_state(UI_HANDLE_PLAY_SCREEN);
         }

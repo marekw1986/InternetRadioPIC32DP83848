@@ -93,6 +93,7 @@ void ui_switch_state(ui_state_t new_state) {
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
+        button_register_push_callback(&rotary_button, dir_list_perform_action);
         draw_scrollable_list();	
 		break;
 		
