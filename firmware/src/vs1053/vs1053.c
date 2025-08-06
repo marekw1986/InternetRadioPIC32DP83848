@@ -625,8 +625,8 @@ static void VS1053_handle_end_of_file (void) {
   
 void VS1053_play_next_audio_file_from_directory (void) {
     SYS_FS_FSTAT info;
-    char buf[257];
-    char lfn_buf[300];
+    char buf[128];
+    char lfn_buf[128];
     
     if(!dir_flag) return;       //currently we are not playing directory
     
@@ -649,7 +649,8 @@ void VS1053_play_next_audio_file_from_directory (void) {
         }
         else {
             if (is_audio_file(info.fname)) {
-                int ret = snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, info.fname);
+                char* file_name = info.altname[0] ? info.altname : info.fname;
+                int ret = snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, file_name);
                 if (ret <= sizeof(buf)-1) {
                     VS1053_soft_stop();
                     VS1053_play_file(buf);
