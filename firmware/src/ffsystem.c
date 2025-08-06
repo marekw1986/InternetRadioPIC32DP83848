@@ -25,3 +25,12 @@ void ff_rel_grant(FF_SYNC_t sobj) {
 }
 
 #endif
+
+
+void* ff_memalloc (UINT msize) {
+    return pvPortMalloc(msize);  // FreeRTOS memory allocator
+}
+
+void ff_memfree (void* mblock) {
+    vPortFree(mblock);           // FreeRTOS memory free
+}
