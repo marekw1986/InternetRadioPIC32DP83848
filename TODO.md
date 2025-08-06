@@ -19,12 +19,13 @@ Internet radio based on PIC32
   - [ ] Create interactive menu
 	- [x] Add option to select stream from list
 	- [x] Add option to play file from local storage
-    - [ ] Add option to play entire directory from local storage
+    - [x] Add option to play entire directory from local storage
+    - [ ] Add support for back button
+    - [ ] Add feature to remember last position in each menu
 	- [ ] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
 - [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
-- [ ] Determine cause of reset after VS1053_play_dir() call
 - [ ] Controll LCD backlight brightness with soft PWM
 - [ ] Analyze ICY headers
 	- [x] Implement basic funcionality
@@ -47,3 +48,4 @@ Internet radio based on PIC32
 - [x] Move project from MLA to Harmony libraries
 - [x] Add backlight timeout
 - [x] Move HD44780 from I2C to GPIO bus
+- [x] Determine cause of reset after VS1053_play_dir() call
