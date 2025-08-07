@@ -626,12 +626,11 @@ static void VS1053_handle_end_of_file (void) {
 void VS1053_play_next_audio_file_from_directory (void) {
     SYS_FS_FSTAT info;
     char buf[128];
-    char lfn_buf[128];
     
     if(!dir_flag) return;       //currently we are not playing directory
     
-    info.lfname = lfn_buf;
-    info.lfsize = sizeof(lfn_buf);
+    info.lfname = NULL;
+    info.lfsize = 0;
     
     uint32_t timeout = millis();
     

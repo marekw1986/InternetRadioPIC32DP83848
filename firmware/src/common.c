@@ -174,10 +174,9 @@ char* get_file_path_from_media_dir_id_is_dir(
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
-    char lfn_buf[300];
     
-    dirEntry.lfname = lfn_buf;
-    dirEntry.lfsize = sizeof(lfn_buf);
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
 
     dirHandle = SYS_FS_DirOpen(media_dir_path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
@@ -251,10 +250,9 @@ uint16_t count_dirs_and_audio_files_in_media_dir(void) {
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
-    char lfn_buf[300];
     
-    dirEntry.lfname = lfn_buf;
-    dirEntry.lfsize = sizeof(lfn_buf);
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
 
     dirHandle = SYS_FS_DirOpen(media_dir_path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
@@ -286,10 +284,9 @@ uint16_t count_dirs_and_audio_files_in_media_dir(void) {
 uint8_t dir_contains_audio_files(const char* path) {
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
-    char lfn_buf[300];
     
-    dirEntry.lfname = lfn_buf;
-    dirEntry.lfsize = sizeof(lfn_buf);
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
 
     dirHandle = SYS_FS_DirOpen(path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
