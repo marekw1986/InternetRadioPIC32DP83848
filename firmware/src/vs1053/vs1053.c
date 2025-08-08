@@ -38,12 +38,13 @@
 
 QueueHandle_t vsQueueHandle;
 
-uri_t uri;
-bool dir_flag = false;
-bool loop_flag = false;
+static uri_t uri;
+static bool dir_flag = false;
+static bool loop_flag = false;
+static uint16_t dir_index = 0;
+static uint16_t dir_count = 0;
 
 static SYS_FS_HANDLE fsrc;
-static SYS_FS_HANDLE vsdir;
 static uint8_t ReconnectLimit = RECONNECT_LIMIT;
 static int current_stream_ind = 1;
 
@@ -63,9 +64,11 @@ static ReconnectStrategy_t ReconnectStrategy = DO_NOT_RECONNECT;
 
 static void VS1053_startPlaying(void);
 static void VS1053_stopPlaying(void);
-static void VS1053_soft_stop (void);
+//static void VS1053_soft_stop (void);
 static void VS1053_handle_end_of_file (void);
 static void get_uri_from_stream_id(uint16_t id, uri_t* uri);
+static char* get_path_of_next_audio_file_in_currently_played_dir(void);
+static uint16_t count_audio_files_in_dir(const char* path);
 
 void VS1053_init(void) {
     VS1053_low_level_init();
@@ -560,7 +563,7 @@ void VS1053_play_prev(void) {
         case STREAM_FILE_GET_DATA:
             if (dir_flag) {
                 //TODO: This need to be implemented
-                //VS1053_play_prev_audio_file_from_directory();
+                VS1053_play_prev_audio_file_from_directory();
             }
             break;
         case STREAM_HOME:
@@ -587,14 +590,14 @@ static void VS1053_stopPlaying(void) {
  and closes current file, but doesn't close directory and 
  leaves flag unchanged */
 
-static void VS1053_soft_stop (void) {
-    //Can be used only if it is actually playing from file
-    if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST || StreamState == STREAM_FILE_FILL_BUFFER) { 
-        SYS_FS_FileClose(fsrc);
-        VS1053_stopPlaying();
-        StreamState = STREAM_HOME;        
-    }
-}
+//static void VS1053_soft_stop (void) {
+//    //Can be used only if it is actually playing from file
+//    if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST || StreamState == STREAM_FILE_FILL_BUFFER) { 
+//        SYS_FS_FileClose(fsrc);
+//        VS1053_stopPlaying();
+//        StreamState = STREAM_HOME;        
+//    }
+//}
 
 static void VS1053_handle_end_of_file (void) {
     int32_t res;
@@ -625,47 +628,25 @@ static void VS1053_handle_end_of_file (void) {
   
   
 void VS1053_play_next_audio_file_from_directory (void) {
-    SYS_FS_FSTAT info;
-    char buf[128];
-    
-    if(!dir_flag) return;       //currently we are not playing directory
-    
-    info.lfname = NULL;
-    info.lfsize = 0;
-    
-    uint32_t timeout = millis();
-    
-    while (SYS_FS_DirRead(vsdir, &info) == SYS_FS_RES_SUCCESS) {
-        if (!info.fname[0]) {           //Empty string - end of directory
-            if (loop_flag) {
-                SYS_CONSOLE_PRINT("Loop flag set - rewinding dir\r\n");
-                SYS_FS_DirRewind(vsdir);
-            }
-            else {
-                SYS_CONSOLE_PRINT("Loop flag cleared - stop playback\r\n");
-                VS1053_stop();          //It handles closing dir and resetting dir_flag
-                return;
-            }
-        }
-        else {
-            if (is_audio_file(info.fname)) {
-                char* file_name = info.altname[0] ? info.altname : info.fname;
-                int ret = snprintf(buf, sizeof(buf)-1, "%s/%s", uri.server, file_name);
-                if (ret <= sizeof(buf)-1) {
-                    VS1053_soft_stop();
-                    VS1053_play_file(buf);
-                }
-                return;
-            }
-        }
-        
-        if ((uint32_t)(millis()-timeout) > 500) {
-            //This is needed in case of empty directory
-            break;
-        }
+    if (!dir_flag) { return; }
+    if (dir_index == 0) { return; }
+    dir_index++;
+    if (dir_index > dir_count) {
+        dir_index = 1;
     }
-    
-    return;
+    VS1053_stop();
+    VS1053_play_file(get_path_of_next_audio_file_in_currently_played_dir());
+}
+
+void VS1053_play_prev_audio_file_from_directory(void) {
+    if (!dir_flag) { return; }
+    if (dir_index == 0) { return; }
+    dir_index--;
+    if (dir_index == 0) {
+        dir_index = dir_count;
+    }
+    VS1053_stop();
+    VS1053_play_file(get_path_of_next_audio_file_in_currently_played_dir());
 }
 
 /*Always call VS1053_stop() before calling that function*/
@@ -820,20 +801,94 @@ void VS1053_play_file (char* url) {
 }
 
 
-void VS1053_play_dir (const char* url) {
-//    if (!dir_contains_audio_files(url)) {
-////        SYS_DEBUG_PRINT(SYS_ERROR_INFO, "No audio files in directory");
-//        SYS_CONSOLE_PRINT("No audio files in directory");
-//        return;       
-//    }
-    vsdir = SYS_FS_DirOpen(url);
-    if (vsdir == SYS_FS_HANDLE_INVALID) {
-        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SYS_FS_DirOpen error\r\n");
+void VS1053_play_dir (const char* path) {
+    dir_count = count_audio_files_in_dir(path);
+    if (dir_count == 0) { return; }
+    dir_index = 1;
+    dir_flag = true;    // TODO: This should be replaced with dir_index alone
+    strncpy(uri.server, path, sizeof(uri.server)-1);		//we use uri.server to store current directory path
+    int ret = snprintf(uri.server, sizeof(uri.server), "%s", path);   //we use uri.server to store current directory path
+    if (ret <0 || ret >= sizeof(uri.server)) {
+//        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Play dir: uri.server does not fit directory path\r\n");
         return;
     }
-    dir_flag = true;
-    strncpy(uri.server, url, sizeof(uri.server)-1);		//we use uri.server to store current directory path
-    VS1053_play_next_audio_file_from_directory();
+    char* file_path = get_path_of_next_audio_file_in_currently_played_dir();
+    if (file_path == NULL) { return; }
+    VS1053_play_file(file_path);
+}
+
+static uint16_t count_audio_files_in_dir(const char* path) {
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
+    uint16_t count = 0;
+    
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
+
+    dirHandle = SYS_FS_DirOpen(path);
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", path);
+        return 0;
+    }
+
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
+        }
+        // Check for directory
+        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
+            continue;
+        }
+        // Check if it's an audio file
+        if (is_audio_file(dirEntry.fname)) {
+            count++;
+        }
+    }
+
+    SYS_FS_DirClose(dirHandle);
+    return count;    
+}
+
+static char* get_path_of_next_audio_file_in_currently_played_dir(void) {
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
+    uint16_t count = 0;
+    
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
+
+    dirHandle = SYS_FS_DirOpen(uri.server);     // We use uri.server to store path for currently played dir
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", uri.server);
+        return NULL;
+    }
+
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
+        }
+        // Check for directory
+        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
+            continue;
+        }
+        // Check if it's an audio file
+        if (is_audio_file(dirEntry.fname)) {
+            count++;
+        }
+        if (count == dir_index) {
+            char* file_name = dirEntry.altname[0] ? dirEntry.altname : dirEntry.fname;
+            if (strlen(uri.server) + 1 + strlen(file_name) >= sizeof(uri.file)) {
+                return NULL;
+            }
+            strlcpy(uri.file, uri.server, sizeof(uri.file));
+            strlcat(uri.file, "/", sizeof(uri.file));
+            strlcat(uri.file, file_name, sizeof(uri.file));
+            return uri.file;
+        }
+    }
+
+    SYS_FS_DirClose(dirHandle);
+    return NULL;     
 }
 
 void VS1053_stop(void) {
@@ -857,8 +912,8 @@ void VS1053_stop(void) {
         case STREAM_FILE_PLAY_REST:
             SYS_FS_FileClose(fsrc);
             if (dir_flag) {
-                SYS_FS_DirClose(vsdir);
                 dir_flag = false;
+                dir_count = 0;
             }
             break;
         default:

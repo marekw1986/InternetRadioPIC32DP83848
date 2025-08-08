@@ -60,6 +60,7 @@ uint8_t VS1053_getVolume(void);
 void VS1053_play_next(void);
 void VS1053_play_prev(void);
 void VS1053_play_next_audio_file_from_directory (void);
+void VS1053_play_prev_audio_file_from_directory (void);
 void VS1053_play_http_stream(const char* url);
 bool VS1053_play_http_stream_by_id(uint16_t id);
 void VS1053_play_next_http_stream_from_list(void);

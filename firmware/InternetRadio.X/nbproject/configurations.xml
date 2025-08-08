@@ -935,6 +935,10 @@
         <C32Global>
         </C32Global>
       </item>
+      <item path="../src/vs1053/dir_play.c" ex="true" overriding="false">
+      </item>
+      <item path="../src/vs1053/dir_play.h" ex="true" overriding="false">
+      </item>
       <C32>
         <property key="additional-warnings" value="true"/>
         <property key="addresss-attribute-use" value="false"/>
