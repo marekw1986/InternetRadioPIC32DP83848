@@ -3,10 +3,22 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/common.h</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_header_parser.c</file>
-            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/ui.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/common.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/ffsystem.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/vs1053/vs1053.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/dir_list.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/system/fs/fat_fs/file_system/ff.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_header_parser.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/dir_list.c</file>
             <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/io/buttons.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/main_list.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/ui.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/system/fs/fat_fs/file_system/ffconf.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/config/default/system/fs/fat_fs/file_system/ff.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/app.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/common.h</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/lcd/ui.c</file>
+            <file>file:/home/marek/Dropbox/Projekty/InternetRadioPIC32DP83848/firmware/src/http_net_print.c</file>
         </group>
     </open-files>
 </project-private>
