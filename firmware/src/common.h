@@ -36,15 +36,10 @@ unsigned char ByteToBcd(unsigned char i);
 long map(long x, long in_min, long in_max, long out_min, long out_max);
 uint32_t millis(void);
 uint32_t uptime(void);
-char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len);
-char* get_file_path_from_media_dir_id_is_dir(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len, uint8_t* is_dir);
+
 void to_lower(char *str);
 uint8_t is_audio_file (char* name);
-void set_media_dir_path(const char* dir_path);
-char* get_media_dir_path(void);
-uint16_t get_number_of_items_in_media_dir();
-uint16_t count_dirs_and_audio_files_in_media_dir(void);
-uint8_t dir_contains_audio_files(const char* path);
+uint16_t count_audio_files_in_dir(const char* path);
 #ifdef	__cplusplus
 }
 #endif

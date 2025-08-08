@@ -91,7 +91,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_DIR_LIST:
 		ui_state = new_state;
-		scrollable_list_set_config(get_file_path_from_media_dir_id, get_number_of_items_in_media_dir, false);
+		scrollable_list_set_config(dir_list_get_path_from_id, dir_list_get_number_of_items, false);
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);

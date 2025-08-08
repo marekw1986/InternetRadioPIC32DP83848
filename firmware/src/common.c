@@ -19,9 +19,6 @@ int time_zone = -120;
 static volatile uint32_t milliseconds = 0;
 static volatile uint32_t upt = 0;
 
-static char media_dir_path[128];
-static uint16_t number_of_items_in_media_dir = 0;
-
 SYS_FS_RESULT FormatSpiFlashDisk (void) {
     SYS_FS_RESULT res;
     SYS_FS_FORMAT_PARAM opt;
@@ -88,133 +85,6 @@ uint32_t get_fattime (void) {
 //    return 0xFFFFFFFF;
 }
 
-//char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* stream_name, size_t stream_name_len) {
-//	char* res = NULL;
-//	switch(number) {
-//		case 1:
-//		strncpy(stream_name, "Queen - Kind of Magic.mp3", stream_name_len);
-//		res = "jeden";
-//		break;
-//		
-//		case 2:
-//		strncpy(stream_name, "Creed - My Sacrifice.mp3", stream_name_len);
-//		res = "dwa";
-//		break;
-//		
-//		case 3:
-//		strncpy(stream_name, "The Cranberries - Zombie.mp3", stream_name_len);
-//		res = "trzy";
-//		break;
-//		
-//		case 4:
-//		strncpy(stream_name, "Pixies - Where is my mind.aac", stream_name_len);
-//		res = "cztery";
-//		break;
-//		
-//		case 5:
-//		strncpy(stream_name, "Frank Turner - Ballad of me and my friends.mp3", stream_name_len);
-//		res = "piec";
-//		break;
-//		
-//		case 6:
-//		strncpy(stream_name, "Czeslaw Niemen - Dziwny jest ten swiat.mp3", stream_name_len);
-//		res = "szesc";
-//		break;
-//		
-//		case 7:
-//		strncpy(stream_name, "Against Me! - I was a teenage anarchist.mp3", stream_name_len);
-//		res = "siedem";
-//		break;
-//		
-//		case 8:
-//		strncpy(stream_name, "Phantom Planet - California.mp3", stream_name_len);
-//		res = "osiem";
-//		break;
-//		
-//		case 9:
-//		strncpy(stream_name, "SAMURAI - Never fade away.mp3", stream_name_len);
-//		res = "dziewiec";
-//		break;
-//		
-//		case 10:
-//		strncpy(stream_name, "Lifehouse - Whatever it takes.mp3", stream_name_len);
-//		res = "dziesiec";
-//		break;
-//		
-//		case 11:
-//		strncpy(stream_name, "Pearl Jam - Once.mp3", stream_name_len);
-//		res = "jedenascie";
-//		break;
-//		
-//		case 12:
-//		strncpy(stream_name, "Bad Religion - Sorrow.mp3", stream_name_len);
-//		res = "dwanascie";
-//		break;										
-//		
-//		default:
-//		strncpy(stream_name, "", stream_name_len);
-//		res = NULL;
-//		break;
-//	}
-//	return res;
-//}
-
-char* get_file_path_from_media_dir_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
-    return get_file_path_from_media_dir_id_is_dir(number, working_buffer, working_buffer_len, name, name_len, NULL);
-}
-
-char* get_file_path_from_media_dir_id_is_dir(
-    uint16_t number,
-    char* working_buffer,
-    size_t working_buffer_len,
-    char* name,
-    size_t name_len,
-    uint8_t* is_dir
-) {
-    SYS_FS_HANDLE dirHandle;
-    SYS_FS_FSTAT dirEntry;
-    uint16_t count = 0;
-    
-    dirEntry.lfname = NULL;
-    dirEntry.lfsize = 0;
-
-    dirHandle = SYS_FS_DirOpen(media_dir_path);
-    if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
-        return NULL;
-    }
-
-    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
-        if (!dirEntry.fname[0]) { // empty string, end of directory
-            break;
-        }
-
-        if ((dirEntry.fattrib & SYS_FS_ATTR_DIR) || is_audio_file(dirEntry.fname)) {
-            count++;
-        }
-
-        if (count == number) {
-            SYS_FS_DirClose(dirHandle);
-            if (is_dir != NULL) {
-                *is_dir = (dirEntry.fattrib & SYS_FS_ATTR_DIR);
-            }
-            if (name) {
-                // Copy the display name
-                strncpy(name, dirEntry.fname, name_len);
-                name[name_len - 1] = '\0';  // Ensure null-termination
-            }
-            if (working_buffer) {
-                char* file_name = dirEntry.altname[0] ? dirEntry.altname : dirEntry.fname;
-                snprintf(working_buffer, working_buffer_len, "%s/%s", media_dir_path, file_name);
-                return working_buffer;
-            }
-        }
-    }
-
-    SYS_FS_DirClose(dirHandle);
-    return NULL;
-}
-
 // Convert string to lowercase for case-insensitive comparison
 void to_lower(char *str) {
     while (*str) {
@@ -233,83 +103,36 @@ uint8_t is_audio_file (char* name) {
     return (strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid"));
  }
 
-void set_media_dir_path(const char* dir_path) {
-    strncpy(media_dir_path, dir_path, sizeof(media_dir_path));
-    number_of_items_in_media_dir = count_dirs_and_audio_files_in_media_dir();
-}
-
-char* get_media_dir_path(void) {
-    return media_dir_path;
-}
-
-uint16_t get_number_of_items_in_media_dir() {
-    return number_of_items_in_media_dir;
-}
-
-uint16_t count_dirs_and_audio_files_in_media_dir(void) {
-    SYS_FS_HANDLE dirHandle;
-    SYS_FS_FSTAT dirEntry;
-    uint16_t count = 0;
-    
-    dirEntry.lfname = NULL;
-    dirEntry.lfsize = 0;
-
-    dirHandle = SYS_FS_DirOpen(media_dir_path);
-    if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
-        return 0;
-    }
-
-    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
-        if (!dirEntry.fname[0]) { // empty string, end of directory
-            break;
-        }
-        
-        // Check for directory
-        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
-            count++;
-            continue;
-        }
-
-        // Check if it's an audio file
-        if (is_audio_file(dirEntry.fname)) {
-            count++;
-        }
-    }
-
-    SYS_FS_DirClose(dirHandle);
-    return count;
-}
-
-uint8_t dir_contains_audio_files(const char* path) {
-    SYS_FS_HANDLE dirHandle;
-    SYS_FS_FSTAT dirEntry;
-    
-    dirEntry.lfname = NULL;
-    dirEntry.lfsize = 0;
-
-    dirHandle = SYS_FS_DirOpen(path);
-    if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
-        return 0;
-    }
-
-    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
-        if (!dirEntry.fname[0]) { // empty string, end of directory
-            break;
-        }
-        
-        // Check for directory
-        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
-            continue;
-        }
-
-        // Check if it's an audio file
-        if (is_audio_file(dirEntry.fname)) {
-            return 1;
-        }
-    }
-
-    SYS_FS_DirClose(dirHandle);
-    return 0;    
-}
+//uint16_t count_audio_files_in_dir(const char* path) {
+//    SYS_FS_HANDLE dirHandle;
+//    SYS_FS_FSTAT dirEntry;
+//    uint16_t count = 0;
+//    
+//    dirEntry.lfname = NULL;
+//    dirEntry.lfsize = 0;
+//
+//    dirHandle = SYS_FS_DirOpen(path);
+//    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+//        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
+//        return 0;
+//    }
+//
+//    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+//        if (!dirEntry.fname[0]) { // empty string, end of directory
+//            break;
+//        }
+//        
+//        // Check for directory
+//        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
+//            continue;
+//        }
+//
+//        // Check if it's an audio file
+//        if (is_audio_file(dirEntry.fname)) {
+//            count++;
+//        }
+//    }
+//
+//    SYS_FS_DirClose(dirHandle);
+//    return count;    
+//}

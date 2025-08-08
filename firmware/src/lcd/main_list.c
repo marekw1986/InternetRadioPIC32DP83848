@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include "string.h"
 #include "main_list.h"
+#include "dir_list.h"
 #include "ui.h"
 #include "scrollable_list.h"
 #include "common.h"
@@ -38,13 +39,13 @@ void main_list_perform_action(void) {
 	switch (scrollable_list_get_selected_item_id()) {
 		case 1:
 		scrollable_list_set_selected_item_id(0);
-        set_media_dir_path("/mnt/myDrive1/music");
+        dir_list_set_path("/mnt/myDrive1/music");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
 		case 2:
 		scrollable_list_set_selected_item_id(0);
-        set_media_dir_path("/mnt/myDrive0");
+        dir_list_set_path("/mnt/myDrive0");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
