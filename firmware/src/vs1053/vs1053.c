@@ -38,15 +38,16 @@
 
 QueueHandle_t vsQueueHandle;
 
+uri_t uri;
+bool dir_flag = false;
+bool loop_flag = false;
+
 static SYS_FS_HANDLE fsrc;
 static SYS_FS_HANDLE vsdir;
 static uint8_t ReconnectLimit = RECONNECT_LIMIT;
 static int current_stream_ind = 1;
 
 static TCP_SOCKET VS_Socket = INVALID_SOCKET;
-static uri_t uri;
-static bool loop_flag = false;
-static bool dir_flag = false;
 static uint8_t last_volume = 0;
 
 static StreamState_t StreamState = STREAM_HOME;

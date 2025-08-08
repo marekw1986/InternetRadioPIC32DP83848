@@ -39,7 +39,6 @@ uint32_t uptime(void);
 
 void to_lower(char *str);
 uint8_t is_audio_file (char* name);
-uint16_t count_audio_files_in_dir(const char* path);
 #ifdef	__cplusplus
 }
 #endif

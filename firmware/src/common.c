@@ -103,36 +103,3 @@ uint8_t is_audio_file (char* name) {
     return (strstr(name, ".mp3") || strstr(name, ".aac") || strstr(name, ".flac") ||strstr(name, ".wma") || strstr(name, ".mid"));
  }
 
-//uint16_t count_audio_files_in_dir(const char* path) {
-//    SYS_FS_HANDLE dirHandle;
-//    SYS_FS_FSTAT dirEntry;
-//    uint16_t count = 0;
-//    
-//    dirEntry.lfname = NULL;
-//    dirEntry.lfsize = 0;
-//
-//    dirHandle = SYS_FS_DirOpen(path);
-//    if (dirHandle == SYS_FS_HANDLE_INVALID) {
-//        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
-//        return 0;
-//    }
-//
-//    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
-//        if (!dirEntry.fname[0]) { // empty string, end of directory
-//            break;
-//        }
-//        
-//        // Check for directory
-//        if (dirEntry.fattrib & SYS_FS_ATTR_DIR) {
-//            continue;
-//        }
-//
-//        // Check if it's an audio file
-//        if (is_audio_file(dirEntry.fname)) {
-//            count++;
-//        }
-//    }
-//
-//    SYS_FS_DirClose(dirHandle);
-//    return count;    
-//}
