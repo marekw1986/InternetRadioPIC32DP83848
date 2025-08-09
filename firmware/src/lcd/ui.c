@@ -24,6 +24,7 @@ typedef enum {SCROLL, SCROLL_WAIT} scroll_state_t;
 
 static button_t next_btn;
 static button_t prev_btn;
+static button_t back_button;
 static button_t state_button;
 static button_t rotary_button;
 
@@ -53,6 +54,7 @@ void ui_init(void) {
     rotary_init();
     button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1053_play_prev, NULL);
     button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1053_play_next, NULL);
+    button_init(&back_button, &PORTE, _PORTE_RE4_MASK, NULL, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
     button_init(&rotary_button, &PORTF, _PORTF_RF2_MASK, NULL, NULL);
     button_register_global_callback(ui_button_update_backlight);
@@ -73,6 +75,7 @@ void ui_switch_state(ui_state_t new_state) {
         rotary_register_callback(ui_rotary_change_volume);
         button_register_push_callback(&prev_btn, VS1053_play_prev);
         button_register_push_callback(&next_btn, VS1053_play_next);
+        button_register_push_callback(&back_button, NULL);
         button_register_push_callback(&rotary_button, NULL);
         button_register_long_callback(&rotary_button, NULL);
 		ui_draw_main_screen();
@@ -84,6 +87,7 @@ void ui_switch_state(ui_state_t new_state) {
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, NULL);
         button_register_push_callback(&next_btn, NULL);
+        button_register_push_callback(&back_button, NULL);
         button_register_push_callback(&rotary_button, main_list_perform_action);
         button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();		
@@ -95,6 +99,7 @@ void ui_switch_state(ui_state_t new_state) {
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
+        button_register_push_callback(&back_button, dir_list_perform_back);
         button_register_push_callback(&rotary_button, dir_list_perform_action);
         button_register_long_callback(&rotary_button, dir_list_perform_alternate_action);
         draw_scrollable_list();	
@@ -106,6 +111,7 @@ void ui_switch_state(ui_state_t new_state) {
         rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
+        button_register_push_callback(&back_button, NULL);
         button_register_push_callback(&rotary_button, play_selected_stream);
         button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();
@@ -205,6 +211,7 @@ void ui_handle(void) {
     rotary_handle();
     button_handle(&next_btn);
     button_handle(&prev_btn);
+    button_handle(&back_button);
     button_handle(&state_button);
     button_handle(&rotary_button);
 }

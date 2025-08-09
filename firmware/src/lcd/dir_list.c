@@ -39,6 +39,19 @@ void dir_list_perform_alternate_action(void) {
     }
 }
 
+void dir_list_perform_back(void) {
+    char* last_slash;
+    last_slash = strrchr(media_dir_path, '/');
+    if (!last_slash) { return; }
+    *last_slash = '\0';
+    // TODO: Refactor this
+    if ( (strncmp(media_dir_path, "/mnt/myDrive0", sizeof(media_dir_path)) == 0) || (strncmp(media_dir_path, "/mnt/myDrive1", sizeof(media_dir_path)) == 0) )  {
+        ui_switch_state(UI_HANDLE_MAIN_LIST);
+        return;
+    }
+    ui_switch_state(UI_HANDLE_DIR_LIST);
+}
+
 char* dir_list_get_path_from_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
     return dir_list_get_path_from_id_is_dir(number, working_buffer, working_buffer_len, name, name_len, NULL);
 }

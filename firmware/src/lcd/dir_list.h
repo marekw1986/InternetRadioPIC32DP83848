@@ -10,6 +10,7 @@ extern "C" {
 
 void dir_list_perform_action(void);
 void dir_list_perform_alternate_action(void);
+void dir_list_perform_back(void);
 char* dir_list_get_path_from_id(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len);
 char* dir_list_get_path_from_id_is_dir(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len, uint8_t* is_dir);
 uint16_t dir_list_count_displayable_items(void);
