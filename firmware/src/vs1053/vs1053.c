@@ -63,7 +63,6 @@ static ReconnectStrategy_t ReconnectStrategy = DO_NOT_RECONNECT;
 
 static void VS1053_startPlaying(void);
 static void VS1053_stopPlaying(void);
-//static void VS1053_soft_stop (void);
 static void VS1053_handle_end_of_file (void);
 static void get_uri_from_stream_id(uint16_t id, uri_t* uri);
 static char* get_path_of_next_audio_file_in_currently_played_dir(void);
@@ -585,19 +584,6 @@ static void VS1053_stopPlaying(void) {
     ringbuffer_clear();
 }
 
-/* This is needed for directory playing - it stops playing
- and closes current file, but doesn't close directory and 
- leaves flag unchanged */
-
-//static void VS1053_soft_stop (void) {
-//    //Can be used only if it is actually playing from file
-//    if (StreamState == STREAM_FILE_GET_DATA || StreamState == STREAM_FILE_PLAY_REST || StreamState == STREAM_FILE_FILL_BUFFER) { 
-//        SYS_FS_FileClose(fsrc);
-//        VS1053_stopPlaying();
-//        StreamState = STREAM_HOME;        
-//    }
-//}
-
 static void VS1053_handle_end_of_file (void) {
     int32_t res;
     
@@ -627,7 +613,6 @@ static void VS1053_handle_end_of_file (void) {
   
   
 void VS1053_play_next_audio_file_from_directory (void) {
-    SYS_CONSOLE_PRINT("play_next_file_in_dir1 dir_count1: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
     if (dir_count == 0) { return; }
     dir_index++;
     if (dir_index > dir_count) {
@@ -640,22 +625,21 @@ void VS1053_play_next_audio_file_from_directory (void) {
         }
     }
     VS1053_stop();
-    SYS_CONSOLE_PRINT("play_next_file_in_dir2 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
     char *file_path = get_path_of_next_audio_file_in_currently_played_dir();
     if(file_path == NULL) { return; }
     VS1053_play_file(file_path);
 }
 
 void VS1053_play_prev_audio_file_from_directory(void) {
-    SYS_CONSOLE_PRINT("play_prev_file_in_dir1 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
     if (dir_count == 0) { return; }
     dir_index--;
     if (dir_index == 0) {
         dir_index = dir_count;
     }
     VS1053_stop();
-    SYS_CONSOLE_PRINT("play_prev_file_in_dir2 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
-    VS1053_play_file(get_path_of_next_audio_file_in_currently_played_dir());
+    char *file_path = get_path_of_next_audio_file_in_currently_played_dir();
+    if(file_path == NULL) { return; }
+    VS1053_play_file(file_path);
 }
 
 /*Always call VS1053_stop() before calling that function*/
@@ -738,7 +722,7 @@ void VS1053_play_prev_http_stream_from_list(void) {
     VS1053_play_http_stream(url);
 }
 
-/*Always call VS1053_stop() or VS1053_soft_stop() before calling that function*/
+/*Always call VS1053_stop() before calling that function*/
 void VS1053_play_file (char* url) {
     if (StreamState != STREAM_HOME) return;
     
@@ -822,7 +806,6 @@ void VS1053_play_dir (const char* path) {
     }
     char* file_path = get_path_of_next_audio_file_in_currently_played_dir();
     if (file_path == NULL) { return; }
-    SYS_CONSOLE_PRINT("play_dir dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s, file_path: %s", dir_count, dir_index, uri.server, uri.file, file_path);
     VS1053_play_file(file_path);
 }
 
@@ -836,7 +819,8 @@ static uint16_t count_audio_files_in_dir(const char* path) {
 
     dirHandle = SYS_FS_DirOpen(path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("count_audio_files_in_dir: Error opening directory: %s\n", path);
+        SYS_FS_ERROR err = SYS_FS_Error();
+        SYS_CONSOLE_PRINT("count_audio_files_in_dir error opening directory: %s, error code: %d\n", uri.server, err);
         return 0;
     }
 
@@ -869,7 +853,7 @@ static char* get_path_of_next_audio_file_in_currently_played_dir(void) {
     dirHandle = SYS_FS_DirOpen(uri.server);     // We use uri.server to store path for currently played dir
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
         SYS_FS_ERROR err = SYS_FS_Error();
-        SYS_CONSOLE_PRINT("get_path_of_next_audio_file_in_currently_played_dir: Error opening directory: %s, error code: %d\n", uri.server, err);
+        SYS_CONSOLE_PRINT("get_path_of_next_audio_file_in_currently_played_dir error opening directory: %s, error code: %d\n", uri.server, err);
         return NULL;
     }
 
@@ -893,7 +877,6 @@ static char* get_path_of_next_audio_file_in_currently_played_dir(void) {
             strlcpy(uri.file, uri.server, sizeof(uri.file));
             strlcat(uri.file, "/", sizeof(uri.file));
             strlcat(uri.file, file_name, sizeof(uri.file));
-            SYS_CONSOLE_PRINT("get_path_of_next_audio_file_in_currently_played_dir returning: %s\r\n", uri.file);
             SYS_FS_DirClose(dirHandle);
             return uri.file;
         }

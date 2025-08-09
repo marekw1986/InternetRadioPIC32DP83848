@@ -499,7 +499,6 @@
         <itemPath>../src/vs1053/ringbuffer.h</itemPath>
         <itemPath>../src/vs1053/vs1053.h</itemPath>
         <itemPath>../src/vs1053/vs1053_low_level.h</itemPath>
-        <itemPath>../src/vs1053/dir_play.h</itemPath>
       </logicalFolder>
       <itemPath>../src/app.h</itemPath>
       <itemPath>../src/common.h</itemPath>
@@ -749,7 +748,6 @@
         <itemPath>../src/vs1053/vs1053.c</itemPath>
         <itemPath>../src/vs1053/vs1053_low_level.c</itemPath>
         <itemPath>../src/vs1053/vs1053b-patches-flac-latm.c</itemPath>
-        <itemPath>../src/vs1053/dir_play.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f8" displayName="web_pages" projectFiles="true">
         <logicalFolder name="f1" displayName="opt" projectFiles="true">
@@ -934,10 +932,6 @@
         </C32CPP>
         <C32Global>
         </C32Global>
-      </item>
-      <item path="../src/vs1053/dir_play.c" ex="true" overriding="false">
-      </item>
-      <item path="../src/vs1053/dir_play.h" ex="true" overriding="false">
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>
