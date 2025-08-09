@@ -15,8 +15,6 @@ static scrollable_list_config_t config;
 
 static uint8_t calculate_selected_line(void);
 static void draw_pointer_at_line(uint8_t line);
-inline static void scrollable_list_increment_selected_item_id_by_lcd_rows(void);
-inline static void scrollable_list_decrement_selected_item_id_by_lcd_rows(void);
 
 
 void handle_scrollable_list(void) {
@@ -111,14 +109,6 @@ void scrollable_list_set_selected_item_id(uint16_t id) {
 
 uint16_t scrollable_list_get_selected_item_id(void) {
 	return selected_item_id;
-}
-
-inline static void scrollable_list_increment_selected_item_id_by_lcd_rows(void) {
-	selected_item_id += LCD_ROWS;
-}
-
-inline static void scrollable_list_decrement_selected_item_id_by_lcd_rows(void) {
-	selected_item_id -= LCD_ROWS;
 }
 
 void scrollable_list_next_page(void) {
