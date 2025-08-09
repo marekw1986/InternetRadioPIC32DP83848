@@ -20,7 +20,7 @@ static void draw_pointer_at_line(uint8_t line);
 void handle_scrollable_list(void) {
     if (drawing_scrollable_list_active) {
         uint8_t selected_line = calculate_selected_line();
-        uint8_t item_at_first_line = selected_item_id-selected_line;
+        uint16_t item_at_first_line = selected_item_id-selected_line;
         char name[22];
         char buf[24];
         char* url = NULL;
