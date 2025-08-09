@@ -123,8 +123,8 @@ inline static void scrollable_list_decrement_selected_item_id_by_lcd_rows(void) 
 
 void scrollable_list_next_page(void) {
 	if (config.get_max_item_id == NULL) { return; }
-    scrollable_list_increment_selected_item_id_by_lcd_rows();
-    if (scrollable_list_get_selected_item_id() > config.get_max_item_id()) {
+    selected_item_id += LCD_ROWS;
+    if (selected_item_id > config.get_max_item_id()) {
         scrollable_list_set_selected_item_id(1);
     }
     draw_scrollable_list();
@@ -132,8 +132,8 @@ void scrollable_list_next_page(void) {
 
 void scrollable_list_prev_page(void) {
 	if (config.get_max_item_id == NULL) { return; }
-    scrollable_list_decrement_selected_item_id_by_lcd_rows();
-    if (scrollable_list_get_selected_item_id() < 1) {
+    selected_item_id -= LCD_ROWS;
+    if (selected_item_id < 1) {
         scrollable_list_set_selected_item_id(config.get_max_item_id());
     }
     draw_scrollable_list();
