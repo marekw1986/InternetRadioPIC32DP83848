@@ -39,7 +39,6 @@
 QueueHandle_t vsQueueHandle;
 
 static uri_t uri;
-static bool dir_flag = false;
 static bool loop_flag = false;
 static uint16_t dir_index = 0;
 static uint16_t dir_count = 0;
@@ -542,7 +541,7 @@ void VS1053_play_next(void) {
     switch (StreamState) {
         case STREAM_FILE_FILL_BUFFER:
         case STREAM_FILE_GET_DATA:
-            if (dir_flag) {
+            if (dir_count > 0) {
                 VS1053_play_next_audio_file_from_directory();
             }
             break;
@@ -561,7 +560,7 @@ void VS1053_play_prev(void) {
     switch (StreamState) {
         case STREAM_FILE_FILL_BUFFER:
         case STREAM_FILE_GET_DATA:
-            if (dir_flag) {
+            if (dir_count > 0) {
                 //TODO: This need to be implemented
                 VS1053_play_prev_audio_file_from_directory();
             }
@@ -602,7 +601,7 @@ static void VS1053_stopPlaying(void) {
 static void VS1053_handle_end_of_file (void) {
     int32_t res;
     
-    if (dir_flag) {
+    if (dir_count > 0) {
         VS1053_play_next_audio_file_from_directory();   //it handles loops
     }
     else {
@@ -628,24 +627,34 @@ static void VS1053_handle_end_of_file (void) {
   
   
 void VS1053_play_next_audio_file_from_directory (void) {
-    if (!dir_flag) { return; }
-    if (dir_index == 0) { return; }
+    SYS_CONSOLE_PRINT("play_next_file_in_dir1 dir_count1: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
+    if (dir_count == 0) { return; }
     dir_index++;
     if (dir_index > dir_count) {
-        dir_index = 1;
+        if (loop_flag) {
+            dir_index = 1;
+        }
+        else {
+            dir_count = 0;
+            dir_index = 0;
+        }
     }
     VS1053_stop();
-    VS1053_play_file(get_path_of_next_audio_file_in_currently_played_dir());
+    SYS_CONSOLE_PRINT("play_next_file_in_dir2 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
+    char *file_path = get_path_of_next_audio_file_in_currently_played_dir();
+    if(file_path == NULL) { return; }
+    VS1053_play_file(file_path);
 }
 
 void VS1053_play_prev_audio_file_from_directory(void) {
-    if (!dir_flag) { return; }
-    if (dir_index == 0) { return; }
+    SYS_CONSOLE_PRINT("play_prev_file_in_dir1 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
+    if (dir_count == 0) { return; }
     dir_index--;
     if (dir_index == 0) {
         dir_index = dir_count;
     }
     VS1053_stop();
+    SYS_CONSOLE_PRINT("play_prev_file_in_dir2 dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s\r\n", dir_count, dir_index, uri.server, uri.file);
     VS1053_play_file(get_path_of_next_audio_file_in_currently_played_dir());
 }
 
@@ -805,7 +814,6 @@ void VS1053_play_dir (const char* path) {
     dir_count = count_audio_files_in_dir(path);
     if (dir_count == 0) { return; }
     dir_index = 1;
-    dir_flag = true;    // TODO: This should be replaced with dir_index alone
     strncpy(uri.server, path, sizeof(uri.server)-1);		//we use uri.server to store current directory path
     int ret = snprintf(uri.server, sizeof(uri.server), "%s", path);   //we use uri.server to store current directory path
     if (ret <0 || ret >= sizeof(uri.server)) {
@@ -814,6 +822,7 @@ void VS1053_play_dir (const char* path) {
     }
     char* file_path = get_path_of_next_audio_file_in_currently_played_dir();
     if (file_path == NULL) { return; }
+    SYS_CONSOLE_PRINT("play_dir dir_count: %d, dir_index: %d, uri.server: %s, uri.file %s, file_path: %s", dir_count, dir_index, uri.server, uri.file, file_path);
     VS1053_play_file(file_path);
 }
 
@@ -827,7 +836,7 @@ static uint16_t count_audio_files_in_dir(const char* path) {
 
     dirHandle = SYS_FS_DirOpen(path);
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("Error opening directory: %s\n", path);
+        SYS_CONSOLE_PRINT("count_audio_files_in_dir: Error opening directory: %s\n", path);
         return 0;
     }
 
@@ -859,7 +868,8 @@ static char* get_path_of_next_audio_file_in_currently_played_dir(void) {
 
     dirHandle = SYS_FS_DirOpen(uri.server);     // We use uri.server to store path for currently played dir
     if (dirHandle == SYS_FS_HANDLE_INVALID) {
-        SYS_CONSOLE_PRINT("Error opening directory: %s\n", uri.server);
+        SYS_FS_ERROR err = SYS_FS_Error();
+        SYS_CONSOLE_PRINT("get_path_of_next_audio_file_in_currently_played_dir: Error opening directory: %s, error code: %d\n", uri.server, err);
         return NULL;
     }
 
@@ -878,11 +888,13 @@ static char* get_path_of_next_audio_file_in_currently_played_dir(void) {
         if (count == dir_index) {
             char* file_name = dirEntry.altname[0] ? dirEntry.altname : dirEntry.fname;
             if (strlen(uri.server) + 1 + strlen(file_name) >= sizeof(uri.file)) {
-                return NULL;
+                break;
             }
             strlcpy(uri.file, uri.server, sizeof(uri.file));
             strlcat(uri.file, "/", sizeof(uri.file));
             strlcat(uri.file, file_name, sizeof(uri.file));
+            SYS_CONSOLE_PRINT("get_path_of_next_audio_file_in_currently_played_dir returning: %s\r\n", uri.file);
+            SYS_FS_DirClose(dirHandle);
             return uri.file;
         }
     }
@@ -911,10 +923,9 @@ void VS1053_stop(void) {
         case STREAM_FILE_GET_DATA:
         case STREAM_FILE_PLAY_REST:
             SYS_FS_FileClose(fsrc);
-            if (dir_flag) {
-                dir_flag = false;
-                dir_count = 0;
-            }
+//            if (dir_count > 0) {
+//                dir_count = 0;
+//            }
             break;
         default:
             return;
