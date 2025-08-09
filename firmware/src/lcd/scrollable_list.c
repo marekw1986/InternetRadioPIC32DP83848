@@ -113,18 +113,24 @@ uint16_t scrollable_list_get_selected_item_id(void) {
 
 void scrollable_list_next_page(void) {
 	if (config.get_max_item_id == NULL) { return; }
-    selected_item_id += LCD_ROWS;
-    if (selected_item_id > config.get_max_item_id()) {
+    int32_t tmp = selected_item_id + LCD_ROWS;
+    if (tmp > config.get_max_item_id()) {
         scrollable_list_set_selected_item_id(1);
+    }
+    else {
+        scrollable_list_set_selected_item_id(tmp);
     }
     draw_scrollable_list();
 }
 
 void scrollable_list_prev_page(void) {
 	if (config.get_max_item_id == NULL) { return; }
-    selected_item_id -= LCD_ROWS;
-    if (selected_item_id < 1) {
+    int32_t tmp = selected_item_id - LCD_ROWS;
+    if (tmp < 1) {
         scrollable_list_set_selected_item_id(config.get_max_item_id());
+    }
+    else {
+        scrollable_list_set_selected_item_id(tmp);
     }
     draw_scrollable_list();
 }
