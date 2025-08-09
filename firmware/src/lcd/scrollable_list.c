@@ -106,9 +106,10 @@ void scrollable_list_set_selected_item_id(uint16_t id) {
 	if (config.get_max_item_id == NULL) { return; }
 	if (id > config.get_max_item_id()) return;
 	selected_item_id = id;
+    cur_pos = selected_item_id % LCD_ROWS;
 }
 
-int32_t scrollable_list_get_selected_item_id(void) {
+uint16_t scrollable_list_get_selected_item_id(void) {
 	return selected_item_id;
 }
 

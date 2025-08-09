@@ -49,6 +49,7 @@ void dir_list_perform_back(void) {
         ui_switch_state(UI_HANDLE_MAIN_LIST);
         return;
     }
+    dir_list_set_path(media_dir_path);
     ui_switch_state(UI_HANDLE_DIR_LIST);
 }
 

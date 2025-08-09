@@ -21,7 +21,7 @@ void handle_scrollable_list(void);
 void scrollable_list_set_config(const scrollable_list_get_content_t content_cbk, const scrollable_list_get_max_item_id_t max_id_cbk, const uint8_t show_number);
 void draw_scrollable_list(void);
 void scrollable_list_move_cursor(int8_t val);
-int32_t scrollable_list_get_selected_item_id(void);
+uint16_t scrollable_list_get_selected_item_id(void);
 void scrollable_list_set_selected_item_id(uint16_t id);
 void scrollable_list_next_page(void);
 void scrollable_list_prev_page(void);
