@@ -10,7 +10,6 @@
 static bool drawing_scrollable_list_active = false;
 static uint8_t currently_drawn_line=0;
 static int32_t selected_item_id = 1;
-static int32_t cur_pos = 0;
 static scrollable_list_config_t config;
 
 static uint8_t calculate_selected_line(void);
@@ -48,7 +47,6 @@ void handle_scrollable_list(void) {
             drawing_scrollable_list_active = false;
         }
         if (currently_drawn_line >= LCD_ROWS) {
-            cur_pos = 0;
             drawing_scrollable_list_active = false;
         }
     }
@@ -62,7 +60,6 @@ void scrollable_list_set_config(const scrollable_list_get_content_t content_cbk,
 
 void draw_scrollable_list(void) {
     lcd_cls();
-    cur_pos = 0;
     currently_drawn_line=0;
     drawing_scrollable_list_active = true;
 }
@@ -104,7 +101,6 @@ void scrollable_list_set_selected_item_id(uint16_t id) {
 	if (config.get_max_item_id == NULL) { return; }
 	if (id > config.get_max_item_id()) return;
 	selected_item_id = id;
-    cur_pos = selected_item_id % LCD_ROWS;
 }
 
 uint16_t scrollable_list_get_selected_item_id(void) {
