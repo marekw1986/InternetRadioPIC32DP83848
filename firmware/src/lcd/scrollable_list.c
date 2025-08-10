@@ -59,7 +59,7 @@ void scrollable_list_move_cursor(int8_t val) {
 }
 
 static void draw_pointer_at_line(uint8_t line) {
-	if (line > 3) { return; }
+	if (line > LCD_ROWS-1) { return; }
 	lcd_locate(line, 0);
 	lcd_char('>');
 }

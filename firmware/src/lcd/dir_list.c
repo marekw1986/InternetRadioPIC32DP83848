@@ -116,14 +116,22 @@ void dir_list_draw_menu_page(uint16_t id) {
     uint16_t count = 0;
     uint16_t drawn_rows = 0;
     
-    if (number_of_items_in_media_dir == 0) { return; }
-    if (number_of_items_in_media_dir < LCD_ROWS) {
+    if (number_of_items_in_media_dir == 0) { 
+        return; 
+    }
+
+    if (id < 1) {
         id = 1;
     }
-    else if (id > number_of_items_in_media_dir - LCD_ROWS +1) {
-        id = number_of_items_in_media_dir - LCD_ROWS + 1;
+    if (id > number_of_items_in_media_dir) {
+        id = number_of_items_in_media_dir;
     }
-    if (id < 1) id = 1;
+
+    id = ((id - 1) / LCD_ROWS) * LCD_ROWS + 1;
+
+    if (number_of_items_in_media_dir <= LCD_ROWS) {
+        id = 1;
+    }
     
     dirEntry.lfname = NULL;
     dirEntry.lfsize = 0;
