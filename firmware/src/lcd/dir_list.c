@@ -114,6 +114,16 @@ void dir_list_draw_menu_page(uint16_t id) {
     SYS_FS_HANDLE dirHandle;
     SYS_FS_FSTAT dirEntry;
     uint16_t count = 0;
+    uint16_t drawn_rows = 0;
+    
+    if (number_of_items_in_media_dir == 0) { return; }
+    if (number_of_items_in_media_dir < LCD_ROWS) {
+        id = 1;
+    }
+    else if (id > number_of_items_in_media_dir - LCD_ROWS +1) {
+        id = number_of_items_in_media_dir - LCD_ROWS + 1;
+    }
+    if (id < 1) id = 1;
     
     dirEntry.lfname = NULL;
     dirEntry.lfsize = 0;
@@ -131,14 +141,23 @@ void dir_list_draw_menu_page(uint16_t id) {
         if ((dirEntry.fattrib & SYS_FS_ATTR_DIR) || is_audio_file(dirEntry.fname)) {
             count++;
         }
-        if ((count >= id) && count < id+LCD_ROWS) {
-            lcd_locate(count % LCD_ROWS, 0);
+        else {
+            continue;
+        }
+        if (count >= id && count < id + LCD_ROWS) {
+            lcd_locate(drawn_rows, 0);
             lcd_char(' ');
-            lcd_utf8str_padd_rest(dirEntry.fname, LCD_COLS, ' ');
+            lcd_utf8str_padd_rest(dirEntry.fname, LCD_COLS-1, ' ');
+            drawn_rows++;
         }
         if (count >= id+LCD_ROWS) {
             break;
         }
+    }
+    while (drawn_rows < LCD_ROWS) {
+        lcd_locate(drawn_rows, 0);
+        lcd_utf8str_padd_rest(" ", LCD_COLS, ' ');
+        drawn_rows++;
     }
     
     SYS_FS_DirClose(dirHandle);    

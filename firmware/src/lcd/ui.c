@@ -83,7 +83,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_MAIN_LIST:
 		ui_state = new_state;
-		scrollable_list_set_config(main_list_get_content, main_list_get_max_id, false);
+		scrollable_list_set_config(main_list_draw_menu_page, main_list_get_max_id, false);
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, NULL);
         button_register_push_callback(&next_btn, NULL);
@@ -95,7 +95,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_DIR_LIST:
 		ui_state = new_state;
-		scrollable_list_set_config(dir_list_get_path_from_id, dir_list_get_number_of_items, false);
+		scrollable_list_set_config(dir_list_draw_menu_page, dir_list_get_number_of_items, false);
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);
@@ -107,7 +107,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_STREAM_LIST:
         ui_state = new_state;
-        scrollable_list_set_config(get_station_url_from_file, get_max_stream_id, true);
+        scrollable_list_set_config(stream_list_draw_menu_page, get_max_stream_id, true);
         rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);
         button_register_push_callback(&next_btn, scrollable_list_next_page);

@@ -83,18 +83,11 @@ bool parse_stream_data_line(char* line, size_t line_len, char* stream_name, size
 }
 
 void stream_list_draw_menu_page(uint16_t id) {
-    SYS_FS_HANDLE file;
-    
-    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
-    if (file == SYS_FS_HANDLE_INVALID) {
-        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
-        return;
-    }
     char workbuf[256];
     char name[64];
     char* result;
-    for (uint8_t i=8; i < LCD_ROWS; i++) {
-        result = find_station_in_file(file, id+i, workbuf, sizeof(workbuf)-1, name, sizeof(name)-1);
+    for (uint8_t i=0; i < LCD_ROWS; i++) {
+        result = get_station_url_from_file(id+i, workbuf, sizeof(workbuf)-1, name, sizeof(name)-1);
         lcd_locate(i, 0);
         lcd_char(' ');
         if (result) {
@@ -104,5 +97,4 @@ void stream_list_draw_menu_page(uint16_t id) {
             lcd_utf8str_padd_rest(" ", LCD_COLS, ' ');
         }
     }
-    SYS_FS_FileClose(file); 
 }

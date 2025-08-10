@@ -7,8 +7,6 @@
 #include "../common.h"
 #endif
 
-static bool drawing_scrollable_list_active = false;
-static uint8_t currently_drawn_line=0;
 static int32_t selected_item_id = 1;
 static scrollable_list_config_t config;
 
@@ -17,53 +15,22 @@ static void draw_pointer_at_line(uint8_t line);
 
 
 void handle_scrollable_list(void) {
-    if (drawing_scrollable_list_active) {
-        uint8_t selected_line = calculate_selected_line();
-        uint16_t item_at_first_line = selected_item_id-selected_line;
-        char name[22];
-        char buf[24];
-        char* url = NULL;
-        char working_buffer[512];
-        if (config.get_content == NULL) { return; }
-        url = config.get_content(item_at_first_line+currently_drawn_line, working_buffer, sizeof(working_buffer), name, sizeof(name));
-        if (url != NULL) {
-            char number[7];
-            if (config.show_number) {
-                snprintf(number, sizeof(number), "%d ", item_at_first_line+currently_drawn_line);
-            }
-            else {
-                number[0] = '\0';
-            }
-            int bytes_in_buffer;
-            char marker = (currently_drawn_line == selected_line) ? '>' : ' ';
-            bytes_in_buffer = snprintf(buf, sizeof(buf), "%c%s%s", marker, number, name);
-            if (bytes_in_buffer > 0) {
-                lcd_locate(currently_drawn_line, 0);
-                lcd_utf8str_padd_rest(buf, LCD_COLS, ' ');
-            }
-            currently_drawn_line++;
-        }
-        else {
-            drawing_scrollable_list_active = false;
-        }
-        if (currently_drawn_line >= LCD_ROWS) {
-            drawing_scrollable_list_active = false;
-        }
-    }
+
 }
 
-void scrollable_list_set_config(const scrollable_list_get_content_t content_cbk, const scrollable_list_get_max_item_id_t max_id_cbk, const uint8_t show_number) {
-	config.get_content = content_cbk;
+void scrollable_list_set_config(const scrollable_list_draw_menu_page_t draw_menu_page_cbk, const scrollable_list_get_max_item_id_t max_id_cbk, const uint8_t show_number) {
+	config.draw_menu_page = draw_menu_page_cbk;
 	config.get_max_item_id = max_id_cbk;
 	config.show_number = show_number;
 }
 
 void draw_scrollable_list(void) {
     lcd_cls();
-    currently_drawn_line=0;
-    drawing_scrollable_list_active = true;
+    if (config.draw_menu_page) {
+        config.draw_menu_page(selected_item_id);
+    }
+    draw_pointer_at_line(calculate_selected_line());
 }
-
 static uint8_t calculate_selected_line(void) {
 	uint8_t selected_line = (selected_item_id%(LCD_ROWS));
 	selected_line = selected_line ? selected_line-1 : LCD_ROWS-1;
@@ -108,25 +75,33 @@ uint16_t scrollable_list_get_selected_item_id(void) {
 }
 
 void scrollable_list_next_page(void) {
-	if (config.get_max_item_id == NULL) { return; }
-    int32_t tmp = selected_item_id + LCD_ROWS;
-    if (tmp > config.get_max_item_id()) {
-        scrollable_list_set_selected_item_id(1);
+    if (config.get_max_item_id == NULL) { return; }
+
+    int32_t max_id = config.get_max_item_id();
+    int32_t new_id = selected_item_id + LCD_ROWS;
+
+    if (new_id > max_id) {
+        new_id = 1;
     }
-    else {
-        scrollable_list_set_selected_item_id(tmp);
-    }
+
+    new_id = ((new_id - 1) / LCD_ROWS) * LCD_ROWS + 1;
+
+    scrollable_list_set_selected_item_id(new_id);
     draw_scrollable_list();
 }
 
 void scrollable_list_prev_page(void) {
-	if (config.get_max_item_id == NULL) { return; }
-    int32_t tmp = selected_item_id - LCD_ROWS;
-    if (tmp < 1) {
-        scrollable_list_set_selected_item_id(config.get_max_item_id());
+    if (config.get_max_item_id == NULL) { return; }
+
+    int32_t max_id = config.get_max_item_id();
+    int32_t new_id = selected_item_id - LCD_ROWS;
+
+    if (new_id < 1) {
+        new_id = ((max_id - 1) / LCD_ROWS) * LCD_ROWS + 1;
+    } else {
+        new_id = ((new_id - 1) / LCD_ROWS) * LCD_ROWS + 1;
     }
-    else {
-        scrollable_list_set_selected_item_id(tmp);
-    }
+
+    scrollable_list_set_selected_item_id(new_id);
     draw_scrollable_list();
 }
