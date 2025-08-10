@@ -2,6 +2,7 @@
 #include "definitions.h"
 #include "scrollable_list.h"
 #include "ui.h"
+#include "hd44780.h"
 #include "../common.h"
 #include "../vs1053/vs1053.h"
 
@@ -107,6 +108,40 @@ char* dir_list_get_path_from_id_is_dir(
 
     SYS_FS_DirClose(dirHandle);
     return NULL;
+}
+
+void dir_list_draw_menu_page(uint16_t id) {
+    SYS_FS_HANDLE dirHandle;
+    SYS_FS_FSTAT dirEntry;
+    uint16_t count = 0;
+    
+    dirEntry.lfname = NULL;
+    dirEntry.lfsize = 0;
+
+    dirHandle = SYS_FS_DirOpen(media_dir_path);
+    if (dirHandle == SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("Error opening directory: %s\n", media_dir_path);
+        return;
+    }
+
+    while (SYS_FS_DirRead(dirHandle, &dirEntry) == SYS_FS_RES_SUCCESS) {
+        if (!dirEntry.fname[0]) { // empty string, end of directory
+            break;
+        }
+        if ((dirEntry.fattrib & SYS_FS_ATTR_DIR) || is_audio_file(dirEntry.fname)) {
+            count++;
+        }
+        if ((count >= id) && count < id+LCD_ROWS) {
+            lcd_locate(count % LCD_ROWS, 0);
+            lcd_char(' ');
+            lcd_utf8str_padd_rest(dirEntry.fname, LCD_COLS, ' ');
+        }
+        if (count >= id+LCD_ROWS) {
+            break;
+        }
+    }
+    
+    SYS_FS_DirClose(dirHandle);    
 }
 
 uint16_t dir_list_count_displayable_items(void) {

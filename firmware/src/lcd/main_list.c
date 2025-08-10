@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include "string.h"
+#include "hd44780.h"
 #include "main_list.h"
 #include "dir_list.h"
 #include "ui.h"
@@ -33,6 +34,17 @@ char* main_list_get_content(uint16_t number, char* working_buffer, size_t workin
 
 uint16_t main_list_get_max_id(void) {
 	return 4;
+}
+
+void main_list_draw_menu_page(uint16_t id) {
+    lcd_locate(0, 0);
+    lcd_utf8str_padd_rest(" USB", LCD_COLS, ' ');
+    lcd_locate(1, 0);
+    lcd_utf8str_padd_rest(" SD", LCD_COLS, ' ');
+    lcd_locate(2, 0);
+    lcd_utf8str_padd_rest(" Streams", LCD_COLS, ' ');
+    lcd_locate(3, 0);
+    lcd_utf8str_padd_rest(" Radio", LCD_COLS, ' ');
 }
 
 void main_list_perform_action(void) {

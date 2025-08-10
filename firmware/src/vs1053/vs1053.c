@@ -724,6 +724,7 @@ void VS1053_play_prev_http_stream_from_list(void) {
 
 /*Always call VS1053_stop() before calling that function*/
 void VS1053_play_file (char* url) {
+    SYS_CONSOLE_PRINT("Playing file: %s\r\n", url);
     if (StreamState != STREAM_HOME) return;
     
     fsrc = SYS_FS_FileOpen(url, SYS_FS_FILE_OPEN_READ);
@@ -753,7 +754,7 @@ void VS1053_play_file (char* url) {
             return;
         }
         if (strncmp(id3, "TAG", 3)) {
-            SYS_CONSOLE_PRINT("File doesn't have an ID3 tag\n\n");
+            SYS_CONSOLE_PRINT("File doesn't have an ID3 tag\r\n");
             mediainfo_title_set("No ID3");
         }
         else {
