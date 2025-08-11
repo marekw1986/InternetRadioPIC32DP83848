@@ -91,10 +91,10 @@ void stream_list_draw_menu_page(uint16_t id) {
         lcd_locate(i, 0);
         lcd_char(' ');
         if (result) {
-            lcd_utf8str_padd_rest(name, LCD_COLS, ' ');
+            lcd_utf8str_padd_rest(name, LCD_COLS-1, ' ');
         }
         else {
-            lcd_utf8str_padd_rest(" ", LCD_COLS, ' ');
+            lcd_utf8str_padd_rest(" ", LCD_COLS-1, ' ');
         }
     }
 }
