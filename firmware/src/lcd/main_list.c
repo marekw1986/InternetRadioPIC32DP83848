@@ -50,11 +50,13 @@ void main_list_draw_menu_page(uint16_t id) {
 void main_list_perform_action(void) {
 	switch (scrollable_list_get_selected_item_id()) {
 		case 1:
+        scrollable_list_set_selected_item_id(1);
         dir_list_set_path("/mnt/myDrive1/music");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;
 		
 		case 2:
+        scrollable_list_set_selected_item_id(1);
         dir_list_set_path("/mnt/myDrive0");
 		ui_switch_state(UI_HANDLE_DIR_LIST);
 		break;

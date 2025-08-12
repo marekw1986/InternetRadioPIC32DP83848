@@ -25,13 +25,16 @@ void handle_scrollable_list(void) {
 uint8_t scrollable_list_save_current_id(void) {
     if (back_stack_index < 0) {
         back_stack_index = 0;
+        SYS_CONSOLE_PRINT("back_stack_index was < 1, setting to 0\r\n");
     }
     if (back_stack_index >= BACK_STACK_SIZE) {
         SYS_CONSOLE_PRINT("Back stack size reached\r\n");
         return 0;
     }
     back_stack[back_stack_index] = selected_item_id;
+    SYS_CONSOLE_PRINT("back_stack[%d]: %d\r\n", back_stack_index, back_stack[back_stack_index]);
     back_stack_index++;
+    SYS_CONSOLE_PRINT("back_stack_index incremented to: %d\r\n", back_stack_index);
     return 1;
 }
 
@@ -41,13 +44,16 @@ uint8_t scrollable_list_restore_previous_id(void) {
         //selected_item_id = 1;
         return 0;
     }
-    selected_item_id = back_stack[back_stack_index];
     back_stack_index--;
+    selected_item_id = back_stack[back_stack_index];
+    SYS_CONSOLE_PRINT("back_stack[%d]: %d\r\n", selected_item_id, back_stack[back_stack_index]);
+    SYS_CONSOLE_PRINT("selected_item_id is now: %d\r\n", selected_item_id);
     return 1;
 }
 
 void scrollable_list_reset_back_stack(void) {
     back_stack_index = -1;
+    SYS_CONSOLE_PRINT("Back stack index set to -1");
     memset(back_stack, 0x00, sizeof(back_stack));
 }
 

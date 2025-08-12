@@ -18,6 +18,7 @@ void dir_list_perform_action(void) {
 //        SYS_CONSOLE_PRINT("Path: %s\r\n", path);
         if (is_dir) {
             if (scrollable_list_save_current_id()) {
+                scrollable_list_set_selected_item_id(1);
                 dir_list_set_path(path);
                 ui_switch_state(UI_HANDLE_DIR_LIST);
             }
@@ -48,10 +49,12 @@ void dir_list_perform_back(void) {
     if (!last_slash) { return; }
     *last_slash = '\0';
     // TODO: Refactor this
-    if ( (strncmp(media_dir_path, "/mnt/myDrive0", sizeof(media_dir_path)) == 0) || (strncmp(media_dir_path, "/mnt/myDrive1", sizeof(media_dir_path)) == 0) )  {
+    SYS_CONSOLE_PRINT("Back action to path: %s\r\n", media_dir_path);
+    if ( (strncmp(media_dir_path, "/mnt", strlen(media_dir_path)) == 0) || (strncmp(media_dir_path, "/mnt/myDrive1", strlen(media_dir_path)) == 0) )  {
         ui_switch_state(UI_HANDLE_MAIN_LIST);
         return;
     }
+    scrollable_list_restore_previous_id();
     dir_list_set_path(media_dir_path);
     ui_switch_state(UI_HANDLE_DIR_LIST);
 }
