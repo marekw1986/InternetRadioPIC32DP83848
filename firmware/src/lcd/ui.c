@@ -68,10 +68,11 @@ void ui_init(void) {
 
 void ui_switch_state(ui_state_t new_state) {
     scroll_info = false;    // Reset scrolling after every change of state
-    scrollable_list_set_selected_item_id(1);
+    scrollable_list_handle_changing_selected_item_id();
 	switch(new_state) {
 		case UI_HANDLE_PLAY_SCREEN:
         ui_state = new_state;
+        scrollable_list_reset_back_stack();
         rotary_register_callback(ui_rotary_change_volume);
         button_register_push_callback(&prev_btn, VS1053_play_prev);
         button_register_push_callback(&next_btn, VS1053_play_next);
@@ -83,6 +84,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_MAIN_LIST:
 		ui_state = new_state;
+        scrollable_list_reset_back_stack();
 		scrollable_list_set_config(main_list_draw_menu_page, main_list_get_max_id, false);
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, NULL);
@@ -107,6 +109,7 @@ void ui_switch_state(ui_state_t new_state) {
 		
 		case UI_HANDLE_STREAM_LIST:
         ui_state = new_state;
+        scrollable_list_reset_back_stack();
         scrollable_list_set_config(stream_list_draw_menu_page, get_max_stream_id, true);
         rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, scrollable_list_prev_page);

@@ -7,7 +7,11 @@
 #include "../common.h"
 #endif
 
+#define BACK_STACK_SIZE 16
+
 static int32_t selected_item_id = 1;
+static uint16_t back_stack[BACK_STACK_SIZE];
+static int8_t back_stack_index = -1;
 static scrollable_list_config_t config;
 
 static uint8_t calculate_selected_line(void);
@@ -16,6 +20,40 @@ static void draw_pointer_at_line(uint8_t line);
 
 void handle_scrollable_list(void) {
 
+}
+
+uint8_t scrollable_list_save_current_id(void) {
+    if (back_stack_index < 0) {
+        back_stack_index = 0;
+    }
+    if (back_stack_index >= BACK_STACK_SIZE) {
+        SYS_CONSOLE_PRINT("Back stack size reached\r\n");
+        return 0;
+    }
+    back_stack[back_stack_index] = selected_item_id;
+    back_stack_index++;
+    return 1;
+}
+
+uint8_t scrollable_list_restore_previous_id(void) {
+    if (back_stack_index < 0) {
+        SYS_CONSOLE_PRINT("No data on back stack\r\n");
+        //selected_item_id = 1;
+        return 0;
+    }
+    selected_item_id = back_stack[back_stack_index];
+    back_stack_index--;
+    return 1;
+}
+
+void scrollable_list_reset_back_stack(void) {
+    back_stack_index = -1;
+    memset(back_stack, 0x00, sizeof(back_stack));
+}
+
+void scrollable_list_handle_changing_selected_item_id(void) {
+    if (scrollable_list_restore_previous_id()) { return; }
+    scrollable_list_set_selected_item_id(1);
 }
 
 void scrollable_list_set_config(const scrollable_list_draw_menu_page_t draw_menu_page_cbk, const scrollable_list_get_max_item_id_t max_id_cbk, const uint8_t show_number) {

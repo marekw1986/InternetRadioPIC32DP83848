@@ -17,8 +17,10 @@ void dir_list_perform_action(void) {
     if (path) {
 //        SYS_CONSOLE_PRINT("Path: %s\r\n", path);
         if (is_dir) {
-            dir_list_set_path(path);
-            ui_switch_state(UI_HANDLE_DIR_LIST);
+            if (scrollable_list_save_current_id()) {
+                dir_list_set_path(path);
+                ui_switch_state(UI_HANDLE_DIR_LIST);
+            }
         }
         else {
             VS1053_stop();

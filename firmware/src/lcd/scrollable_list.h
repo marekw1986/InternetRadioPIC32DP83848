@@ -21,6 +21,10 @@ extern "C" {
 
 void handle_scrollable_list(void);
 void scrollable_list_set_config(const scrollable_list_draw_menu_page_t dram_menu_page_cbk, const scrollable_list_get_max_item_id_t max_id_cbk, const uint8_t show_number);
+uint8_t scrollable_list_save_current_id(void);
+uint8_t scrollable_list_restore_previous_id(void);
+void scrollable_list_reset_back_stack(void);
+void scrollable_list_handle_changing_selected_item_id(void);
 void draw_scrollable_list(void);
 void scrollable_list_move_cursor(int8_t val);
 uint16_t scrollable_list_get_selected_item_id(void);
