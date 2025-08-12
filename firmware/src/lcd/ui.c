@@ -60,6 +60,7 @@ void ui_init(void) {
     button_register_global_callback(ui_button_update_backlight);
     rotary_register_callback(ui_rotary_change_volume);
     
+    lcd_set_backlight_state(true);
     backlight_timer = millis();
     
 	ui_state = UI_HANDLE_PLAY_SCREEN;
