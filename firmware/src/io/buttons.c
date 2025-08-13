@@ -49,7 +49,7 @@ void button_handle(button_t *btn) {
             if (btn->push_proc) (btn->push_proc)();
             btn->state = IDLE;
         }
-        else if (pressed && (btn->state)==WAIT_LONG && ((uint32_t)(millis()-(btn->timer)) >= 3000)) {
+        else if (pressed && (btn->state)==WAIT_LONG && ((uint32_t)(millis()-(btn->timer)) >= 1000)) {
             if (any_proc) (*any_proc)();            
             if (btn->long_proc) (btn->long_proc)();
             btn->state = WAIT_RELEASE;
