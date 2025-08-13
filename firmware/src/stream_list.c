@@ -86,6 +86,13 @@ void stream_list_draw_menu_page(uint16_t id) {
     char workbuf[256];
     char name[64];
     char* result;
+    
+    if (id < 1) {
+        id = 1;
+    }
+
+    id = ((id - 1) / LCD_ROWS) * LCD_ROWS + 1;
+    
     for (uint8_t i=0; i < LCD_ROWS; i++) {
         result = get_station_url_from_file(id+i, workbuf, sizeof(workbuf)-1, name, sizeof(name)-1);
         lcd_locate(i, 0);
