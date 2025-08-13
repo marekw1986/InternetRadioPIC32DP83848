@@ -11,6 +11,7 @@ char* main_list_get_content(uint16_t number, char* working_buffer, size_t workin
 void main_list_draw_menu_page(uint16_t id);
 uint16_t main_list_get_max_id(void);
 void main_list_perform_action(void);
+void main_list_perform_back(void);
 
 #ifdef	__cplusplus
 }

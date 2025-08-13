@@ -72,3 +72,7 @@ void main_list_perform_action(void) {
 		break;
 	}
 }
+
+void main_list_perform_back(void) {
+    ui_switch_state(UI_HANDLE_PLAY_SCREEN);
+}

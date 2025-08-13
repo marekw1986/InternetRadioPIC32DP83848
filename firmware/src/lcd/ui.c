@@ -91,7 +91,7 @@ void ui_switch_state(ui_state_t new_state) {
 		rotary_register_callback(scrollable_list_move_cursor);
         button_register_push_callback(&prev_btn, NULL);
         button_register_push_callback(&next_btn, NULL);
-        button_register_push_callback(&back_button, NULL);
+        button_register_push_callback(&back_button, main_list_perform_back);
         button_register_push_callback(&rotary_button, main_list_perform_action);
         button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();		
