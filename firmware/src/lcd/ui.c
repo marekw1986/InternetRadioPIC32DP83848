@@ -202,6 +202,18 @@ void ui_clear_state_info(void) {
     }
 }
 
+void ui_update_loop_flag(uint8_t val) {
+    if (ui_state != UI_HANDLE_PLAY_SCREEN) { return; }
+    lcd_locate(3, 20);
+    lcd_str(val ? "[L]" : "   ");
+}
+
+void ui_update_dir_flag(uint8_t val) {
+    if (ui_state != UI_HANDLE_PLAY_SCREEN) { return; }
+    lcd_locate(3, 23);
+    lcd_str(val ? "[D]" : "   ");
+}
+
 void ui_handle(void) {
     switch(ui_state) {
 		case UI_HANDLE_PLAY_SCREEN:

@@ -622,6 +622,9 @@ void VS1053_play_next_audio_file_from_directory (void) {
         else {
             dir_count = 0;
             dir_index = 0;
+            #ifdef USE_LCD_UI
+            ui_update_dir_flag(0);
+            #endif
         }
     }
     VS1053_stop();
@@ -797,6 +800,9 @@ void VS1053_play_file (char* url) {
 
 void VS1053_play_dir (const char* path) {
     dir_count = count_audio_files_in_dir(path);
+    #ifdef USE_LCD_UI
+    ui_update_dir_flag(dir_count);
+    #endif
     if (dir_count == 0) { return; }
     dir_index = 1;
     strncpy(uri.server, path, sizeof(uri.server)-1);		//we use uri.server to store current directory path
@@ -942,6 +948,9 @@ void VS1053_stopRecordingPCM(void) {
 
 void VS1053_setLoop(bool val) {
     loop_flag = val;
+  #ifdef USE_LCD_UI
+  ui_update_loop_flag(val);
+  #endif
 }
 
 bool VS1053_getLoop(void) {

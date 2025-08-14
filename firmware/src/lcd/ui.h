@@ -21,6 +21,8 @@ void ui_update_content_info(const char* str);
 void ui_clear_content_info(void);
 void ui_update_state_info(const char* str);
 void ui_clear_state_info(void);
+void ui_update_loop_flag(uint8_t val);
+void ui_update_dir_flag(uint8_t val);
 void ui_handle(void);
 
 
