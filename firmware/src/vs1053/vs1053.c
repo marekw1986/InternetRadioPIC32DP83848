@@ -957,6 +957,10 @@ bool VS1053_getLoop(void) {
     return loop_flag;
 }
 
+bool VS1053_getDirFlag() {
+    return (dir_count > 0);
+}
+
 StreamState_t VS1053_getStreamState(void) {
     return StreamState;
 }

@@ -140,6 +140,8 @@ static void ui_draw_main_screen(void) {
     lcd_locate(3, 0);
     lcd_str("Volume: ");
     ui_update_volume();
+    ui_update_loop_flag(VS1053_getLoop());
+    ui_update_dir_flag(VS1053_getDirFlag());
 }
 
 void ui_update_volume(void) {
