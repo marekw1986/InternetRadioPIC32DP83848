@@ -953,6 +953,13 @@ void VS1053_setLoop(bool val) {
   #endif
 }
 
+void VS1053_toggleLoop(void) {
+  loop_flag = !loop_flag;
+  #ifdef USE_LCD_UI
+  ui_update_loop_flag(loop_flag);
+  #endif    
+}
+
 bool VS1053_getLoop(void) {
     return loop_flag;
 }

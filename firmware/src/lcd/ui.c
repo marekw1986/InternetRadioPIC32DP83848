@@ -54,7 +54,7 @@ void ui_init(void) {
     rotary_init();
     button_init(&prev_btn, &PORTG, _PORTG_RG13_MASK, &VS1053_play_prev, NULL);
     button_init(&next_btn, &PORTE, _PORTE_RE2_MASK, &VS1053_play_next, NULL);
-    button_init(&back_button, &PORTE, _PORTE_RE4_MASK, NULL, NULL);
+    button_init(&back_button, &PORTE, _PORTE_RE4_MASK, VS1053_toggleLoop, NULL);
     button_init(&state_button, &PORTE, _PORTE_RE5_MASK, &ui_button_switch_state, NULL);
     button_init(&rotary_button, &PORTF, _PORTF_RF2_MASK, NULL, NULL);
     button_register_global_callback(ui_button_update_backlight);
@@ -77,7 +77,7 @@ void ui_switch_state(ui_state_t new_state) {
         rotary_register_callback(ui_rotary_change_volume);
         button_register_push_callback(&prev_btn, VS1053_play_prev);
         button_register_push_callback(&next_btn, VS1053_play_next);
-        button_register_push_callback(&back_button, NULL);
+        button_register_push_callback(&back_button, VS1053_toggleLoop);
         button_register_push_callback(&rotary_button, NULL);
         button_register_long_callback(&rotary_button, NULL);
 		ui_draw_main_screen();
@@ -206,13 +206,13 @@ void ui_clear_state_info(void) {
 
 void ui_update_loop_flag(uint8_t val) {
     if (ui_state != UI_HANDLE_PLAY_SCREEN) { return; }
-    lcd_locate(3, 20);
+    lcd_locate(3, 14);
     lcd_str(val ? "[L]" : "   ");
 }
 
 void ui_update_dir_flag(uint8_t val) {
     if (ui_state != UI_HANDLE_PLAY_SCREEN) { return; }
-    lcd_locate(3, 23);
+    lcd_locate(3, 17);
     lcd_str(val ? "[D]" : "   ");
 }
 

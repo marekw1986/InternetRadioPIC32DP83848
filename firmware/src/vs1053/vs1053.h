@@ -69,6 +69,7 @@ void VS1053_play_file (char* url);
 void VS1053_play_dir (const char* url);
 void VS1053_stop(void);
 void VS1053_setLoop(bool val);
+void VS1053_toggleLoop(void);
 bool VS1053_getLoop(void);
 bool VS1053_getDirFlag();
 StreamState_t VS1053_getStreamState(void);
