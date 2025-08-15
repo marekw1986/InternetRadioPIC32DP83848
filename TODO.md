@@ -13,17 +13,6 @@ Internet radio based on PIC32
   - [ ] Add possibility to save config from web UI
   - [ ] Add reset from web UI
   - [ ] Option of adding streams to list
-- [ ] Create HD44780 UI
-  - [x] Show volume value
-  - [x] Show currently played stream/file
-  - [ ] Create interactive menu
-	- [x] Add option to select stream from list
-	- [x] Add option to play file from local storage
-    - [x] Add option to play entire directory from local storage
-    - [ ] Add support for back button
-    - [ ] Add feature to remember last position in each menu
-	- [ ] Add option to change playback settings (for example playing in loop)
-  - [x] Scrolled text (info about played song/stream)
 - [ ] Use busy flag instead delay in HD44780 driver
 - [ ] Determine cause of ocassional failures of network connectivity
 - [ ] Controll LCD backlight brightness with soft PWM
@@ -49,3 +38,14 @@ Internet radio based on PIC32
 - [x] Add backlight timeout
 - [x] Move HD44780 from I2C to GPIO bus
 - [x] Determine cause of reset after VS1053_play_dir() call
+- [x] Create HD44780 UI
+  - [x] Show volume value
+  - [x] Show currently played stream/file
+  - [x] Create interactive menu
+	- [x] Add option to select stream from list
+	- [x] Add option to play file from local storage
+    - [x] Add option to play entire directory from local storage
+    - [x] Add support for back button
+    - [x] Add feature to remember last position in dir menu
+	- [x] Add option to change playback settings (for example playing in loop)
+  - [x] Scrolled text (info about played song/stream)
