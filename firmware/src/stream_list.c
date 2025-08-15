@@ -83,9 +83,10 @@ bool parse_stream_data_line(char* line, size_t line_len, char* stream_name, size
 }
 
 void stream_list_draw_menu_page(uint16_t id) {
-    char workbuf[256];
-    char name[64];
+    char name[256];
+    uint16_t current_id = 0;
     char* result;
+    SYS_FS_HANDLE file;
     
     if (id < 1) {
         id = 1;
@@ -93,15 +94,48 @@ void stream_list_draw_menu_page(uint16_t id) {
 
     id = ((id - 1) / LCD_ROWS) * LCD_ROWS + 1;
     
-    for (uint8_t i=0; i < LCD_ROWS; i++) {
-        result = get_station_url_from_file(id+i, workbuf, sizeof(workbuf)-1, name, sizeof(name)-1);
-        lcd_locate(i, 0);
-        lcd_char(' ');
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
+    if (file == SYS_FS_HANDLE_INVALID) {
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Draw stream menu page: Can't open file\r\n");
+        return;
+    }
+    
+    while(SYS_FS_FileStringGet(file, name, sizeof(name)) == SYS_FS_RES_SUCCESS) {
+        current_id++;
+        if (current_id < id) { continue; }
+        if (current_id >= id + LCD_ROWS) { break; }
+        uint8_t lcd_row = current_id - id; // 0..LCD_ROWS-1
+        lcd_locate(lcd_row, 0);
+        lcd_char(' ');    
+        result = strstr(name, " : ");
         if (result) {
+            *result = '\0';
             lcd_utf8str_padd_rest(name, LCD_COLS-1, ' ');
         }
         else {
             lcd_utf8str_padd_rest(" ", LCD_COLS-1, ' ');
         }
+    }
+    SYS_FS_FileClose(file);
+    
+    /* Determine which LCD row to start clearing */
+    int start_clear_row;
+    if (current_id >= id + LCD_ROWS) {
+        // Page completely filled, nothing to clear
+        start_clear_row = LCD_ROWS;
+    }
+    else if (current_id >= id) {
+        // Printed at least one line, start after the last printed row
+        start_clear_row = (current_id - id) + 1;
+    }
+    else {
+        // Printed nothing, clear all rows
+        start_clear_row = 0;
+    }
+
+    /* Clear remaining rows */
+    for (int lcd_row = start_clear_row; lcd_row < LCD_ROWS; lcd_row++) {
+        lcd_locate(lcd_row, 0);
+        lcd_utf8str_padd_rest(" ", LCD_COLS, ' ');
     }
 }
