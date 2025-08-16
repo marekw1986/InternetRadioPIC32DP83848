@@ -86,8 +86,6 @@ void VS1053_handle(void) {
     int w; // to_load;
     uint8_t data[32];
     int br;
-    vs1053cmd_t rcv;
-    //SYS_FS_RESULT fres;
     
 	switch(StreamState)
 	{
@@ -468,46 +466,49 @@ void VS1053_handle(void) {
             break;
 	}
     
-	if (xQueueReceive(vsQueueHandle, &rcv, 5) == pdTRUE) {
-		SYS_CONSOLE_PRINT("Received command %d from queque\r\n", rcv.cmd);
-		switch(rcv.cmd) {
-			case VS_MSG_NEXT:
-				VS1053_play_next();
-				break;
-            case VS_MSG_PREV:
-                VS1053_play_prev();
-                break;
-			case VS_MSG_STOP:
-				VS1053_fullStop();
-				break;
-			case VS_MSG_PLAY_STREAM_BY_ID:
-				VS1053_play_http_stream_by_id(rcv.param);
-				break;
-			case VS_MSG_PLAY_FILE:;
-                char* file = (char*)rcv.param;
-                SYS_CONSOLE_PRINT("Playing file %s\r\n", file);
-                VS1053_fullStop();
-                VS1053_play_file(file);
-				break;
-			case VS_MSG_PLAY_DIR:;
-                char* dir = (char*)rcv.param;
-                SYS_CONSOLE_PRINT("Playing direcotry %s\r\n", dir);
-                VS1053_fullStop();
-                VS1053_play_dir(dir);                
-				break;
-			case VS_MSG_SET_VOL:
-				if ( (rcv.param >= 1) && (rcv.param <= 100) ) {
-                    VS1053_setVolume(rcv.param);
-				}
-				break;
-            case VS_MSG_LOOP:
-                if (rcv.param) { VS1053_setLoop(true); }
-                else { VS1053_setLoop(false); }
-                break;
-			default:
-				break;
-		}
-	}    
+    {
+        vs1053cmd_t rcv;
+        if (xQueueReceive(vsQueueHandle, &rcv, 5) == pdTRUE) {
+            SYS_CONSOLE_PRINT("Received command %d from queque\r\n", rcv.cmd);
+            switch(rcv.cmd) {
+                case VS_MSG_NEXT:
+                    VS1053_play_next();
+                    break;
+                case VS_MSG_PREV:
+                    VS1053_play_prev();
+                    break;
+                case VS_MSG_STOP:
+                    VS1053_fullStop();
+                    break;
+                case VS_MSG_PLAY_STREAM_BY_ID:
+                    VS1053_play_http_stream_by_id(rcv.param);
+                    break;
+                case VS_MSG_PLAY_FILE:;
+                    char* file = (char*)rcv.param;
+                    SYS_CONSOLE_PRINT("Playing file %s\r\n", file);
+                    VS1053_fullStop();
+                    VS1053_play_file(file);
+                    break;
+                case VS_MSG_PLAY_DIR:;
+                    char* dir = (char*)rcv.param;
+                    SYS_CONSOLE_PRINT("Playing direcotry %s\r\n", dir);
+                    VS1053_fullStop();
+                    VS1053_play_dir(dir);                
+                    break;
+                case VS_MSG_SET_VOL:
+                    if ( (rcv.param >= 1) && (rcv.param <= 100) ) {
+                        VS1053_setVolume(rcv.param);
+                    }
+                    break;
+                case VS_MSG_LOOP:
+                    if (rcv.param) { VS1053_setLoop(true); }
+                    else { VS1053_setLoop(false); }
+                    break;
+                default:
+                    break;
+            }
+        }    
+    }
 }
 
 void VS1053_setVolume(uint8_t vol) {
