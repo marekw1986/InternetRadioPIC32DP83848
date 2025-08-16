@@ -478,7 +478,7 @@ void VS1053_handle(void) {
                 VS1053_play_prev();
                 break;
 			case VS_MSG_STOP:
-				VS1053_stop();
+				VS1053_fullStop();
 				break;
 			case VS_MSG_PLAY_STREAM_BY_ID:
 				VS1053_play_http_stream_by_id(rcv.param);
@@ -486,13 +486,13 @@ void VS1053_handle(void) {
 			case VS_MSG_PLAY_FILE:;
                 char* file = (char*)rcv.param;
                 SYS_CONSOLE_PRINT("Playing file %s\r\n", file);
-                VS1053_stop();
+                VS1053_fullStop();
                 VS1053_play_file(file);
 				break;
 			case VS_MSG_PLAY_DIR:;
                 char* dir = (char*)rcv.param;
                 SYS_CONSOLE_PRINT("Playing direcotry %s\r\n", dir);
-                VS1053_stop();
+                VS1053_fullStop();
                 VS1053_play_dir(dir);                
 				break;
 			case VS_MSG_SET_VOL:
@@ -672,6 +672,7 @@ bool VS1053_play_http_stream_by_id(uint16_t id) {
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
+        ui_update_dir_flag(dir_count);
         // TODO: Fix it
         // ui_set_selected_stream_id(id); 
         #endif
@@ -700,6 +701,7 @@ void VS1053_play_next_http_stream_from_list(void) {
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
+    ui_update_dir_flag(dir_count);
     //TODO: Fix it
     //ui_set_selected_stream_id(current_stream_ind);
     #endif
@@ -719,6 +721,7 @@ void VS1053_play_prev_http_stream_from_list(void) {
     mediainfo_title_set(name);
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
+    ui_update_dir_flag(dir_count);
     // TODO: Fix it
     //ui_set_selected_stream_id(current_stream_ind);
     #endif
@@ -791,6 +794,7 @@ void VS1053_play_file (char* url) {
     
     #ifdef USE_LCD_UI
     ui_update_content_info(mediainfo_title_get());
+    ui_update_dir_flag(dir_count);
     #endif
     mediainfo_type_set(MEDIA_TYPE_FILE);
     StreamState = STREAM_FILE_FILL_BUFFER;
@@ -800,9 +804,6 @@ void VS1053_play_file (char* url) {
 
 void VS1053_play_dir (const char* path) {
     dir_count = count_audio_files_in_dir(path);
-    #ifdef USE_LCD_UI
-    ui_update_dir_flag(dir_count);
-    #endif
     if (dir_count == 0) { return; }
     dir_index = 1;
     strncpy(uri.server, path, sizeof(uri.server)-1);		//we use uri.server to store current directory path
@@ -913,21 +914,29 @@ void VS1053_stop(void) {
         case STREAM_FILE_GET_DATA:
         case STREAM_FILE_PLAY_REST:
             SYS_FS_FileClose(fsrc);
-//            if (dir_count > 0) {
-//                dir_count = 0;
-//            }
             break;
         default:
             return;
             break;
     }
+//    if ((dir_count > 0) && (dir_index == dir_count)) {
+//        dir_count = 0;
+//        dir_index = 0;
+//    }
     VS1053_stopPlaying();
     mediainfo_clean();
     #ifdef USE_LCD_UI
     ui_clear_content_info();
     ui_clear_state_info();
+    ui_update_dir_flag(dir_count);
     #endif
     StreamState = STREAM_HOME;
+}
+
+void VS1053_fullStop(void) {
+    dir_count = 0;
+    dir_index = 0;
+    VS1053_stop();
 }
 
 void VS1053_startRecordingPCM(void) {

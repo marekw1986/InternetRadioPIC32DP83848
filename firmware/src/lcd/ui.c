@@ -333,6 +333,7 @@ static void ui_button_switch_state(void) {
 
 static void play_selected_stream(void) {
     if (ui_state != UI_HANDLE_STREAM_LIST) { return; }
+    VS1053_fullStop();
     VS1053_play_http_stream_by_id(scrollable_list_get_selected_item_id());
     ui_switch_state(UI_HANDLE_PLAY_SCREEN);
 }

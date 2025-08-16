@@ -68,6 +68,7 @@ void VS1053_play_prev_http_stream_from_list(void);
 void VS1053_play_file (char* url);
 void VS1053_play_dir (const char* url);
 void VS1053_stop(void);
+void VS1053_fullStop(void);
 void VS1053_setLoop(bool val);
 void VS1053_toggleLoop(void);
 bool VS1053_getLoop(void);
