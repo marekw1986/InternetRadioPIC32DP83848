@@ -123,6 +123,9 @@ void ui_switch_state(ui_state_t new_state) {
         button_register_long_callback(&rotary_button, NULL);
 		draw_scrollable_list();
 		break;
+        
+        case UI_HANDLE_RADIO_SCREEN:
+        break;
 	}
 }
 
@@ -227,6 +230,9 @@ void ui_handle(void) {
 		case UI_HANDLE_STREAM_LIST:
 		handle_scrollable_list();
 		break;
+        
+        case UI_HANDLE_RADIO_SCREEN:
+        break;
 	}
     ui_handle_backlight();
     rotary_handle();
