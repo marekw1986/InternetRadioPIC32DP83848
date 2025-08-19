@@ -82,10 +82,6 @@ void VS1053_init(void) {
 void VS1053_handle(void) {   
 	static uint32_t	timer;
     static IP_MULTI_ADDRESS ServerAddress;
-    TCPIP_DNS_RESULT dnsres;
-    int w; // to_load;
-    
-    int br;
     
 	switch(StreamState)
 	{
@@ -97,7 +93,7 @@ void VS1053_handle(void) {
         {
             // Obtain the IP address associated with the radio server
             if(strlen(uri.server)) {
-                dnsres = TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
+                TCPIP_DNS_RESULT dnsres = TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
                 if (dnsres < 0) {
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
@@ -134,7 +130,7 @@ void VS1053_handle(void) {
         case STREAM_HTTP_NAME_RESOLVE:;
         {
             // Wait for the DNS server to return the requested IP address
-            dnsres = TCPIP_DNS_IsResolved(uri.server, &ServerAddress, TCPIP_DNS_TYPE_A);
+            TCPIP_DNS_RESULT dnsres = TCPIP_DNS_IsResolved(uri.server, &ServerAddress, TCPIP_DNS_TYPE_A);
             if (dnsres < 0) {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
@@ -248,7 +244,7 @@ void VS1053_handle(void) {
 			}
             
             uint8_t data[32];
-            w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+            int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
             if (w) {
                 http_res_t http_result = http_parse_headers((char*)data, w, &uri);
                 switch (http_result) {
@@ -300,7 +296,7 @@ void VS1053_handle(void) {
         {
             uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
-                w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+                int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
                 if (w) {
                     timer = millis();
                     write_array_to_ringbuffer(data, w);
@@ -345,7 +341,7 @@ void VS1053_handle(void) {
         {
             uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
-                w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+                int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
                 if (w) {
                     timer = millis();
                     write_array_to_ringbuffer(data, w);
@@ -391,7 +387,7 @@ void VS1053_handle(void) {
         {
             uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
-                br = SYS_FS_FileRead(fsrc, data, 32);
+                int br = SYS_FS_FileRead(fsrc, data, 32);
                 if (br != -1) {
                     if (br != 0) { write_array_to_ringbuffer(data, br); }
                     if (br < 32) {  //end of file
@@ -411,7 +407,7 @@ void VS1053_handle(void) {
         {
             uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
-                br = SYS_FS_FileRead(fsrc, data, 32);
+                int br = SYS_FS_FileRead(fsrc, data, 32);
                 if ( br != -1 ) {
                     if (br) {write_array_to_ringbuffer(data, br); }
                     if (br < 32) {     //end of file
