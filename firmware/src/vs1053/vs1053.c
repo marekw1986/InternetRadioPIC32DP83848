@@ -84,7 +84,7 @@ void VS1053_handle(void) {
     static IP_MULTI_ADDRESS ServerAddress;
     TCPIP_DNS_RESULT dnsres;
     int w; // to_load;
-    uint8_t data[32];
+    
     int br;
     
 	switch(StreamState)
@@ -93,7 +93,8 @@ void VS1053_handle(void) {
             //nothing to do here, just wait
             break;
         
-        case STREAM_HTTP_BEGIN:            
+        case STREAM_HTTP_BEGIN:
+        {
             // Obtain the IP address associated with the radio server
             if(strlen(uri.server)) {
                 dnsres = TCPIP_DNS_Resolve(uri.server, TCPIP_DNS_TYPE_A);
@@ -128,8 +129,10 @@ void VS1053_handle(void) {
             }
             SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve: Something went wrong\r\n");
 			break;
+        }
             
         case STREAM_HTTP_NAME_RESOLVE:;
+        {
             // Wait for the DNS server to return the requested IP address
             dnsres = TCPIP_DNS_IsResolved(uri.server, &ServerAddress, TCPIP_DNS_TYPE_A);
             if (dnsres < 0) {
@@ -144,6 +147,7 @@ void VS1053_handle(void) {
                 break;
             }
             else if ( dnsres == TCPIP_DNS_RES_OK ) {
+                uint8_t data[32];
                 StreamState = STREAM_HTTP_OBTAIN_SOCKET;
                 SYS_CONSOLE_PRINT("DNS OK\r\n");
                 TCPIP_Helper_IPAddressToString(&ServerAddress.v4Add, (char*)data, 32);        
@@ -154,8 +158,10 @@ void VS1053_handle(void) {
             }
             SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved: something went wrong\r\n");
             break;
+        }
             
         case STREAM_HTTP_OBTAIN_SOCKET:
+        {
             VS_Socket = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4, uri.port, &ServerAddress);
             
             if(VS_Socket == INVALID_SOCKET) {
@@ -180,9 +186,11 @@ void VS1053_handle(void) {
 				StreamState = STREAM_HTTP_CLOSE;
                 ReconnectStrategy = RECONNECT_WAIT_SHORT;
             }
-            break;            
+            break;
+        }
 
 		case STREAM_HTTP_SOCKET_OBTAINED:
+        {
 			// Wait for the remote server to accept our connection request
 			if(!TCPIP_TCP_IsConnected(VS_Socket))
 			{
@@ -199,8 +207,10 @@ void VS1053_handle(void) {
             StreamState = STREAM_HTTP_SEND_REQUEST;
 			timer = millis();
             break;
+        }
             
         case STREAM_HTTP_SEND_REQUEST:
+        {
 			// Make certain the socket can be written to
 			if( TCPIP_TCP_PutIsReady(VS_Socket) < (49u + strlen(uri.file) + strlen(uri.server)) ) {
                 if ( (uint32_t)(millis()-timer) > 5000 ) {
@@ -225,8 +235,10 @@ void VS1053_handle(void) {
 			StreamState = STREAM_HTTP_PROCESS_HEADER;
             http_prepare_parser();
 			break;
+        }
             
         case STREAM_HTTP_PROCESS_HEADER:
+        {
 			if(TCPIP_TCP_WasReset(VS_Socket))
 			{
 				StreamState = STREAM_HTTP_CLOSE;
@@ -235,6 +247,7 @@ void VS1053_handle(void) {
 				break;
 			}
             
+            uint8_t data[32];
             w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
             if (w) {
                 http_res_t http_result = http_parse_headers((char*)data, w, &uri);
@@ -281,8 +294,11 @@ void VS1053_handle(void) {
                 #endif
             }            
             break;
+        }
             
         case STREAM_HTTP_FILL_BUFFER:
+        {
+            uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
                 w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
                 if (w) {
@@ -323,8 +339,11 @@ void VS1053_handle(void) {
                 #endif
             }                        
             break;
+        }
 
 		case STREAM_HTTP_GET_DATA:
+        {
+            uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
                 w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
                 if (w) {
@@ -366,8 +385,11 @@ void VS1053_handle(void) {
                 #endif
             }
 			break;
+        }
             
-         case STREAM_FILE_FILL_BUFFER:
+        case STREAM_FILE_FILL_BUFFER:
+        {
+            uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
                 br = SYS_FS_FileRead(fsrc, data, 32);
                 if (br != -1) {
@@ -383,8 +405,11 @@ void VS1053_handle(void) {
             ui_update_state_info(VS1053_get_state_description());
             #endif
             break;
+        }
             
         case STREAM_FILE_GET_DATA:
+        {
+            uint8_t data[32];
             while (get_remaining_space_in_ringbuffer() > 128) {
                 br = SYS_FS_FileRead(fsrc, data, 32);
                 if ( br != -1 ) {
@@ -396,20 +421,26 @@ void VS1053_handle(void) {
                 }
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
-            if (VS1053_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
+            feed_ret_t feed_ret = VS1053_feed_from_buffer();
+            if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
                 StreamState = STREAM_FILE_FILL_BUFFER;
             }            
             break;
+        }
             
         case STREAM_FILE_PLAY_REST:
-            if (VS1053_feed_from_buffer() == FEED_RET_BUFFER_EMPTY) {
+        {
+            feed_ret_t feed_ret = VS1053_feed_from_buffer();
+            if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
             	VS1053_handle_end_of_file();
             }
-        	break;            
+        	break;
+        }
 	
 		case STREAM_HTTP_CLOSE:
+        {
 			// Close the socket so it can be used by other modules
 			// For this application, we wish to stay connected, but this state will still get entered if the remote server decides to disconnect
 			if (!TCPIP_TCP_Close(VS_Socket)) {
@@ -457,13 +488,16 @@ void VS1053_handle(void) {
             }
             timer = millis();
 			break;
+        }
             
         case STREAM_HTTP_RECONNECT_WAIT:
+        {
             if ( (uint32_t)(millis()-timer) > ((ReconnectStrategy == RECONNECT_WAIT_LONG) ? (5000) : (1000)) ) {
                 SYS_CONSOLE_PRINT("Internet radio: reconnecting\r\n");
                 StreamState = STREAM_HTTP_BEGIN;
             }
             break;
+        }
 	}
     
     {
