@@ -392,7 +392,12 @@ void VS1053_handle(void) {
                     if (br != 0) { write_array_to_ringbuffer(data, br); }
                     if (br < 32) {  //end of file
                         StreamState = STREAM_FILE_PLAY_REST;
+                        break;
                     }
+                }
+                else {
+                    StreamState = STREAM_FILE_PLAY_REST;
+                    break;
                 }
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
@@ -412,8 +417,13 @@ void VS1053_handle(void) {
                     if (br) {write_array_to_ringbuffer(data, br); }
                     if (br < 32) {     //end of file
                         StreamState = STREAM_FILE_PLAY_REST;
+                        break;
                     }
                     if (VS_DREQ_PIN) break;
+                }
+                else {
+                    StreamState = STREAM_FILE_PLAY_REST;
+                    break;
                 }
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
@@ -421,7 +431,10 @@ void VS1053_handle(void) {
             if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
                 StreamState = STREAM_FILE_FILL_BUFFER;
-            }            
+            }
+            else if (feed_ret == FEED_RET_ERR_TMOUT) {
+                StreamState = STREAM_FILE_PLAY_REST;
+            }
             break;
         }
             
