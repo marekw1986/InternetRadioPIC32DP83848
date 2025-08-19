@@ -43,7 +43,7 @@ static bool loop_flag = false;
 static uint16_t dir_index = 0;
 static uint16_t dir_count = 0;
 
-static SYS_FS_HANDLE fsrc;
+static SYS_FS_HANDLE fsrc = SYS_FS_HANDLE_INVALID;
 static uint8_t ReconnectLimit = RECONNECT_LIMIT;
 static int current_stream_ind = 1;
 
@@ -600,7 +600,10 @@ static void VS1053_handle_end_of_file (void) {
         }
         else {
             SYS_CONSOLE_PRINT("Loop flag cleared - closing file\r\n");
-            SYS_FS_FileClose(fsrc);
+            if (fsrc != SYS_FS_HANDLE_INVALID) {
+                SYS_FS_FileClose(fsrc);
+                fsrc = SYS_FS_HANDLE_INVALID;
+            }
             VS1053_stopPlaying();
             mediainfo_clean();
             #ifdef USE_LCD_UI
@@ -734,6 +737,11 @@ void VS1053_play_file (char* url) {
     SYS_CONSOLE_PRINT("Playing file: %s\r\n", url);
     if (StreamState != STREAM_HOME) return;
     
+    if (fsrc != SYS_FS_HANDLE_INVALID) {
+        SYS_CONSOLE_PRINT("File already opened\r\n");
+        return;
+    }
+    
     fsrc = SYS_FS_FileOpen(url, SYS_FS_FILE_OPEN_READ);
     if (fsrc == SYS_FS_HANDLE_INVALID) {
         SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "SYS_FS_FileOpen error %d\r\n", SYS_FS_Error());
@@ -747,17 +755,20 @@ void VS1053_play_file (char* url) {
         if (SYS_FS_FileSeek(fsrc, -128, SYS_FS_SEEK_END) == -1) {
             SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "ID3 SYS_FS_FileSeek (end-128) error\r\n");
             SYS_FS_FileClose(fsrc);
+            fsrc = SYS_FS_HANDLE_INVALID;
             return;
         }
         if (SYS_FS_FileRead(fsrc, id3, 128) == -1) {
             SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "ID3 SYS_FS_FileRead error\r\n");
             SYS_FS_FileClose(fsrc);
+            fsrc = SYS_FS_HANDLE_INVALID;
             return;
         }
         //Move to beginning
         if (SYS_FS_FileSeek(fsrc, 0, SYS_FS_SEEK_SET) == -1) {
             SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "ID3 SYS_FS_FileSeek (begin) error\r\n");
             SYS_FS_FileClose(fsrc);
+            fsrc = SYS_FS_HANDLE_INVALID;
             return;
         }
         if (strncmp(id3, "TAG", 3)) {
@@ -914,16 +925,15 @@ void VS1053_stop(void) {
         case STREAM_FILE_FILL_BUFFER:    
         case STREAM_FILE_GET_DATA:
         case STREAM_FILE_PLAY_REST:
-            SYS_FS_FileClose(fsrc);
+            if (fsrc != SYS_FS_HANDLE_INVALID) {
+                SYS_FS_FileClose(fsrc);
+                fsrc = SYS_FS_HANDLE_INVALID;
+            }
             break;
         default:
             return;
             break;
     }
-//    if ((dir_count > 0) && (dir_index == dir_count)) {
-//        dir_count = 0;
-//        dir_index = 0;
-//    }
     VS1053_stopPlaying();
     mediainfo_clean();
     #ifdef USE_LCD_UI
