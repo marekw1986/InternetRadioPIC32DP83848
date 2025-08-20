@@ -390,12 +390,12 @@ void VS1053_handle(void) {
             while (get_remaining_space_in_ringbuffer() > 128) {
                 int br = SYS_FS_FileRead(fsrc, data, 32);
                 if (br != -1) {
+                    consecutiveReadErrors = 0;
                     if (br != 0) { write_array_to_ringbuffer(data, br); }
                     if (br < 32) {  //end of file
                         StreamState = STREAM_FILE_PLAY_REST;
                         break;
                     }
-                    consecutiveReadErrors = 0;
                 }
                 else {
                     consecutiveReadErrors++;
@@ -419,12 +419,12 @@ void VS1053_handle(void) {
             while (get_remaining_space_in_ringbuffer() > 128) {
                 int br = SYS_FS_FileRead(fsrc, data, 32);
                 if ( br != -1 ) {
+                    consecutiveReadErrors = 0;
                     if (br) {write_array_to_ringbuffer(data, br); }
                     if (br < 32) {     //end of file
                         StreamState = STREAM_FILE_PLAY_REST;
                         break;
                     }
-                    consecutiveReadErrors = 0;
                     if (VS_DREQ_PIN) break;
                 }
                 else {
@@ -440,9 +440,6 @@ void VS1053_handle(void) {
             if (feed_ret == FEED_RET_BUFFER_EMPTY) {
                 //buffer empty
                 StreamState = STREAM_FILE_FILL_BUFFER;
-            }
-            else if (feed_ret == FEED_RET_ERR_TMOUT) {
-                StreamState = STREAM_FILE_PLAY_REST;
             }
             break;
         }

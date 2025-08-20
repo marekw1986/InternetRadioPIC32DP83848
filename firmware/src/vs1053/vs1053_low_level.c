@@ -221,7 +221,7 @@ feed_ret_t VS1053_feed_from_buffer (void) {
         asm("nop");
         asm("nop");
         asm("nop");
-        if ((uint32_t)(millis()-timeout) > 20) {
+        if ((uint32_t)(millis()-timeout) > 40) {
             return FEED_RET_ERR_TMOUT;
         }
     } while(VS_DREQ_PIN);
