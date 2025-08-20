@@ -51,7 +51,8 @@ static TCP_SOCKET VS_Socket = INVALID_SOCKET;
 static uint8_t last_volume = 0;
 
 static StreamState_t StreamState = STREAM_HOME;
-
+static uint8_t consecutiveReadErrors = 0;
+    
 typedef enum {
     DO_NOT_RECONNECT = 0,
     RECONNECT_IMMEDIATELY,
@@ -111,7 +112,7 @@ void VS1053_handle(void) {
                 else {
                     StreamState = STREAM_HTTP_NAME_RESOLVE;
                     SYS_CONSOLE_PRINT("DNS begin: %s\r\n", uri.server);
-                    clear_ringbuffer();
+                    ringbuffer_clear();
                     break;
                 }
             }
@@ -394,9 +395,13 @@ void VS1053_handle(void) {
                         StreamState = STREAM_FILE_PLAY_REST;
                         break;
                     }
+                    consecutiveReadErrors = 0;
                 }
                 else {
-                    StreamState = STREAM_FILE_PLAY_REST;
+                    consecutiveReadErrors++;
+                    if (consecutiveReadErrors > 50) {
+                        StreamState = STREAM_FILE_PLAY_REST;
+                    }
                     break;
                 }
             }
@@ -419,10 +424,14 @@ void VS1053_handle(void) {
                         StreamState = STREAM_FILE_PLAY_REST;
                         break;
                     }
+                    consecutiveReadErrors = 0;
                     if (VS_DREQ_PIN) break;
                 }
                 else {
-                    StreamState = STREAM_FILE_PLAY_REST;
+                    consecutiveReadErrors++;
+                    if (consecutiveReadErrors > 50) {
+                        StreamState = STREAM_FILE_PLAY_REST;
+                    }
                     break;
                 }
             }
@@ -853,6 +862,7 @@ void VS1053_play_file (char* url) {
     #endif
     mediainfo_type_set(MEDIA_TYPE_FILE);
     StreamState = STREAM_FILE_FILL_BUFFER;
+    consecutiveReadErrors = 0;
     VS1053_startPlaying();         //Start playing song
 }
 

@@ -1,76 +1,86 @@
-/*
- * ringbuffer.c
- *
- *  Created on: 27 wrz 2022
- *      Author: marek
- */
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
-#include <xc.h>
-
 #include "ringbuffer.h"
-#include "vs1053.h"
-#include "../common.h"
+
+// Must be power of 2
+#ifndef RING_BUFFER_SIZE
+#define RING_BUFFER_SIZE 1024
+#endif
 
 static uint8_t buffer[RING_BUFFER_SIZE];
-static uint16_t ringbuffer_head = 0;
-static uint16_t ringbuffer_tail = 0;
+static volatile uint16_t head = 0;
+static volatile uint16_t tail = 0;
+
+#define RB_MASK (RING_BUFFER_SIZE - 1)
+
+// --- Internal helpers ---
+static inline bool rb_is_full(void) {
+    return ((head + 1) & RB_MASK) == tail;
+}
+
+static inline bool rb_is_empty(void) {
+    return head == tail;
+}
+
+// --- API implementation ---
 
 void ringbuffer_clear(void) {
-	memset(buffer, 0x00, RING_BUFFER_SIZE);
-	ringbuffer_head = 0;
-	ringbuffer_tail = 0;
-}
-
-void write_byte_to_ringbuffer(uint8_t data) {
-    buffer[ringbuffer_head] = data;
-    ringbuffer_head++;
-    if (ringbuffer_head >= RING_BUFFER_SIZE) {
-        ringbuffer_head = 0;
-    }
-    //If no space in buffer, it will simply override   
-}
-
-void write_array_to_ringbuffer(uint8_t* data, uint16_t len) {
-	//printf("Writing to ring buffer, head: %lu, tail: %lu\r\n", spiram_ringbuffer_head, spiram_ringbuffer_tail);
-    uint16_t i;
-	for (i=0; i<len; i++) {
-        write_byte_to_ringbuffer(data[i]);
-	}
-}
-
-uint16_t read_array_from_ringbuffer(uint8_t* data, uint16_t len) {
-	uint32_t bytes_read = 0;
-    uint16_t i;
-
-	if (ringbuffer_head == ringbuffer_tail) return 0;
-
-	//printf("Reading from ring buffer, head: %lu, tail: %lu\r\n", spiram_ringbuffer_head, spiram_ringbuffer_tail);
-
-	for(i=0; i<len; i++) {
-		data[i] = buffer[ringbuffer_tail];
-		ringbuffer_tail++;
-		bytes_read++;
-		if (ringbuffer_tail >= RING_BUFFER_SIZE) {
-			ringbuffer_tail = 0;
-		}
-		if (ringbuffer_tail == ringbuffer_head) { break; }
-	}
-
-	return bytes_read;
-}
-
-void clear_ringbuffer(void) {
-    ringbuffer_head = 0;
-    ringbuffer_tail = 0;
-}
-
-uint16_t get_remaining_space_in_ringbuffer(void) {
-	return (ringbuffer_tail > ringbuffer_head) ? ringbuffer_tail-ringbuffer_head : RING_BUFFER_SIZE - ringbuffer_head + ringbuffer_tail;
+    head = 0;
+    tail = 0;
+    // No need to memset buffer (optional)
 }
 
 uint16_t get_num_of_bytes_in_ringbuffer(void) {
-    return RING_BUFFER_SIZE - get_remaining_space_in_ringbuffer();
+    return (head - tail) & RB_MASK;
+}
+
+uint16_t get_remaining_space_in_ringbuffer(void) {
+    return (tail - head - 1) & RB_MASK;
+}
+
+void write_byte_to_ringbuffer(uint8_t data) {
+    if (!rb_is_full()) {
+        buffer[head] = data;
+        head = (head + 1) & RB_MASK;
+    } else {
+        // Policy: overwrite oldest
+        // advance tail first
+        tail = (tail + 1) & RB_MASK;
+        buffer[head] = data;
+        head = (head + 1) & RB_MASK;
+    }
+}
+
+uint16_t write_array_to_ringbuffer(const uint8_t *data, uint16_t len) {
+    int written = 0;
+    for (int i = 0; i < len; i++) {
+        if (rb_is_full()) {
+            // overwrite oldest
+            tail = (tail + 1) & RB_MASK;
+        }
+        buffer[head] = data[i];
+        head = (head + 1) & RB_MASK;
+        written++;
+    }
+    return written;
+}
+
+uint8_t read_byte_from_ringbuffer(void) {
+    if (rb_is_empty()) {
+        return 0; // Or some sentinel
+    }
+    uint8_t val = buffer[tail];
+    tail = (tail + 1) & RB_MASK;
+    return val;
+}
+
+uint16_t read_array_from_ringbuffer(uint8_t *data, uint16_t len) {
+    int read = 0;
+    while (!rb_is_empty() && read < len) {
+        data[read] = buffer[tail];
+        tail = (tail + 1) & RB_MASK;
+        read++;
+    }
+    return read;
 }
