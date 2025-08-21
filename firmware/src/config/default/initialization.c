@@ -57,7 +57,7 @@
 
 /*** DEVCFG0 ***/
 #pragma config DEBUG =      OFF
-#pragma config ICESEL =     ICS_PGx2
+#pragma config ICESEL =     ICS_PGx1
 #pragma config PWP =        OFF
 #pragma config BWP =        OFF
 #pragma config CP =         OFF
