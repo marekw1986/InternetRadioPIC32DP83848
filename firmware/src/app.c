@@ -219,6 +219,8 @@ void APP_Tasks ( void )
         case APP_STATE_INIT:
         {
             SYS_CONSOLE_PRINT("Initializing user app\r\n");
+            SYS_CONSOLE_PRINT("RCON: %d\r\n", RCON);
+            RCON = 0;
             lcd_init();
             lcd_cls();
             ui_init();          
