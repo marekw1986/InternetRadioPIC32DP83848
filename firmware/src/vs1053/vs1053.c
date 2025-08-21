@@ -303,6 +303,7 @@ void VS1053_handle(void) {
                     write_array_to_ringbuffer(data, w);
                 }
                 else { break; }
+                taskYIELD();
             }
             
             if (get_remaining_space_in_ringbuffer() <= 128) {
@@ -348,6 +349,7 @@ void VS1053_handle(void) {
                     write_array_to_ringbuffer(data, w);
                 }
                 if (VS_DREQ_PIN) break;
+                taskYIELD();
             }
             
             feed_ret_t feed_ret = VS1053_feed_from_buffer();
@@ -404,6 +406,7 @@ void VS1053_handle(void) {
                     }
                     break;
                 }
+                taskYIELD();
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
             StreamState = STREAM_FILE_GET_DATA;
@@ -434,6 +437,7 @@ void VS1053_handle(void) {
                     }
                     break;
                 }
+                taskYIELD();
             }
             if (StreamState == STREAM_FILE_PLAY_REST) break;
             feed_ret_t feed_ret = VS1053_feed_from_buffer();

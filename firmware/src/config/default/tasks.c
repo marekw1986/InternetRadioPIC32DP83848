@@ -247,7 +247,7 @@ void SYS_Tasks ( void )
                 "APP_Tasks",
                 1024,
                 NULL,
-                2,
+                1,
                 &xAPP_Tasks);
 
 
