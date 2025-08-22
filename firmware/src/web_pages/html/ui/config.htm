@@ -44,7 +44,6 @@ function ValidateMACaddress(inputText) {
     }
 }
 function test() {
-	var result = document.getElementById('result');
 	if (document.getElementById('dhcpYes').checked) {var dhcp="yes";}
 	else {var dhcp="no";}
 	var ip = document.getElementById('ip');
@@ -61,21 +60,18 @@ function test() {
 		if(!ValidateIPaddress(inputs[i])) {
 			document.getElementById('ipSettings').style.display = 'block';
 			inputs[i].focus();
-			result.style.display = 'block';
-			result.innerHTML = "Nieprawidłowy format adresu IP.";
+			alert("Nieprawidłowy format adresu IP.");
 			return false;
 		}
 	}
     if (!ValidateMACaddress(mac)) {
         mac.focus();
-        result.style.display = 'block';
-        result.innerHTML = 'Nieprawidłowy format adresu MAC.';
+        alert('Nieprawidłowy format adresu MAC.');
         return false;
     }    
 	if (ntp.value === '') {
 		ntp.focus();
-		result.style.display = 'block';
-		result.innerHTML = "Pole \"Serwer NTP\" nie może być puste.";
+		alert("Pole \"Serwer NTP\" nie może być puste.");
 		return false;		
 	}		
 	var http_request;
@@ -91,7 +87,7 @@ function test() {
 				http_request = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 			catch (e){
-				result.innerHTML = "Wystąpił błąd przeglądarki. Wysłanie nowej konfiguracji do urządzenia nie jest możliwe.";
+				alert("Wystąpił błąd przeglądarki. Wysłanie nowej konfiguracji do urządzenia nie jest możliwe.");
 				return false;
 			}	
 		}
@@ -99,59 +95,48 @@ function test() {
 	http_request.onreadystatechange = function () {
 		if (http_request.readyState === 4 && http_request.status === 200 ) {
             if (http_request.responseText === "invalid_token") {
-                result.style.display = 'block';
-                result.innerHTML = "Nieprawidłowy token operacji. Spróbuj ponownie załadować stronę.";
+                alert("Nieprawidłowy token operacji. Spróbuj ponownie załadować stronę.");
             }
 			else if (http_request.responseText === "invalid_dhcp") {
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowych ustawień DHCP.";
+				alert("Błąd parsowania nowych ustawień DHCP.");
 			}
 			else if (http_request.responseText === "invalid_ip") {
 				ip.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego adresu IP.";			
+				alert("Błąd parsowania nowego adresu IP.");			
 			}
 			else if (http_request.responseText === "invalid_netmask") {
 				netmask.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowej maski podsieci.";					
+				alert("Błąd parsowania nowej maski podsieci.");					
 			}
 			else if (http_request.responseText === "invalid_gw") {
 				gw.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowej bramy domyślnej.";					
+				alert("Błąd parsowania nowej bramy domyślnej.");					
 			}
 			else if (http_request.responseText === "invalid_dns1") {
 				dns1.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego adresu serwera DNS #1.";					
+				alert("Błąd parsowania nowego adresu serwera DNS #1.");					
 			}
 			else if (http_request.responseText === "invalid_dns2") {
 				dns2.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego adresu serwera DNS #2.";					
+				alert("Błąd parsowania nowego adresu serwera DNS #2.");					
 			}
 			else if (http_request.responseText === "invalid_ntp") {
 				ntp.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego adresu serwera NTP.";					
+				alert("Błąd parsowania nowego adresu serwera NTP.");					
 			}
 			else if (http_request.responseText === "invalid_mac") {
 				mac.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego adresu MAC.";					
+				alert("Błąd parsowania nowego adresu MAC.");					
 			}				
 			else if (http_request.responseText === "invalid_timezone") {
 				timezone.focus();
-				result.style.display = 'block';
-				result.innerHTML = "Błąd parsowania nowego ustawienia strefy czasowej.";					
+				alert("Błąd parsowania nowego ustawienia strefy czasowej.");					
 			}										
 			else if (http_request.responseText === "ok") {
 				window.location.replace("/ui/reset.htm");
 			}
 			else {
-				result.style.display = 'block';
-				result.innerHTML = "Wystąpił błąd podczas zapisywaia konfiguracji";					
+				alert("Wystąpił błąd podczas zapisywaia konfiguracji");					
 			}
 		}
 	};
@@ -185,8 +170,6 @@ function test() {
 <input type="hidden" name="curtz" id="curtz" value="~timezone~">
 <label>Strefa czasowa:</label><select id="timezone"></select><br><br><br>
 <input type="button" value="Zapisz" onclick="test()">
-
-<div id="result" style="color:red; display:none;"></div>
 </div>
 </body>
 </html>

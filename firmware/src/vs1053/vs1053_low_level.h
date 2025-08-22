@@ -1,5 +1,5 @@
-#ifndef _VS1003_LOW_LEVEL_H_
-#define _VS1003_LOW_LEVEL_H_
+#ifndef _VS1053_LOW_LEVEL_H_
+#define _VS1053_LOW_LEVEL_H_
 
 #include <stdint.h>
 
@@ -51,16 +51,18 @@
 typedef enum {
     FEED_RET_NO_DATA_NEEDED = 0,
     FEED_RET_OK,
-    FEED_RET_BUFFER_EMPTY
+    FEED_RET_BUFFER_EMPTY,
+    FEED_RET_ERR_TMOUT
 } feed_ret_t;
 
-void VS1003_low_level_init(void);
-uint16_t VS1003_read_register(uint8_t _reg);
-void VS1003_write_register(uint8_t _reg,uint16_t _value);
-void VS1003_sdi_send_buffer(const uint8_t* data, int len);
-void VS1003_sdi_send_chunk(const uint8_t* data, int len);
-void VS1003_sdi_send_zeroes(int len);
-feed_ret_t VS1003_feed_from_buffer (void);
-//void VS1003_loadUserCode(const uint16_t* buf, size_t len);
+void VS1053_low_level_init(void);
+void VS1053_soft_reset(void);
+uint16_t VS1053_read_register(uint8_t _reg);
+void VS1053_write_register(uint8_t _reg,uint16_t _value);
+void VS1053_sdi_send_buffer(const uint8_t* data, int len);
+void VS1053_sdi_send_chunk(const uint8_t* data, int len);
+void VS1053_sdi_send_zeroes(int len);
+feed_ret_t VS1053_feed_from_buffer (void);
+//void VS1053_loadUserCode(const uint16_t* buf, size_t len);
 
-#endif // _VS1003_LOW_LEVEL_H_
+#endif // _VS1053_LOW_LEVEL_H_

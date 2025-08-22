@@ -13,20 +13,6 @@ children:
         attributes: {id: visible}
         children:
         - {type: Value, value: 'true'}
-  - type: Boolean
-    attributes: {id: NET_PRES_SUPPORT_DATAGRAM}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: net_Pres, value: 'true'}
-  - type: Boolean
-    attributes: {id: NET_PRES_SUPPORT_STREAM}
-    children:
-    - type: Values
-      children:
-      - type: Dynamic
-        attributes: {id: net_Pres, value: 'true'}
   - type: File
     attributes: {id: NET_PRES_SYS_RTOS_TASK}
     children:
@@ -36,20 +22,5 @@ children:
         attributes: {id: enabled}
         children:
         - {type: Value, value: 'true'}
-- type: Attachments
-  children:
-  - type: DirectDependency
-    attributes: {id: Net_Pres_Crypto_Dependency}
-    children:
-    - type: Attributes
-      children:
-      - type: String
-        attributes: {id: targetComponentID}
-        children:
-        - {type: Value, value: lib_wolfssl}
-      - type: String
-        attributes: {id: targetAttachmentID}
-        children:
-        - {type: Value, value: lib_wolfssl}
 - type: ElementPosition
-  attributes: {x: '492', y: '509', id: net_Pres}
+  attributes: {x: '787', y: '399', id: net_Pres}

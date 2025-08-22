@@ -39,10 +39,11 @@ THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
 #include "tcpip/tcpip.h"
 #include "http_net_print.h"
 #include "system_config.h"
-#include "internal.h"
+//#include "internal.h"
 #include "common.h"
-#include "vs1003/vs1003.h"
-#include "vs1003/mediainfo.h"
+#include "stream_list.h"
+#include "vs1053/vs1053.h"
+#include "vs1053/mediainfo.h"
 
 
 /****************************************************************************
@@ -198,7 +199,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionGetDirJson(TCPIP_HTTP_NET_CONN
                 strncpy(tmpbuf, (const char*)ptr, sizeof(tmpbuf)-1);
             }
             strncpy(parent, tmpbuf, TCPIP_HTTP_NET_ConnectionDataBufferSizeGet(connHandle)-5);
-            SYS_CONSOLE_PRINT("Parent: %s\r\n", parent);
+//            SYS_CONSOLE_PRINT("Parent: %s\r\n", parent);
             httpDataBuff[0] = DIR_OK;
             httpDataBuff[1] = DIR_MODE_PRINT_FS;
             return TCPIP_HTTP_NET_IO_RES_DONE;
@@ -454,23 +455,23 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
             }
             SYS_CONSOLE_PRINT("POSTPlay: token ok\r\n");
             if (newVol) {
-                VS1003_send_cmd_thread_safe(VS_MSG_SET_VOL, (uint32_t)newVol);
+                VS1053_send_cmd_thread_safe(VS_MSG_SET_VOL, (uint32_t)newVol);
             }
             if (newLoop >= 0) {
-                VS1003_send_cmd_thread_safe(VS_MSG_LOOP, newLoop);
+                VS1053_send_cmd_thread_safe(VS_MSG_LOOP, newLoop);
             }
             if (strlen(newurl)) {
                 if (strncmp(newurl, "stop", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: stop\r\n");
-                    VS1003_send_cmd_thread_safe(VS_MSG_STOP, 0);
+                    VS1053_send_cmd_thread_safe(VS_MSG_STOP, 0);
                 }
                 else if (strncmp(newurl, "next", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: playing next song/stream\r\n");
-                     VS1003_send_cmd_thread_safe(VS_MSG_NEXT, 0);
+                     VS1053_send_cmd_thread_safe(VS_MSG_NEXT, 0);
                 }
                 else if (strncmp(newurl, "prev", 5) == 0) {
                     SYS_CONSOLE_PRINT("POSTPlay: playing prev song/stream\r\n");
-                    VS1003_send_cmd_thread_safe(VS_MSG_PREV, 0);
+                    VS1053_send_cmd_thread_safe(VS_MSG_PREV, 0);
                 }
                 else {
                     switch(playsrc) {
@@ -480,7 +481,7 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                                 break;
                             }
                             SYS_CONSOLE_PRINT("POSTPlay: playing file %s\r\n", newurl);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_FILE, (uint32_t)newurl);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_FILE, (uint32_t)newurl);
                             break;
                         case PLAY_SRC_DIR:
                             if (!is_local_url_valid(newurl)) {
@@ -488,12 +489,12 @@ TCPIP_HTTP_NET_IO_RESULT TCPIP_HTTP_NET_ConnectionPostPlay(TCPIP_HTTP_NET_CONN_H
                                 break;
                             }                            
                             SYS_CONSOLE_PRINT("POSTPlay: playing dir %s\r\n", newurl);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_DIR, (uint32_t)newurl);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_DIR, (uint32_t)newurl);
                             break;
                         case PLAY_SRC_ID:;
                             uint16_t streamid = strtol(newurl, NULL, 10);
                             SYS_CONSOLE_PRINT("POSTPlay: playing stream by id %d\r\n", streamid);
-                            VS1003_send_cmd_thread_safe(VS_MSG_PLAY_STREAM_BY_ID, streamid);
+                            VS1053_send_cmd_thread_safe(VS_MSG_PLAY_STREAM_BY_ID, streamid);
                             break;
                         default:
                             break;
@@ -892,9 +893,8 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
                 return TCPIP_HTTP_DYN_PRINT_RES_DONE;                
             }
             SYS_FS_FSTAT stat;
-            char longFileName[300];
-            stat.lfname = longFileName;
-            stat.lfsize = 300;
+            stat.lfname = NULL;
+            stat.lfsize = 0;
             if (SYS_FS_DirRead(dirHandle, &stat) == SYS_FS_RES_FAILURE) {
                 SYS_CONSOLE_PRINT("Can't read dir\r\n");
                 SYS_FS_DirClose(dirHandle);
@@ -910,10 +910,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_dirs(TCPIP_HTTP_NET_CONN_HANDLE connHa
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
                     size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
-                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
-                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                        *firstOne = 0;
+                    if (res >= HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        SYS_CONSOLE_PRINT("DynPrintBuffer not large enough.\r\n");
                     }
+                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                    *firstOne = 0;
                 }
             }
             else {
@@ -946,28 +947,35 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                     SYS_CONSOLE_PRINT("Can't open radio.txt file!\r\n");
                     return TCPIP_HTTP_DYN_PRINT_RES_DONE;                    
                 }
-                SYS_CONSOLE_PRINT("radio.txt file opened, handle: %lu\r\n", fileHandle);
+//                SYS_CONSOLE_PRINT("radio.txt file opened, handle: %lu\r\n", fileHandle);
                 *firstOne = 1;
                 TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, 0x01);
             }
             char line[512];
+            // Save current file position
+            int32_t current_file_pos = SYS_FS_FileTell(fileHandle);
             if (SYS_FS_FileStringGet(fileHandle, line, sizeof(line)-1) == SYS_FS_RES_SUCCESS) {
                 if (line[strlen(line)-1] == '\n') {
                     line[strlen(line)-1] = '\0';
                 }
                 char name[64];    
                 char url[256];
-                int id;
-                if ( (id = parse_stream_data_line(line, strlen(line), name, sizeof(name)-1, url, sizeof(url)-1)) ) {
+                int id = TCPIP_HTTP_NET_ConnectionCallbackPosGet(connHandle);
+                if (parse_stream_data_line(line, strlen(line), name, sizeof(name), url, sizeof(url))) {
                     HTTP_APP_DYNVAR_BUFFER *pDynBuffer = HTTP_APP_GetDynamicBuffer();
                     if(pDynBuffer == 0) { 
                         // failed to get a buffer; retry
+                        // Restore old position to try again
+                        if (current_file_pos >= 0) {
+                            SYS_FS_FileSeek(fileHandle, current_file_pos, SYS_FS_SEEK_SET);
+                        }
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
                     snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"id\": \"%d\", \"name\": \"%s\", \"url\": \"%s\"}", *firstOne ? "" : ", ", id, name, url);
                     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
                     *firstOne = 0;                
                 }
+                TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, id+1);
             }
             else {
                 SYS_FS_FileClose(fileHandle);
@@ -988,15 +996,14 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                     SYS_CONSOLE_PRINT("Can't open dir!\r\n");
                     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
                 }
-                SYS_CONSOLE_PRINT("Dir opened, handle: %lu\r\n", dirHandle);
+//                SYS_CONSOLE_PRINT("Dir opened, handle: %lu\r\n", dirHandle);
                 *firstOne = 1;
                 TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, 0x01);
                 return TCPIP_HTTP_DYN_PRINT_RES_DONE;
             }
             SYS_FS_FSTAT stat;
-            char longFileName[300];
-            stat.lfname = longFileName;
-            stat.lfsize = 300;
+            stat.lfname = NULL;
+            stat.lfsize = 0;
             if (SYS_FS_DirRead(dirHandle, &stat) == SYS_FS_RES_FAILURE) {
                 SYS_CONSOLE_PRINT("Can't read dir\r\n");
                 SYS_FS_DirClose(dirHandle);
@@ -1012,10 +1019,11 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_files(TCPIP_HTTP_NET_CONN_HANDLE connH
                         return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
                     }
                     size_t res = snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "%s{\"ln\":\"%s\",\"sn\":\"%s\"}", *firstOne ? "" : ", ", stat.fname, get_altname_if_available(&stat));
-                    if (res < HTTP_APP_DYNVAR_BUFFER_SIZE) {
-                        TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
-                        *firstOne = 0;
+                    if (res >= HTTP_APP_DYNVAR_BUFFER_SIZE) {
+                        SYS_CONSOLE_PRINT("DynPrintBuffer not large enough.\r\n");
                     }
+                    TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
+                    *firstOne = 0;
                 }
             }
             else {
@@ -1064,7 +1072,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_playInfo(TCPIP_HTTP_NET_CONN_HANDLE co
             {   // failed to get a buffer; retry
                 return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
             }
-            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "{\"volume\": \"%d\", ", VS1003_getVolume());
+            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "{\"volume\": \"%d\", ", VS1053_getVolume());
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
             TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, INFO_LOOP);
             break;
@@ -1074,7 +1082,7 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_playInfo(TCPIP_HTTP_NET_CONN_HANDLE co
             {   // failed to get a buffer; retry
                 return TCPIP_HTTP_DYN_PRINT_RES_AGAIN;
             }
-            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "\"loop\": \"%s\", ", VS1003_getLoop() ? "true" : "false");
+            snprintf(pDynBuffer->data, HTTP_APP_DYNVAR_BUFFER_SIZE, "\"loop\": \"%s\", ", VS1053_getLoop() ? "true" : "false");
             TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
             TCPIP_HTTP_NET_ConnectionCallbackPosSet(connHandle, INFO_TYPE);
             break;
@@ -1189,13 +1197,6 @@ TCPIP_HTTP_DYN_PRINT_RES TCPIP_HTTP_Print_configToken(TCPIP_HTTP_NET_CONN_HANDLE
     strncpy(pDynBuffer->data, token, HTTP_APP_DYNVAR_BUFFER_SIZE);
     TCPIP_HTTP_NET_DynamicWriteString(vDcpt, pDynBuffer->data, true);
     return TCPIP_HTTP_DYN_PRINT_RES_DONE;
-}
-
-void AppDP83848ResetFunction(const struct DRV_ETHPHY_OBJECT_BASE_TYPE* pBaseObj, DRV_HANDLE handle) {
-    SYS_CONSOLE_PRINT("Reseting PHY\r\n");
-    DP_RST_Clear();
-    CORETIMER_DelayUs(10);
-    DP_RST_Set();
 }
 
 static bool is_local_url_valid(const char* url) {

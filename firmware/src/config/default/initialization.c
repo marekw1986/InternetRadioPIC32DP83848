@@ -57,7 +57,7 @@
 
 /*** DEVCFG0 ***/
 #pragma config DEBUG =      OFF
-#pragma config ICESEL =     ICS_PGx2
+#pragma config ICESEL =     ICS_PGx1
 #pragma config PWP =        OFF
 #pragma config BWP =        OFF
 #pragma config CP =         OFF
@@ -452,14 +452,14 @@ const TCPIP_IPV4_MODULE_CONFIG  tcpipIPv4InitData =
 
 
 
-TCPIP_STACK_HEAP_INTERNAL_CONFIG tcpipHeapConfig =
+TCPIP_STACK_HEAP_EXTERNAL_CONFIG tcpipHeapConfig =
 {
-    .heapType = TCPIP_STACK_HEAP_TYPE_INTERNAL_HEAP,
+    .heapType = TCPIP_STACK_HEAP_TYPE_EXTERNAL_HEAP,
     .heapFlags = TCPIP_STACK_HEAP_USE_FLAGS,
     .heapUsage = TCPIP_STACK_HEAP_USAGE_CONFIG,
     .malloc_fnc = TCPIP_STACK_MALLOC_FUNC,
     .free_fnc = TCPIP_STACK_FREE_FUNC,
-    .heapSize = TCPIP_STACK_DRAM_SIZE,
+    .calloc_fnc = TCPIP_STACK_CALLOC_FUNC,
 };
 
 
@@ -899,6 +899,7 @@ void SYS_Initialize ( void* data )
 
 	SPI1_Initialize();
 
+    I2C1_Initialize();
     RTCC_Initialize();
 
     /* Initialize SDSPI0 Driver Instance */
@@ -934,7 +935,6 @@ void SYS_Initialize ( void* data )
    SYS_ASSERT(sysObj.tcpip != SYS_MODULE_OBJ_INVALID, "TCPIP_STACK_Init Failed" );
 
 
-    CRYPT_WCCB_Initialize();
     /*** File System Service Initialization Code ***/
     SYS_FS_Initialize( (const void *) sysFSInit );
 

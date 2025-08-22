@@ -23,10 +23,23 @@ children:
   - type: Integer
     attributes: {id: TCPIP_HTTP_NET_HEAP_SIZE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipHttpNet, value: '5568'}
+        attributes: {id: tcpipHttpNet, value: '4352'}
+  - type: Integer
+    attributes: {id: TCPIP_HTTP_NET_MAX_CONNECTIONS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: '2'}
   - type: Integer
     attributes: {id: TCPIP_HTTP_NET_MAX_DATA_LEN}
     children:
@@ -34,20 +47,6 @@ children:
       children:
       - type: User
         attributes: {value: '256'}
-  - type: Integer
-    attributes: {id: TCPIP_HTTP_NET_SKT_RX_BUFF_SIZE}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: '512'}
-  - type: Integer
-    attributes: {id: TCPIP_HTTP_NET_SKT_TX_BUFF_SIZE}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: '512'}
   - type: String
     attributes: {id: TCPIP_HTTP_NET_WEBPAGE_DIRECTORY_PATH}
     children:
@@ -281,4 +280,4 @@ children:
         children:
         - {type: Value, value: 'true'}
 - type: ElementPosition
-  attributes: {x: '630', y: '32', id: tcpipHttpNet}
+  attributes: {x: '789', y: '247', id: tcpipHttpNet}

@@ -105,7 +105,7 @@
 #define VS_DREQ_OutputEnable()      (TRISCCLR = (1<<1))
 #define VS_DREQ_InputEnable()       (TRISCSET = (1<<1))
 #define VS_DREQ_Get()               ((PORTC >> 1) & 0x1)
-#define VS_DREQ_PIN                  GPIO_PIN_RC1
+//#define VS_DREQ_PIN                  GPIO_PIN_RC1
 
 /*** Macros for VS_XRST pin ***/
 #define VS_XRST_Set()               (LATCSET = (1<<2))
@@ -394,24 +394,6 @@
 #define LCD_BACKLIGHT_InputEnable()       (TRISCSET = (1<<15))
 #define LCD_BACKLIGHT_Get()               ((PORTC >> 15) & 0x1)
 #define LCD_BACKLIGHT_PIN                  GPIO_PIN_RC15
-
-/*** Macros for GPIO_RA14 pin ***/
-#define GPIO_RA14_Set()               (LATASET = (1<<14))
-#define GPIO_RA14_Clear()             (LATACLR = (1<<14))
-#define GPIO_RA14_Toggle()            (LATAINV= (1<<14))
-#define GPIO_RA14_OutputEnable()      (TRISACLR = (1<<14))
-#define GPIO_RA14_InputEnable()       (TRISASET = (1<<14))
-#define GPIO_RA14_Get()               ((PORTA >> 14) & 0x1)
-#define GPIO_RA14_PIN                  GPIO_PIN_RA14
-
-/*** Macros for GPIO_RA15 pin ***/
-#define GPIO_RA15_Set()               (LATASET = (1<<15))
-#define GPIO_RA15_Clear()             (LATACLR = (1<<15))
-#define GPIO_RA15_Toggle()            (LATAINV= (1<<15))
-#define GPIO_RA15_OutputEnable()      (TRISACLR = (1<<15))
-#define GPIO_RA15_InputEnable()       (TRISASET = (1<<15))
-#define GPIO_RA15_Get()               ((PORTA >> 15) & 0x1)
-#define GPIO_RA15_PIN                  GPIO_PIN_RA15
 
 /*** Macros for GPIO_RD9 pin ***/
 #define GPIO_RD9_Set()               (LATDSET = (1<<9))

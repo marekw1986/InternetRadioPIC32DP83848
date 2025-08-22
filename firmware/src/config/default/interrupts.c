@@ -63,6 +63,7 @@
 
 void CORE_TIMER_InterruptHandler( void );
 void TIMER_2_InterruptHandler( void );
+void I2C_1_InterruptHandler( void );
 void SPI_4_InterruptHandler( void );
 void DRV_USBFS_USB_Handler( void );
 void ETHERNET_InterruptHandler( void );
@@ -82,6 +83,11 @@ void CORE_TIMER_Handler (void)
 void TIMER_2_Handler (void)
 {
     TIMER_2_InterruptHandler();
+}
+
+void I2C_1_Handler (void)
+{
+    I2C_1_InterruptHandler();
 }
 
 void SPI_4_Handler (void)

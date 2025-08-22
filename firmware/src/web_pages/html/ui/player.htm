@@ -5,13 +5,23 @@
 <link rel="stylesheet" type="text/css" href="/ui/style.css">
 <link rel="stylesheet" type="text/css" href="/ui/menu.css">
 <script type="text/javascript">
+
+let volumeChangeInProgress = false;
+let intervalId = 0;
+	
 function preparePage() {
 	showDir('root');
 	loadInfo();
-	window.setInterval(loadInfo, 5000);
+	if (intervalId == 0)
+	{
+		intervalId = window.setInterval(loadInfo, 5000);
+	}
 }
 
 function loadInfo() {
+	if (volumeChangeInProgress) {
+		return;
+	}
     getJSON("/ui/plinf.json", function(err, data) {
         var vol = document.getElementById('volume');
         var loop = document.getElementById('loop');
@@ -23,7 +33,7 @@ function loadInfo() {
 			else if (data.type = "file") {
 				playInf.value = data.artist + " - " + data.title;
 			}
-			if ( (data.volume >= 1) && (data.volume <= 100) ) {
+			if ( (data.volume >= 1) && (data.volume <= 100) && !volumeChangeInProgress) {
 				volume.value = data.volume;
 			}
 			if (data.loop === "true") {
@@ -130,7 +140,6 @@ function showDir(path) {
 
 function play(path, type="file") {
 	var token = document.getElementById('token');
-	var result = document.getElementById('result');
 	var playsrc = type;
 	
 	if (playsrc !== "file" && playsrc !== "dir" && playsrc !== "stream" && playsrc !== "id") return;
@@ -180,25 +189,16 @@ function sendToPlayCgi(params) {
 	   http_request = new XMLHttpRequest();
 	}
 	catch (e) {
-        result.innerHTML = "Wystąpił błąd przeglądarki. Wykonanie akcji nie jest możliwe.";
+        console.log("Wystąpił błąd przeglądarki. Wykonanie akcji nie jest możliwe.");
         return false;
 	}
 	http_request.onreadystatechange = function () {
 		if (http_request.readyState === 4 && http_request.status === 200 ) {
             if (http_request.responseText.startsWith("invalid_token")) {
-                result.style.display = 'block';
-                result.style.color = 'red';
-                result.innerHTML = "Nieprawidłowy token operacji. Spróbuj ponownie załadować stronę.";
+                alert("Nieprawidłowy token operacji. Spróbuj ponownie załadować stronę.");
             }
-			else if (http_request.responseText.startsWith("ok")) {
-				result.style.display = 'block';
-				result.style.color = 'green';
-				result.innerHTML = "Ok";	
-			}
-			else {
-				result.style.display = 'block';
-				result.style.color = 'red';
-				result.innerHTML = "Wystąpił nieznany błąd.";					
+			else if (!http_request.responseText.startsWith("ok")){
+				alert("Wystąpił nieznany błąd.");					
 			}
 		}
 	};
@@ -211,17 +211,19 @@ function sendToPlayCgi(params) {
 function setVolume() {
 	var vol = document.getElementById('volume').value;
 	var token = document.getElementById('token');
-	var result = document.getElementById('result');
 	var request ="token=" + token.value + "&vol=" + vol;
 	
+	if (intervalId != 0) {
+		clearInterval(intervalId);
+	}
 	var ret = sendToPlayCgi(request);
+	intervalId = window.setInterval(loadInfo, 5000);
 	return ret;		
 }
 
 function setLoop() {
 	var loop = document.getElementById('loop');
 	var token = document.getElementById('token');
-	var result = document.getElementById('result');	
 	var loopMsg;
 	
 	if (loop.checked) {
@@ -234,6 +236,14 @@ function setLoop() {
 	var request = "token=" + token.value + "&loop=" + loopMsg;
 	var ret = sendToPlayCgi(request);
 	return ret;
+}
+
+function setVolumeUpdateInPogress() {
+	volumeChangeInProgress = true;
+}
+
+function clearVolumeUpdateInPogress() {
+	volumeChangeInProgress = false;
 }
 
 </script>
@@ -252,8 +262,7 @@ function setLoop() {
 <label for="loop">Pętla:</label>
 <input type="checkbox" id="loop" name="loop" value="" onchange="setLoop()"><br>
 <label for="volume">Głośność:</label>
-<input type="range" min="1" max="100" value="50" class="slider" id="volume" onchange="setVolume()"><br>
-<div id="result" style="color:red; display:none;"></div>
+<input type="range" min="1" max="100" value="50" class="slider" id="volume" onmousedown="setVolumeUpdateInPogress()" onmouseup="clearVolumeUpdateInPogress()" onchange="setVolume()"><br>
 </div>
 </body>
 </html>

@@ -43,13 +43,6 @@ children:
       children:
       - type: Dynamic
         attributes: {id: FreeRTOS, value: '40000000'}
-  - type: Combo
-    attributes: {id: FREERTOS_SCHEDULER}
-    children:
-    - type: Values
-      children:
-      - type: User
-        attributes: {value: Preemptive}
   - type: Integer
     attributes: {id: FREERTOS_TIMER_QUEUE_LENGTH}
     children:

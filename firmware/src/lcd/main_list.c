@@ -1,0 +1,78 @@
+#include <stddef.h>
+#include "string.h"
+#include "hd44780.h"
+#include "main_list.h"
+#include "dir_list.h"
+#include "ui.h"
+#include "scrollable_list.h"
+#include "common.h"
+
+char* main_list_get_content(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
+	switch(number) {
+		case 1:
+		strncpy(name, "USB", name_len);
+		break;
+		
+		case 2:
+		strncpy(name, "SD", name_len);
+		break;
+		
+		case 3:
+		strncpy(name, "Streams", name_len);
+		break;
+		
+		case 4:
+		strncpy(name, "Radio", name_len);
+		break;
+		
+		default:
+		strncpy(name, "", name_len);
+		break;
+	}
+	return name;
+}
+
+uint16_t main_list_get_max_id(void) {
+	return 4;
+}
+
+void main_list_draw_menu_page(uint16_t id) {
+    lcd_locate(0, 0);
+    lcd_utf8str_padd_rest(" USB", LCD_COLS, ' ');
+    lcd_locate(1, 0);
+    lcd_utf8str_padd_rest(" SD", LCD_COLS, ' ');
+    lcd_locate(2, 0);
+    lcd_utf8str_padd_rest(" Streams", LCD_COLS, ' ');
+    lcd_locate(3, 0);
+    lcd_utf8str_padd_rest(" Radio", LCD_COLS, ' ');
+}
+
+void main_list_perform_action(void) {
+	switch (scrollable_list_get_selected_item_id()) {
+		case 1:
+        scrollable_list_set_selected_item_id(1);
+        dir_list_set_path("/mnt/myDrive1/music");
+		ui_switch_state(UI_HANDLE_DIR_LIST);
+		break;
+		
+		case 2:
+        scrollable_list_set_selected_item_id(1);
+        dir_list_set_path("/mnt/myDrive0");
+		ui_switch_state(UI_HANDLE_DIR_LIST);
+		break;
+		
+		case 3:
+		ui_switch_state(UI_HANDLE_STREAM_LIST);
+		break;
+		
+		case 4:
+		break;
+		
+		default:
+		break;
+	}
+}
+
+void main_list_perform_back(void) {
+    ui_switch_state(UI_HANDLE_PLAY_SCREEN);
+}

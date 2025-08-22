@@ -48,7 +48,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "crypto/crypto.h"
 #include "peripheral/spi/spi_master/plib_spi4_master.h"
 #include "driver/ethmac/drv_ethmac.h"
 #include "driver/sdspi/drv_sdspi.h"
@@ -79,7 +78,7 @@
 #include "peripheral/evic/plib_evic.h"
 #include "peripheral/wdt/plib_wdt.h"
 #include "driver/miim/drv_miim.h"
-#include "wolfssl/wolfcrypt/port/pic32/crypt_wolfcryptcb.h"
+#include "peripheral/i2c/master/plib_i2c1_master.h"
 #include "net_pres/pres/net_pres.h"
 #include "net_pres/pres/net_pres_encryptionproviderapi.h"
 #include "net_pres/pres/net_pres_transportapi.h"

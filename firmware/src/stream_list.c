@@ -1,0 +1,141 @@
+#include <stdlib.h>
+#include "lcd/hd44780.h"
+#include "stream_list.h"
+#include "definitions.h"
+
+static uint16_t max_stream_id = 0;
+
+static char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len);
+
+void initialize_stream_list(void) {
+    SYS_FS_HANDLE file;
+    
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
+    if (file == SYS_FS_HANDLE_INVALID) {
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
+        return;
+    }
+    char working_buffer[512];
+    uint16_t number = 0;
+    while (SYS_FS_FileStringGet(file, working_buffer, sizeof(working_buffer)) == SYS_FS_RES_SUCCESS) {
+        number++;
+    }
+    if (number > 0) {
+        max_stream_id = number;
+    }
+    SYS_CONSOLE_PRINT("%d streams found\r\n", max_stream_id);
+    SYS_FS_FileClose(file);
+}
+
+uint16_t get_max_stream_id(void) {
+    return max_stream_id;
+}
+
+char* get_station_url_from_file(uint16_t number, char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len) {
+    SYS_FS_HANDLE file;
+    char* result = NULL;
+    
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
+    if (file == SYS_FS_HANDLE_INVALID) {
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Get station url: Can't open file\r\n");
+        return NULL;
+    }
+    result = find_station_in_file(file, number, workbuf, workbuf_len, stream_name, stream_name_len);
+    
+    SYS_FS_FileClose(file);
+    return result;
+}
+
+char* find_station_in_file(SYS_FS_HANDLE file, uint16_t number,  char* workbuf, size_t workbuf_len, char* stream_name, size_t stream_name_len) {
+	char* result = NULL;
+    uint16_t current_id = 0;
+    while (SYS_FS_FileStringGet(file, workbuf, workbuf_len) == SYS_FS_RES_SUCCESS) {
+        current_id++;
+        if (current_id == number) {
+            if (workbuf[strlen(workbuf)-1] == '\n') {
+                workbuf[strlen(workbuf)-1] = '\0';
+            }
+            if (parse_stream_data_line(workbuf, strlen(workbuf), stream_name, stream_name_len, workbuf, workbuf_len)) {
+                result = workbuf;
+                break;
+            }
+            else { break; }
+        }
+    }
+    return result;
+}
+
+bool parse_stream_data_line(char* line, size_t line_len, char* stream_name, size_t stream_name_len, char* stream_url, size_t stream_url_len) {
+    char* url = strstr(line, " : ");
+    if (url) {
+        *url = '\0';
+        url += 3;
+        if (url >= line+line_len) { return 0; }
+        if (stream_name) {
+            strncpy(stream_name, line, stream_name_len);
+        }
+        if (stream_url) {
+            strncpy(stream_url, url, stream_url_len);
+        }
+        return true;
+    }
+    return false;    
+}
+
+void stream_list_draw_menu_page(uint16_t id) {
+    char name[256];
+    uint16_t current_id = 0;
+    char* result;
+    SYS_FS_HANDLE file;
+    
+    if (id < 1) {
+        id = 1;
+    }
+
+    id = ((id - 1) / LCD_ROWS) * LCD_ROWS + 1;
+    
+    file = SYS_FS_FileOpen(STREAM_LIST_PATH, SYS_FS_FILE_OPEN_READ);
+    if (file == SYS_FS_HANDLE_INVALID) {
+        SYS_DEBUG_PRINT(SYS_ERROR_ERROR, "Draw stream menu page: Can't open file\r\n");
+        return;
+    }
+    
+    while(SYS_FS_FileStringGet(file, name, sizeof(name)) == SYS_FS_RES_SUCCESS) {
+        current_id++;
+        if (current_id < id) { continue; }
+        if (current_id >= id + LCD_ROWS) { break; }
+        uint8_t lcd_row = current_id - id; // 0..LCD_ROWS-1
+        lcd_locate(lcd_row, 0);
+        lcd_char(' ');    
+        result = strstr(name, " : ");
+        if (result) {
+            *result = '\0';
+            lcd_utf8str_padd_rest(name, LCD_COLS-1, ' ');
+        }
+        else {
+            lcd_utf8str_padd_rest(" ", LCD_COLS-1, ' ');
+        }
+    }
+    SYS_FS_FileClose(file);
+    
+    /* Determine which LCD row to start clearing */
+    int start_clear_row;
+    if (current_id >= id + LCD_ROWS) {
+        // Page completely filled, nothing to clear
+        start_clear_row = LCD_ROWS;
+    }
+    else if (current_id >= id) {
+        // Printed at least one line, start after the last printed row
+        start_clear_row = (current_id - id) + 1;
+    }
+    else {
+        // Printed nothing, clear all rows
+        start_clear_row = 0;
+    }
+
+    /* Clear remaining rows */
+    for (int lcd_row = start_clear_row; lcd_row < LCD_ROWS; lcd_row++) {
+        lcd_locate(lcd_row, 0);
+        lcd_utf8str_padd_rest(" ", LCD_COLS, ' ');
+    }
+}
