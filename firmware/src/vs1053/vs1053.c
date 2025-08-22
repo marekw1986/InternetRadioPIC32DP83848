@@ -826,7 +826,15 @@ void VS1053_play_file (char* url) {
         }
         if (strncmp(id3, "TAG", 3)) {
             SYS_CONSOLE_PRINT("File doesn't have an ID3 tag\r\n");
-            mediainfo_title_set("No ID3");
+            const char* filename = strrchr(url, '/');
+            if (filename) {
+                filename++;
+                SYS_CONSOLE_PRINT("Name of opened file: %s\r\n", filename);
+                mediainfo_title_set(filename);
+            }
+            else {
+                mediainfo_title_set("No ID3");
+            }
         }
         else {
             unsigned char *s = (unsigned char*)id3+3;
