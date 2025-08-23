@@ -18,12 +18,13 @@ Internet radio based on PIC32
 - [ ] Controll LCD backlight brightness with soft PWM
 - [ ] Analyze ICY headers
 	- [x] Implement basic funcionality
-- [ ] Add RF tuner funcionality.
+- [ ] Add RF tuner funcionality
 	- [x] Design RF board
 	- [ ] Port driver for si4735 chip
-	- [ ] Write code responsible for controlling VS1053 line input.
+	- [ ] Write code responsible for controlling VS1053 line input
 	- [ ] Add RF tuner support to LCD UI
 	- [ ] Add RF tuner support to Web UI
+- [ ] Add support for m3u playlists
 
 ### Completed Column ✓
 - [x] Debug SD card
