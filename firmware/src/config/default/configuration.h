@@ -201,7 +201,7 @@ extern "C" {
 
 /* MIIM RTOS Configurations*/
 #define DRV_MIIM_RTOS_STACK_SIZE                1280
-#define DRV_MIIM_RTOS_TASK_PRIORITY             1
+#define DRV_MIIM_RTOS_TASK_PRIORITY             2
 
 
 
@@ -544,7 +544,7 @@ extern "C" {
 
 /* TCP/IP RTOS Configurations*/
 #define TCPIP_RTOS_STACK_SIZE                1280
-#define TCPIP_RTOS_PRIORITY             1
+#define TCPIP_RTOS_PRIORITY             3
 
 
 /* Number of MSD Function driver instances in the application */
@@ -605,7 +605,7 @@ extern "C" {
 
 /* Net Pres RTOS Configurations*/
 #define NET_PRES_RTOS_STACK_SIZE                1024
-#define NET_PRES_RTOS_TASK_PRIORITY             1
+#define NET_PRES_RTOS_TASK_PRIORITY             3
 	
 
 
