@@ -219,7 +219,7 @@ feed_ret_t VS1053_feed_from_buffer (void) {
         uint16_t w = read_array_from_ringbuffer(data, 32);
         if (w == 32) VS1053_sdi_send_chunk(data, 32);
         taskYIELD();
-        if ((uint32_t)(millis()-timeout) > 40) {
+        if ((uint32_t)(millis()-timeout) > 500) {
             return FEED_RET_ERR_TMOUT;
         }
     } while(VS_DREQ_PIN);
