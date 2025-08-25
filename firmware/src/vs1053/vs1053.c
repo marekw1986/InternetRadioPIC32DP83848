@@ -534,6 +534,7 @@ void VS1053_handle(void) {
                     VS1053_fullStop();
                     break;
                 case VS_MSG_PLAY_STREAM_BY_ID:
+                    VS1053_fullStop();
                     VS1053_play_http_stream_by_id(rcv.param);
                     break;
                 case VS_MSG_PLAY_FILE:;
@@ -725,7 +726,6 @@ bool VS1053_play_http_stream_by_id(uint16_t id) {
     memset(name, 0x00, sizeof(name));
 	char* url = get_station_url_from_file(id, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
 	if (url) {
-		VS1053_stop();
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
