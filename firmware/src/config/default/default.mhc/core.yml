@@ -1524,6 +1524,13 @@ children:
       - type: User
         attributes: {value: 'ON'}
   - type: Combo
+    attributes: {id: CONFIG_ICESEL}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: ICS_PGx1}
+  - type: Combo
     attributes: {id: CONFIG_POSCMOD}
     children:
     - type: Values
