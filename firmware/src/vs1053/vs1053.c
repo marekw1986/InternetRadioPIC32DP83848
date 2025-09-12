@@ -98,6 +98,7 @@ void VS1053_handle(void) {
                 if (dnsres < 0) {
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
+                    ui_clear_content_info();
                     ui_clear_state_info();
                     #endif
                     SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve error %d\r\n", dnsres);
@@ -119,6 +120,7 @@ void VS1053_handle(void) {
             else {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
+                ui_clear_content_info();
                 ui_clear_state_info();
                 #endif                
                 SYS_CONSOLE_PRINT("DNS uri.server empty\r\n");
@@ -135,6 +137,7 @@ void VS1053_handle(void) {
             if (dnsres < 0) {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
+                ui_clear_content_info();
                 ui_clear_state_info();
                 #endif
                 SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved error: %d\r\n", dnsres);
@@ -471,6 +474,7 @@ void VS1053_handle(void) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
+                    ui_clear_content_info();
                     ui_clear_state_info();
                     #endif
                     break;
@@ -483,6 +487,7 @@ void VS1053_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
+                        ui_clear_content_info();
                         ui_clear_state_info();
                         #endif
                     }
@@ -497,6 +502,7 @@ void VS1053_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
+                        ui_clear_content_info();
                         ui_clear_state_info();
                         #endif
                     }
