@@ -1082,10 +1082,14 @@ void si4735_setGpio(uint8_t GPO1LEVEL, uint8_t GPO2LEVEL, uint8_t GPO3LEVEL);
 void si4735_setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t CTSIEN, uint8_t STCREP, uint8_t RSQREP);
 
 void si4735_setup(uint8_t resetPin, uint8_t defaultFunction);
-void si4735_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode = SI473X_ANALOG_AUDIO, uint8_t clockType = XOSCEN_CRYSTAL, uint8_t gpo2Enable = 0);
+void si4735_detailed_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode, uint8_t clockType, uint8_t gpo2Enable);
+#define si4735_detailed_setup_defaultGpo2Enable(resetPin, ctsIntEnable, defaultFunction, audioMode, clockType) si4735_detailed_setup(resetPin, ctsIntEnable, defaultFunction, audioMode, clockType, 0)
+#define si4735_detailed_setup_defaultGpo2EnableAndClockType(resetPin, ctsIntEnable, defaultFunction, audioMode) si4735_detailed_setup(resetPin, ctsIntEnable, defaultFunction, audioMode, XOSCEN_CRYSTAL, 0)
+#define si4735_detailed_setup_defaultGpo2EnableAndClockType_and_audioMode(resetPin, ctsIntEnable, defaultFunction) si4735_detailed_setup(resetPin, ctsIntEnable, defaultFunction, SI473X_ANALOG_AUDIO, XOSCEN_CRYSTAL, 0)
 
 void si4735_setRefClock(uint16_t refclk);
-void si4735_setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel = 0);
+void si4735_setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel);
+#define si4735_setRefClockPrescalerDefaultRclkSel(prescale) si4735_setRefClockPrescaler(prescale, 0)
 
 int32_t si4735_getProperty(uint16_t propertyValue);
 
@@ -1115,7 +1119,8 @@ uint16_t si4735_getFrequency(void);
 
 
 void si4735_getAutomaticGainControl(); //!<  Queries Automatic Gain Control STATUS
-void si4735_setAvcAmMaxGain(uint8_t gain = 90); //!<  Sets the maximum gain for automatic volume control.
+void si4735_setAvcAmMaxGain(uint8_t gain); //!<  Sets the maximum gain for automatic volume control.
+#define si4735_setAvcAmMaxGainDefaultGain() si4735_setAvcAmMaxGain(90)
 void si4735_setAutomaticGainControl(uint8_t AGCDIS, uint8_t AGCIDX);
 
 /**
@@ -1136,9 +1141,10 @@ void si4735_setAutomaticGainControl(uint8_t AGCDIS, uint8_t AGCIDX);
  *                if >greater than 36 - Maximum attenuation (min gain) ).
  */
 
-void si4735_setSsbAgcOverrite(uint8_t SSBAGCDIS, uint8_t SSBAGCNDX, uint8_t reserved = 0);
+void si4735_setSsbAgcOverrite(uint8_t SSBAGCDIS, uint8_t SSBAGCNDX, uint8_t reserved);
+#define si4735_setSsbAgcOverrite_defaultReserved(SSBAGCDIS, SSBAGCNDX) si4735_setSsbAgcOverrite(SSBAGCDIS, SSBAGCNDX, 0)
 void si4735_getCurrentReceivedSignalQuality(uint8_t INTACK);
-void si4735_getCurrentReceivedSignalQuality(void);
+void si4735_getCurrentReceivedSignalQualityNoArgs(void);
 void si4735_setVolume(uint8_t volume);
 uint8_t si4735_getVolume();
 void si4735_volumeDown();
@@ -1146,8 +1152,8 @@ void si4735_volumeUp();
 void si4735_digitalOutputFormat(uint8_t OSIZE, uint8_t OMONO, uint8_t OMODE, uint8_t OFALL);
 void si4735_digitalOutputSampleRate(uint16_t DOSR);
 void si4735_setAudioMute(bool off); // if true mute the audio; else unmute
-void si4735_setAM();
-void si4735_setFM();
+void si4735_setAMNoArgs();
+void si4735_setFMNoArgs();
 void si4735_setAM(uint16_t fromFreq, uint16_t toFreq, uint16_t intialFreq, uint16_t step);
 void si4735_setFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step);
 void si4735_setBandwidth(uint8_t AMCHFLT, uint8_t AMPLFLT);

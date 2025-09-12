@@ -2190,7 +2190,7 @@ void si4735_setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel)
  * @param clockType 0 = Use external RCLK (crystal oscillator disabled); 1 = Use crystal oscillator
  * @param gpo2Enable GPO2OE (GPO2 Output) 1 = Enable; 0 Disable (defult)
  */
-void si4735_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode, uint8_t clockType, uint8_t gpo2Enable)
+void si4735_detailed_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode, uint8_t clockType, uint8_t gpo2Enable)
 {
     Wire.begin();
 
@@ -2376,7 +2376,7 @@ void si4735_frequencyDown()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 129.
  */
-void si4735_setAM()
+void si4735_setAMNoArgs()
 {
     // If you?re already using AM mode, it is not necessary to call powerDown and radioPowerUp.
     // The other properties also should have the same value as the previous status.
@@ -2401,7 +2401,7 @@ void si4735_setAM()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 64.
  */
-void si4735_setFM(void)
+void si4735_setFMNoArgs(void)
 {
     si4735_powerDown();
     si4735_setPowerUp(ctsIntEnable, gpo2Enable, 0, currentClockType, FM_CURRENT_MODE, currentAudioMode);
@@ -2778,7 +2778,7 @@ void si4735_getCurrentReceivedSignalQuality(uint8_t INTACK)
  *        0 = Interrupt status preserved;
  *        1 = Clears RSQINT, BLENDINT, SNRHINT, SNRLINT, RSSIHINT, RSSILINT, MULTHINT, MULTLINT.
  */
-void si4735_getCurrentReceivedSignalQuality(void)
+void si4735_getCurrentReceivedSignalQualityNoArgs(void)
 {
     si4735_getCurrentReceivedSignalQuality(0);
 }
