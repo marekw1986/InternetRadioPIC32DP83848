@@ -14,7 +14,6 @@ Internet radio based on PIC32
   - [ ] Add reset from web UI
   - [ ] Option of adding streams to list
 - [ ] Use busy flag instead delay in HD44780 driver
-- [ ] Determine cause of ocassional failures of network connectivity
 - [ ] Controll LCD backlight brightness with soft PWM
 - [ ] Analyze ICY headers
 	- [x] Implement basic funcionality
@@ -25,6 +24,7 @@ Internet radio based on PIC32
 	- [ ] Add RF tuner support to LCD UI
 	- [ ] Add RF tuner support to Web UI
 - [ ] Add support for m3u playlists
+- [ ] Determine cause of ocassional failures of HTTP server/WebUI
 
 ### Completed Column ✓
 - [x] Debug SD card
@@ -50,3 +50,4 @@ Internet radio based on PIC32
     - [x] Add feature to remember last position in dir menu
 	- [x] Add option to change playback settings (for example playing in loop)
   - [x] Scrolled text (info about played song/stream)
+  - [x] Determine cause of ocassional failures of network connectivity
