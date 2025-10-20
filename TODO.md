@@ -24,6 +24,7 @@ Internet radio based on PIC32
 	- [ ] Write code responsible for controlling VS1053 line input.
 	- [ ] Add RF tuner support to LCD UI
 	- [ ] Add RF tuner support to Web UI
+- [ ] Add Home Assistant MQTT integration.
 
 ### Completed Column ✓
 - [x] Debug SD card
