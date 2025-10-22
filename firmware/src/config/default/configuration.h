@@ -238,6 +238,34 @@ extern "C" {
 
 
 
+/*** wolfMQTT configuration ***/
+#define WOLFMQTT_NONBLOCK
+#define WOLFMQTT_USER_SETTINGS
+// #define WOLFMQTT_NO_TIMEOUT
+// #define WOLFMQTT_NO_STDIN_CAP
+
+#define WOLFMQTT_DISCONNECT_CB
+#define WOLFMQTT_NO_ERROR_STRINGS
+#define WOLFMQTT_NO_STDIO
+
+// #define ENABLE_MQTT_TLS
+
+/*** wolMQTT Net Glue configuration ***/
+#define WMQTT_NET_GLUE_FORCE_TLS			false
+#define WMQTT_NET_GLUE_IPV6					false
+#define WMQTT_NET_GLUE_MAX_BROKER_NAME		64
+#define WMQTT_NET_GLUE_DEBUG_ENABLE			false
+#define WMQTT_NET_GLUE_ERROR_STRINGS		true
+#define WMQTT_NET_GLUE_MALLOC				malloc
+#define WMQTT_NET_GLUE_FREE					free
+#define WMQTT_NET_SKT_TX_BUFF				2048
+#define WMQTT_NET_SKT_RX_BUFF				2048
+
+
+
+
+
+
 /*** HTTP NET Configuration ***/
 #define TCPIP_STACK_USE_HTTP_NET_SERVER
 #define TCPIP_HTTP_NET_MAX_HEADER_LEN		    		15

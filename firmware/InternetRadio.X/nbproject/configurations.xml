@@ -419,6 +419,13 @@
             <itemPath>../src/config/default/system/sys_time_h2_adapter.h</itemPath>
             <itemPath>../src/config/default/system/sys_random_h2_adapter.h</itemPath>
           </logicalFolder>
+          <logicalFolder name="f7" displayName="third_party_adapter" projectFiles="true">
+            <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../src/config/default/third_party_adapter/wolfMQTT/src/mqtt_net_glue.h</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
           <logicalFolder name="f8" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../src/config/default/usb/src/usb_host_local.h</itemPath>
@@ -448,6 +455,8 @@
           <itemPath>../src/config/default/definitions.h</itemPath>
           <itemPath>../src/config/default/interrupts.h</itemPath>
           <itemPath>../src/config/default/FreeRTOSConfig.h</itemPath>
+          <itemPath>../src/config/default/config.h</itemPath>
+          <itemPath>../src/config/default/user_settings.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f5" displayName="FreeRTOS" projectFiles="true">
@@ -494,6 +503,19 @@
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
         <itemPath>../src/radio/si4735.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3" displayName="third_party" projectFiles="true">
+        <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
+          <logicalFolder name="f1" displayName="wolfmqtt" projectFiles="true">
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/mqtt_client.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/mqtt_packet.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/mqtt_socket.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/mqtt_types.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/version.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/visibility.h</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/wolfmqtt/vs_settings.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+      </logicalFolder>
       <logicalFolder name="f6" displayName="VS1053" projectFiles="true">
         <itemPath>../src/vs1053/mediainfo.h</itemPath>
         <itemPath>../src/vs1053/ringbuffer.h</itemPath>
@@ -505,6 +527,7 @@
       <itemPath>../src/http_header_parser.h</itemPath>
       <itemPath>../src/stream_list.h</itemPath>
       <itemPath>../src/http_net_print.h</itemPath>
+      <itemPath>../src/app_mqtt_task.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -690,6 +713,13 @@
             <itemPath>../src/config/default/system/sys_time_h2_adapter.c</itemPath>
             <itemPath>../src/config/default/system/sys_random_h2_adapter.c</itemPath>
           </logicalFolder>
+          <logicalFolder name="f8" displayName="third_party_adapter" projectFiles="true">
+            <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
+              <logicalFolder name="f1" displayName="src" projectFiles="true">
+                <itemPath>../src/config/default/third_party_adapter/wolfMQTT/src/mqtt_net_glue.c</itemPath>
+              </logicalFolder>
+            </logicalFolder>
+          </logicalFolder>
           <logicalFolder name="f9" displayName="usb" projectFiles="true">
             <logicalFolder name="f1" displayName="src" projectFiles="true">
               <itemPath>../src/config/default/usb/src/usb_host.c</itemPath>
@@ -741,6 +771,15 @@
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
         <itemPath>../src/radio/si4735.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="third_party" projectFiles="true">
+        <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
+          <logicalFolder name="f1" displayName="src" projectFiles="true">
+            <itemPath>../src/third_party/wolfMQTT/src/mqtt_client.c</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/src/mqtt_packet.c</itemPath>
+            <itemPath>../src/third_party/wolfMQTT/src/mqtt_socket.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f6" displayName="VS1053" projectFiles="true">
         <itemPath>../src/vs1053/mediainfo.c</itemPath>
@@ -814,6 +853,7 @@
           <itemPath>../src/config/default/default.mhc/Group0/tcpipDns.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipArp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/Group0.yml</itemPath>
+          <itemPath>../src/config/default/default.mhc/Group0/lib_wolfmqtt.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipDhcp.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/tcpipIPv4.yml</itemPath>
           <itemPath>../src/config/default/default.mhc/Group0/drvMiim.yml</itemPath>
@@ -853,6 +893,7 @@
       </logicalFolder>
       <itemPath>Makefile</itemPath>
       <itemPath>../src/config/default/harmony-manifest-success.yml</itemPath>
+      <itemPath>../src/config/default/harmony-manifest-failure.yml</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -942,7 +983,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/config/default;../src/config/default/library;../src/config/default/library/tcpip/src;../src/config/default/library/tcpip/src/common;../src/config/default/system/fs/fat_fs/file_system;../src/config/default/system/fs/fat_fs/hardware_access;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
+                  value="../src;../src/config/default;../src/config/default/library;../src/config/default/library/tcpip/src;../src/config/default/library/tcpip/src/common;../src/config/default/system/fs/fat_fs/file_system;../src/config/default/system/fs/fat_fs/hardware_access;../src/config/default/third_party_adapter/wolfMQTT/src/;../src/third_party/rtos/FreeRTOS/Source/include;../src/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX;../src/third_party/wolfMQTT"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -952,7 +993,7 @@
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
         <property key="preprocessor-macros"
-                  value="_DISABLE_OPENADC10_CONFIGPORT_WARNING;_SUPPRESS_PLIB_WARNING"/>
+                  value="HAVE_CONFIG_H;_DISABLE_OPENADC10_CONFIGPORT_WARNING;_SUPPRESS_PLIB_WARNING"/>
         <property key="strict-ansi" value="false"/>
         <property key="support-ansi" value="false"/>
         <property key="tentative-definitions" value=""/>

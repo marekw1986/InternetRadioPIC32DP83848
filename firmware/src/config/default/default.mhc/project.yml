@@ -13,6 +13,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: null
+- generatedChecksum: 69ACFE71788887938F64DDAD1C50B6B7
+  logicalPath: ''
+  name: app_mqtt_task.c
+  physicalPath: ../..
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 69ACFE71788887938F64DDAD1C50B6B7
 - generatedChecksum: 19E6E92AA768F57902FD49EEEA8938EA
   logicalPath: config/default/library/tcpip/src
   name: arp.c
@@ -251,6 +258,34 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: null
+- generatedChecksum: AD183632B937146A8C80EDE0D35BFE21
+  logicalPath: third_party/wolfMQTT/src
+  name: mqtt_client.c
+  physicalPath: ../../third_party/wolfMQTT/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: AD183632B937146A8C80EDE0D35BFE21
+- generatedChecksum: C8BB40E052F28BC84434A2693034CBD9
+  logicalPath: config/default/third_party_adapter/wolfMQTT/src
+  name: mqtt_net_glue.c
+  physicalPath: third_party_adapter/wolfMQTT/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: C8BB40E052F28BC84434A2693034CBD9
+- generatedChecksum: 0BC7F3E30A7AA1A317E6927623FA4AE8
+  logicalPath: third_party/wolfMQTT/src
+  name: mqtt_packet.c
+  physicalPath: ../../third_party/wolfMQTT/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 0BC7F3E30A7AA1A317E6927623FA4AE8
+- generatedChecksum: 51A0DA6D8006E00542108FEAECA8D581
+  logicalPath: third_party/wolfMQTT/src
+  name: mqtt_socket.c
+  physicalPath: ../../third_party/wolfMQTT/src
+  security: NON_SECURE
+  type: SOURCE
+  userChecksum: 51A0DA6D8006E00542108FEAECA8D581
 - generatedChecksum: 3D1FBA1F5B3DFFA1B419A579EA0D8600
   logicalPath: config/default/library/tcpip/src
   name: nbns.c
@@ -846,6 +881,13 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: null
+- generatedChecksum: 874B8F5AFF2A6E8563550762B04CA6AC
+  logicalPath: ''
+  name: app_mqtt_task.h
+  physicalPath: ../..
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 874B8F5AFF2A6E8563550762B04CA6AC
 - generatedChecksum: 2709BE5CD31DEA3E6E95B9EAFB459465
   logicalPath: config/default/library/tcpip
   name: arp.h
@@ -881,13 +923,20 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: C0F34020BFE4A8185F282064E89AB3D2
-- generatedChecksum: E17DF4E07A469E2E87258705565238A7
+- generatedChecksum: 9537C1E41F14DFF1B50CF8AE3880105C
+  logicalPath: config/default
+  name: config.h
+  physicalPath: ''
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 9537C1E41F14DFF1B50CF8AE3880105C
+- generatedChecksum: 82A246AE7876C589E2171B190393C700
   logicalPath: config/default
   name: configuration.h
   physicalPath: ''
   security: NON_SECURE
   type: HEADER
-  userChecksum: E17DF4E07A469E2E87258705565238A7
+  userChecksum: 82A246AE7876C589E2171B190393C700
 - generatedChecksum: 4B11D1A616E95BDD37123685C8434FCF
   logicalPath: FreeRTOS/Source/include
   name: croutine.h
@@ -1532,6 +1581,41 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: 2ECEDD5114F296955777187904C449C7
+- generatedChecksum: 7A1FF906C6F6D1599139F3F80FE03574
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: mqtt_client.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 7A1FF906C6F6D1599139F3F80FE03574
+- generatedChecksum: 27AB8D156118B0A484304F91A6222557
+  logicalPath: config/default/third_party_adapter/wolfMQTT/src
+  name: mqtt_net_glue.h
+  physicalPath: third_party_adapter/wolfMQTT/src
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 27AB8D156118B0A484304F91A6222557
+- generatedChecksum: 1D0683B6A4ADB3744D5EA789A94190A8
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: mqtt_packet.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 1D0683B6A4ADB3744D5EA789A94190A8
+- generatedChecksum: 5900707CEEDF72B73F304D91798685A8
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: mqtt_socket.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 5900707CEEDF72B73F304D91798685A8
+- generatedChecksum: CB241AF50AC4F0E3021CA9EA1B8A28AE
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: mqtt_types.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: CB241AF50AC4F0E3021CA9EA1B8A28AE
 - generatedChecksum: F74D8EB5B501CEF184B30ED0D76F7AFB
   logicalPath: config/default/library/tcpip
   name: nbns.h
@@ -3275,6 +3359,34 @@ files:
   security: NON_SECURE
   type: HEADER
   userChecksum: null
+- generatedChecksum: 9537C1E41F14DFF1B50CF8AE3880105C
+  logicalPath: config/default
+  name: user_settings.h
+  physicalPath: ''
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 9537C1E41F14DFF1B50CF8AE3880105C
+- generatedChecksum: EE5F8702B1CBD54BA2D29D54E7E7E876
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: version.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: EE5F8702B1CBD54BA2D29D54E7E7E876
+- generatedChecksum: 3C87FEFF7840135A93E14B7383810315
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: visibility.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: 3C87FEFF7840135A93E14B7383810315
+- generatedChecksum: A938DB68320AD6F2E9F0CD8DC5514160
+  logicalPath: third_party/wolfMQTT/wolfmqtt
+  name: vs_settings.h
+  physicalPath: ../../third_party/wolfMQTT/wolfmqtt
+  security: NON_SECURE
+  type: HEADER
+  userChecksum: A938DB68320AD6F2E9F0CD8DC5514160
 - generatedChecksum: 06C82512168AC4A3EBBF4CABD33D4CED
   logicalPath: config/default/library/tcpip/src
   name: zero_conf_helper.h
@@ -3337,6 +3449,12 @@ settings:
   delimiter: ;
   key: extra-include-directories
   security: NON_SECURE
+  value: ../src/third_party/wolfMQTT;../src/config/default/third_party_adapter/wolfMQTT/src/
+- append: true
+  category: C32
+  delimiter: ;
+  key: extra-include-directories
+  security: NON_SECURE
   value: ../src;../src/config/default;
 - append: true
   category: C32
@@ -3350,6 +3468,12 @@ settings:
   key: generate-16-bit-code
   security: NON_SECURE
   value: 'false'
+- append: true
+  category: C32
+  delimiter: ;
+  key: preprocessor-macros
+  security: NON_SECURE
+  value: HAVE_CONFIG_H
 - append: true
   category: C32-AS
   delimiter: ;
