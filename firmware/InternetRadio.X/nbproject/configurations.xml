@@ -527,7 +527,6 @@
       <itemPath>../src/http_header_parser.h</itemPath>
       <itemPath>../src/stream_list.h</itemPath>
       <itemPath>../src/http_net_print.h</itemPath>
-      <itemPath>../src/app_mqtt_task.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
