@@ -501,7 +501,7 @@
         <itemPath>../src/lcd/dir_list.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
-        <itemPath>../src/radio/si4735.h</itemPath>
+        <itemPath>../src/radio/SI4735.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="third_party" projectFiles="true">
         <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
@@ -769,7 +769,7 @@
         <itemPath>../src/lcd/dir_list.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="radio" projectFiles="true">
-        <itemPath>../src/radio/si4735.c</itemPath>
+        <itemPath>../src/radio/SI4735.cpp</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="third_party" projectFiles="true">
         <logicalFolder name="f1" displayName="wolfMQTT" projectFiles="true">
@@ -941,37 +941,9 @@
         <makeCustomizationEnableLongLines>false</makeCustomizationEnableLongLines>
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
-      <item path="../src/radio/si4735.c" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
+      <item path="../src/radio/SI4735.cpp" ex="true" overriding="false">
       </item>
-      <item path="../src/radio/si4735.h" ex="true" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-CO>
-        </C32-CO>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
+      <item path="../src/radio/SI4735.h" ex="true" overriding="false">
       </item>
       <C32>
         <property key="additional-warnings" value="true"/>

@@ -1,1666 +1,52 @@
-#include <string.h>
-#include "si4735.h"
-
-char rds_buffer2A[65]; //!<  RDS Radio Text buffer - Program Information
-char rds_buffer2B[33]; //!<  RDS Radio Text buffer - Station Informaation
-char rds_buffer0A[9];  //!<  RDS Basic tuning and switching information (Type 0 groups)
-char rds_time[25];     //!<  RDS date time received information
-
-int rdsTextAdress2A; //!<  rds_buffer2A current position
-int rdsTextAdress2B; //!<  rds_buffer2B current position
-int rdsTextAdress0A; //!<  rds_buffer0A current position
-
-bool rdsEndGroupA = false;
-bool rdsEndGroupB = false;
-
-int16_t deviceAddress = SI473X_ADDR_SEN_LOW; //!<  Stores the current I2C bus address.
-
-// Delays
-uint16_t maxDelaySetFrequency = MAX_DELAY_AFTER_SET_FREQUENCY; //!< Stores the maximum delay after set frequency command (in ms).
-uint16_t maxDelayAfterPouwerUp = MAX_DELAY_AFTER_POWERUP;      //!< Stores the maximum delay you have to setup after a power up command (in ms).
-unsigned long maxSeekTime = MAX_SEEK_TIME;                     //!< Stores the maximum time (ms) for a seeking process. Defines the maximum seeking time.
-
-uint8_t lastTextFlagAB;
-uint8_t resetPin; //!<  pin used on Arduino Board to RESET the Si47XX device
-
-uint8_t currentTune; //!<  tell the current tune (FM, AM or SSB)
-
-uint16_t currentMinimumFrequency; //!<  minimum frequency of the current band
-uint16_t currentMaximumFrequency; //!<  maximum frequency of the current band
-uint16_t currentWorkFrequency;    //!<  current frequency
-
-uint16_t currentStep; //!<  Stores the current step used to increment or decrement the frequency.
-
-uint8_t lastMode = -1; //!<  Stores the last mode used.
-
-uint8_t currentAvcAmMaxGain = DEFAULT_CURRENT_AVC_AM_MAX_GAIN; //!<  Stores the current Automatic Volume Control Gain for AM.
-uint8_t currentClockType = XOSCEN_CRYSTAL;                     //!< Stores the current clock type used (Crystal or REF CLOCK)
-uint8_t ctsIntEnable = 0;
-uint8_t gpo2Enable = 0;
-
-uint16_t refClock = 32768;     //!< Frequency of Reference Clock in Hz.
-uint16_t refClockPrescale = 1; //!< Prescaler for Reference Clock (divider).
-uint8_t refClockSourcePin = 0; //!< 0 = RCLK pin is clock source; 1 = DCLK pin is clock source.
-
-si47x_frequency currentFrequency; //!<  data structure to get current frequency
-si47x_set_frequency currentFrequencyParams;
-si47x_rqs_status currentRqsStatus;       //!<  current Radio SIgnal Quality status
-si47x_response_status currentStatus;     //!<  current device status
-si47x_firmware_information firmwareInfo; //!<  firmware information
-si47x_rds_status currentRdsStatus;       //!<  current RDS status
-si47x_agc_status currentAgcStatus;       //!<  current AGC status
-si47x_ssb_mode currentSSBMode;           //!<  indicates if USB or LSB
-
-si473x_powerup powerUp;
-
-uint8_t volume = 32; //!< Stores the current vlume setup (0-63).
-
-uint8_t currentAudioMode = SI473X_ANALOG_AUDIO; //!< Current audio mode used (ANALOG or DIGITAL or both)
-uint8_t currentSsbStatus;
-int8_t audioMuteMcuPin = -1;
-
-static void si4735_waitInterrupr(void);
-static si47x_status si4735_getInterruptStatus();
-
-// static void si4735_setGpioCtl(uint8_t GPO1OEN, uint8_t GPO2OEN, uint8_t GPO3OEN);
-// static void si4735_setGpio(uint8_t GPO1LEVEL, uint8_t GPO2LEVEL, uint8_t GPO3LEVEL);
-// static void si4735_setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t CTSIEN, uint8_t STCREP, uint8_t RSQREP);
-
-static void si4735_sendProperty(uint16_t propertyNumber, uint16_t param);
-
-static void si4735_sendSSBModeProperty(void);
-static void si4735_disableFmDebug(void);
-static void si4735_getSsbAgcStatus(void);
-static inline void si4735_setProperty(uint16_t propertyNumber, uint16_t param);
-static inline bool si4735_getSignalQualityInterrupt(void);
-static inline bool si4735_getRadioDataSystemInterrupt(void);
-static inline bool si4735_getTuneCompleteTriggered(void);
-static inline bool si4735_getStatusError(void);
-static inline bool si4735_getStatusCTS(void);
-static inline bool si4735_getACFIndicator(void);
-static inline bool si4735_getBandLimit(void);
-static inline bool si4735_getStatusValid(void);
-static inline uint8_t si4735_getReceivedSignalStrengthIndicator(void);
-static inline uint8_t si4735_getStatusSNR(void);
-static inline uint8_t si4735_getStatusMULT(void);
-static inline uint16_t si4735_getAntennaTuningCapacitor(void);
-static inline void si4735_setAvcAmMaxGain(void);
-static inline void si4735_setAvcAmMinGain(void);
-static inline void si4735_setAvcAmDefaultGain(void);
-static inline uint8_t si4735_getCurrentAvcAmMaxGain(void);
-static inline void si4735_setAmSoftMuteMaxAttenuation(uint8_t smattn = 0);
-static inline void si4735_setSsbSoftMuteMaxAttenuation(uint8_t smattn = 0);
-static inline void si4735_setSsbIfAgcReleaseRate(uint8_t param = 140);
-static inline void si4735_setSsbIfAgcAttackRate(uint8_t param = 4);
-static inline bool si4735_isAgcEnabled(void);
-static inline uint8_t si4735_getAgcGainIndex(void);
-static inline uint8_t si4735_getCurrentRSSI(void);
-static inline uint8_t si4735_getCurrentSNR(void);
-static inline bool si4735_getCurrentRssiDetectLow(void);
-static inline bool si4735_getCurrentRssiDetectHigh(void);
-static inline bool si4735_getCurrentSnrDetectLow(void);
-static inline bool si4735_getCurrentSnrDetectHigh(void);
-static inline bool si4735_getCurrentValidChannel(void);
-static inline bool si4735_getCurrentAfcRailIndicator(void);
-static inline bool si4735_getCurrentSoftMuteIndicator(void);
-static inline uint8_t si4735_getCurrentStereoBlend(void);
-static inline bool si4735_getCurrentPilot(void);
-static inline uint8_t si4735_getCurrentMultipath(void);
-static inline uint8_t si4735_getCurrentSignedFrequencyOffset(void);
-static inline bool si4735_getCurrentMultipathDetectLow(void);
-static inline bool si4735_getCurrentMultipathDetectHigh(void);
-static inline bool si4735_getCurrentBlendDetectInterrupt(void);
-static inline uint8_t si4735_getFirmwarePN(void);
-static inline uint8_t si4735_getFirmwareFWMAJOR(void);
-static inline uint8_t si4735_getFirmwareFWMINOR(void);
-static inline uint8_t si4735_getFirmwarePATCHH(void);
-static inline uint8_t si4735_getFirmwarePATCHL(void);
-static inline uint8_t si4735_getFirmwareCMPMAJOR(void);
-static inline uint8_t si4735_getFirmwareCMPMINOR(void);
-static inline uint8_t si4735_getFirmwareCHIPREV(void);
-static inline uint8_t si4735_getCurrentVolume(void);
-static inline void si4735_setVolumeUp(void);
-static inline void si4735_setVolumeDown(void);
-static inline void si4735_setAudioMode(uint8_t audioMode);
-static inline void si4735_setAmDelayNB(uint16_t value);
-inline void si4735_setFMDeEmphasis(uint8_t parameter);
-inline void si4735_setFmSoftMuteMaxAttenuation(uint8_t smattn = 0);
-inline void si4735_setFmNoiseBlankThreshold(uint16_t parameter);
-
-
-
-
-
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 2A (Radio Text / Program Information)
- * @details same clearRdsProgramInformation
- */
-static inline void si4735_clearRdsBuffer2A(void) { memset(rds_buffer2A, 0, sizeof(rds_buffer2A)); };
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 2A (Radio Text / Program Information)
- * @details same clearRdsBuffer2A
- */
-static inline void si4735_clearRdsProgramInformation(void) { memset(rds_buffer2A, 0, sizeof(rds_buffer2A)); };
-
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 2B (text / Station INformation 32 bytes)
- * @details Same clearRdsStationInformation
- */
-static inline void si4735_clearRdsBuffer2B(void) { memset(rds_buffer2B, 0, sizeof(rds_buffer2B)); };
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 2B (text / Station INformation 32 bytes)
- * @details Same clearRdsBuffer2B
- */
-static inline void si4735_clearRdsStationInformation(void) { memset(rds_buffer2B, 0, sizeof(rds_buffer2B)); };
-
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 0A (text / Station Name)
- * @details clearRdsStationName
- */
-static inline void si4735_clearRdsBuffer0A(void) { memset(rds_buffer0A, 0, sizeof(rds_buffer0A)); };
-/**
- * @ingroup group16 RDS setup
- * @brief Clear RDS buffer 0A (text / Station Name)
- * @details clearRdsBuffer0A
- */
-static inline void si4735_clearRdsStationName(void) { memset(rds_buffer0A, 0, sizeof(rds_buffer0A)); };
-
-/**
- * @ingroup group08
- * @brief Get the Signal Quality Interrupt status
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 63
- * @return RDSINT status
- */
-static inline bool si4735_getSignalQualityInterrupt(void)
-{
-    return currentStatus.resp.RSQINT;
-};
-
-
-/**
- * @ingroup group08
- * @brief Get the Radio Data System (RDS) Interrupt status
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 63
- * @return RDSINT status
- */
-static inline bool si4735_getRadioDataSystemInterrupt(void)
-{
-    return currentStatus.resp.RDSINT;
-};
-
-/**
- * @ingroup group08
- * @brief Get the Tune Complete status
- * @details Seek/Tune Complete Interrupt; 1 = Tune complete has been triggered.
- * @return STCINT status
- */
-static inline bool si4735_getTuneCompleteTriggered(void)
-{
-    return currentStatus.resp.STCINT;
-};
-
-/**
- * @ingroup group08
- * @brief Get the Status Error
- * @details Return the Error flag (true or false) of status of the least Tune or Seek
- * @return Error flag
- */
-static inline bool si4735_getStatusError(void)
-{
-    return currentStatus.resp.ERR;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the Error flag Clear to Send
- *
- * @return CTS
- */
-static inline bool si4735_getStatusCTS(void) { return currentStatus.resp.CTS; };
-
-/**
- * @ingroup group08
- * @brief Returns true if the AFC rails (AFC Rail Indicator).
- *
- * @return true
- */
-static inline bool si4735_getACFIndicator(void)
-{
-    return currentStatus.resp.AFCRL;
-};
-
-/**
- * @ingroup group08
- * @brief Returns true if a seek hit the band limit
- *
- * @details (WRAP = 0 in FM_START_SEEK) or wrapped to the original frequency(WRAP = 1).
- *
- * @return BLTF
- */
-static inline bool si4735_getBandLimit(void)
-{
-    return currentStatus.resp.BLTF;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the channel status
- *
- * @details Returns true if the channel is currently valid as determined by the seek/tune properties (0x1403, 0x1404, 0x1108)
- *
- * @return true
- * @return false
- */
-static inline bool si4735_getStatusValid(void)
-{
-    return currentStatus.resp.VALID;
-};
-
-/**
- * @ingroup group08
- * @brief Returns the value of  Received Signal Strength Indicator (dB?V).
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getReceivedSignalStrengthIndicator(void)
-{
-    return currentStatus.resp.RSSI;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the SNR metric when tune is complete (dB)
- *
- * @details Returns the value  of the SNR metric when tune is complete (dB).
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getStatusSNR(void)
-{
-    return currentStatus.resp.SNR;
-};
-
-/**
- * @ingroup group08
- * @brief Get the Status the M U L T
- *
- * @details Returns the value containing the multipath metric when tune is complete.
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getStatusMULT(void)
-{
-    return currentStatus.resp.MULT;
-};
-
-/**
- * @ingroup group17
- * @brief Get the Antenna Tuning Capacitor value
- * @details Returns the current antenna tuning capacitor value. The tuning capacitance is 95 fF x READANTCAP + 7 pF.
- * @details ON AM or SSB mode, the MULT attribute stores the high byte of READANTCAP and the attribute READANTCAP by itself stores the low byte.
- *
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 74,74, 140 and 141.
- * @return uint8_t capacitance
- */
-static inline uint16_t si4735_getAntennaTuningCapacitor(void)
-{
-    si47x_antenna_capacitor cap;
-
-    if (currentTune == FM_TUNE_FREQ)
-        return currentStatus.resp.READANTCAP;
-    else
-    {
-        cap.raw.ANTCAPL = currentStatus.resp.READANTCAP; // On AM it is the low byte the READANTCAP value
-        cap.raw.ANTCAPH = currentStatus.resp.MULT;       // On AM it is the high byte the READANTCAP value
-        return cap.value;
-    }
-};
-
-
-/**
- * @ingroup group17
- * @brief Sets the Avc Am Max Gain to maximum gain (0x7800)
- */
-static inline void si4735_setAvcAmMaxGain(void)
-{
-    si4735_sendProperty(AM_AUTOMATIC_VOLUME_CONTROL_MAX_GAIN, 0x7800);
-    currentAvcAmMaxGain = 90;
-};
-
-/**
- * @ingroup group17
- * @brief Sets the Avc Am Max Gain to minimal gain (0x1000)
- */
-static inline void si4735_setAvcAmMinGain(void)
-{
-    si4735_sendProperty(AM_AUTOMATIC_VOLUME_CONTROL_MAX_GAIN, 0x1000);
-    currentAvcAmMaxGain = 12;
-};
-
-/**
- * @ingroup group17
- * @brief Sets the Avc Am Max Gain to default gain (0x2A80)
- */
-static inline void si4735_setAvcAmDefaultGain(void)
-{
-    si4735_sendProperty(AM_AUTOMATIC_VOLUME_CONTROL_MAX_GAIN, 0x1543);
-    currentAvcAmMaxGain = DEFAULT_CURRENT_AVC_AM_MAX_GAIN;
-};
-
-/**
- * @ingroup group17
- * @brief Get the current Avc Am Max Gain
- *
- * @return uint8_t Current AVC gain index value
- */
-static inline uint8_t si4735_getCurrentAvcAmMaxGain(void)
-{
-    return currentAvcAmMaxGain;
-};
-
-/**
- * @ingroup group17
- * @brief Sets the Am Soft Mute Max Attenuation
- *
- * @details This function can be useful to disable Soft Mute. The value 0 disable soft mute.
- * @details Specified in units of dB. Default maximum attenuation is 8 dB. It works for AM and SSB.
- *
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 158.
- *
- * @param smattn Maximum attenuation to apply when in soft mute
- */
-static inline void si4735_setAmSoftMuteMaxAttenuation(uint8_t smattn = 0)
-{
-    si4735_sendProperty(AM_SOFT_MUTE_MAX_ATTENUATION, smattn);
-};
-
-/**
- * @ingroup group17
- * @brief Sets the SSB Soft Mute Max Attenuation object
- *
- * @details Sets maximum attenuation during soft mute (dB). Set to 0 to disable soft mute.
- * @details Specified in units of dB. Default maximum attenuation is 8 dB.
- * @details You can use setAmSoftMuteMaxAttenuation instead. Same AM property values.
- * @param smattn Maximum attenuation to apply when in soft mute.
- */
-static inline void si4735_setSsbSoftMuteMaxAttenuation(uint8_t smattn = 0)
-{
-    si4735_sendProperty(SSB_SOFT_MUTE_MAX_ATTENUATION, smattn);
-};
-
-/**
- * @ingroup group17
- * @brief Sets the number of milliseconds the low IF peak detector
- *
- * @details Sets the number of milliseconds the low IF peak detector must not be exceeded before increasing the gain. Default value is 140 (approximately 40 dB / s).
- * @param param number of milliseconds ( from 4 to 248; step 4); default value 0x008C (140).
- */
-static inline void si4735_setSsbIfAgcReleaseRate(uint8_t param = 140)
-{
-    si4735_sendProperty(SSB_IF_AGC_RELEASE_RATE, param);
-};
-
-/**
- * @ingroup group17
- * @brief Sets the IF AGC attack rate
- *
- * @details Large values provide slower attack, and smaller values provide faster attack
- * @param param number of milliseconds ( from 4 to 248; step 4); default value 4.
- */
-static inline void si4735_setSsbIfAgcAttackRate(uint8_t param = 4)
-{
-    si4735_sendProperty(SSB_IF_AGC_ATTACK_RATE, param);
-};
-
-/**
- * @ingroup group08
- * @brief Checks if the AGC is enabled
- *
- * @return true if the AGC is enabled
- */
-static inline bool si4735_isAgcEnabled(void)
-{
-    return !currentAgcStatus.refined.AGCDIS;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the current AGC gain index
- *
- * @return uint8_t The current AGC gain index.
- */
-static inline uint8_t si4735_getAgcGainIndex(void)
-{
-    return currentAgcStatus.refined.AGCIDX;
-};
-
-/**
- * @ingroup group08
- * @brief Get the current receive signal strength (0?127 dB?V)
- *
- * @return uint8_t a value between 0 to 127
- */
-static inline uint8_t si4735_getCurrentRSSI(void)
-{
-    return currentRqsStatus.resp.RSSI;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the current SNR metric (0?127 dB).
- *
- * @return uint8_t SNR value in dB (0-127)
- */
-static inline uint8_t si4735_getCurrentSNR(void)
-{
-    return currentRqsStatus.resp.SNR;
-};
-
-/**
- * @ingroup group08
- * @brief Checks if RSSI detected is LOW.
- *
- * @return true if RSSI is low
- */
-static inline bool si4735_getCurrentRssiDetectLow(void)
-{
-    return currentRqsStatus.resp.RSSIILINT;
-};
-
-/**
- * @ingroup group08
- * @brief Checks if RSSI detected is high
- *
- * @return true if RSSI detected is high
- */
-static inline bool si4735_getCurrentRssiDetectHigh(void)
-{
-    return currentRqsStatus.resp.RSSIHINT;
-};
-
-/**
- * @ingroup group08
- * @brief Checks if SNR detect is low
- *
- * @return true if SNR detected is low
- */
-static inline bool si4735_getCurrentSnrDetectLow(void)
-{
-    return currentRqsStatus.resp.SNRLINT;
-};
-
-/**
- * @ingroup group08
- * @brief Checks if SNR detect is high
- *
- * @return true  if SNR detect is high
- */
-static inline bool si4735_getCurrentSnrDetectHigh(void)
-{
-    return currentRqsStatus.resp.SNRHINT;
-};
-
-/**
- * @ingroup group08
- * @brief Checks if the current channel is valid
- *
- * @return true if the current channel is valid
- */
-static inline bool si4735_getCurrentValidChannel(void)
-{
-    return currentRqsStatus.resp.VALID;
-};
-
-/**
- * @ingroup group08
- * @brief AFC Rail Indicator
- *
- * @return true or false
- */
-static inline bool si4735_getCurrentAfcRailIndicator(void)
-{
-    return currentRqsStatus.resp.AFCRL;
-};
-
-/**
- * @ingroup group08
- * @brief Soft Mute Indicator.
- *
- * @details Indicates soft mute is engaged.
- *
- * @return true  if soft mute indicates is engaged.
- */
-static inline bool si4735_getCurrentSoftMuteIndicator(void)
-{
-    return currentRqsStatus.resp.SMUTE;
-};
-
-// Just FM
-
-/**
- * @ingroup group08
- * @brief Gets the value of the amount of stereo blend in % (100 = full stereo, 0 = full mono).
- *
- * @return uint8_t value (0 to 100)
- */
-static inline uint8_t si4735_getCurrentStereoBlend(void)
-{
-    return currentRqsStatus.resp.STBLEND;
-};
-
-/**
- * @ingroup group08
- * @brief Checks the current pilot
- *
- * @details Indicates stereo pilot presence.
- *
- * @return true if stereo pilot presence has detected
- */
-static inline bool si4735_getCurrentPilot(void)
-{
-    return currentRqsStatus.resp.PILOT;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the current Multipath
- *
- * @details Contains the current multipath metric. (0 = no multipath; 100 = full multipath)
- *
- * @return uint8_t value (0 to 100)
- */
-static inline uint8_t si4735_getCurrentMultipath(void)
-{
-    return currentRqsStatus.resp.MULT;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the Signed frequency offset (kHz).
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getCurrentSignedFrequencyOffset(void)
-{
-    return currentRqsStatus.resp.FREQOFF;
-};
-
-/**
- * @ingroup group08
- * @brief Get Multipath Detect Low
- *
- * @return true
- * @return false
- */
-static inline bool si4735_getCurrentMultipathDetectLow(void)
-{
-    return currentRqsStatus.resp.MULTLINT;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the Current Multipath Detect High
- *
- * @return true
- * @return false
- */
-static inline bool si4735_getCurrentMultipathDetectHigh(void)
-{
-    return currentRqsStatus.resp.MULTHINT;
-};
-
-/**
- * @ingroup group08
- * @brief Gets the Current Blend Detect Interrupt
- *
- * @return true
- * @return false
- */
-static inline bool si4735_getCurrentBlendDetectInterrupt(void)
-{
-    return currentRqsStatus.resp.BLENDINT;
-};
-
-/*
- * FIRMWARE RESPONSE
- *
- * See Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 66
- */
-
-/**
- * @ingroup group06
- * @brief Returns the Firmware Part Number
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwarePN(void)
-{
-    return firmwareInfo.resp.PN;
-};
-
-/**
- * @ingroup group06
- * @brief Returns the Firmware F W M A J O R
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwareFWMAJOR(void)
-{
-    return firmwareInfo.resp.FWMAJOR;
-};
-
-/**
- * @ingroup group06
- * @brief Returns the Firmware F W M I N O R
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwareFWMINOR(void)
-{
-    return firmwareInfo.resp.FWMINOR;
-};
-
-/**
- * @ingroup group06
- * @brief Returns the Firmware P A T C H  HIGH
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwarePATCHH(void)
-{
-    return firmwareInfo.resp.PATCHH;
-};
-
-/**
- * @ingroup group06
- * @brief Returns the Firmware P A T C H  LOW
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwarePATCHL(void)
-{
-    return firmwareInfo.resp.PATCHL;
-};
-
-/**
- * @ingroup group06
- * @brief Get the Firmware C M P M A J O R object
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwareCMPMAJOR(void)
-{
-    return firmwareInfo.resp.CMPMAJOR;
-}; //!<  RESP6 -  Returns the Component Major Revision (ASCII).
-
-/**
- * @ingroup group06
- * @brief Returns the Component Minor Revision (ASCII) (RESP7)
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwareCMPMINOR(void)
-{
-    return firmwareInfo.resp.CMPMINOR;
-};
-
-/**
- * @ingroup group06
- * @brief RESP8 -  Returns the Chip Revision (ASCII)
- *
- * @return uint8_t
- */
-static inline uint8_t si4735_getFirmwareCHIPREV(void)
-{
-    return firmwareInfo.resp.CHIPREV;
-};
-
-/**
- * @ingroup group13 Audio volume
- * @brief Get the Current Volume
- * @details Returns the current volume level.
- * @return uint8_t
- */
-static inline uint8_t si4735_getCurrentVolume(void) { return volume; };
-
-/**
- * @ingroup group13 Audio volume
- * @brief Set the Volume Up
- * @details Same volumeUp()
- * @see volumeUp
- */
-static inline void si4735_setVolumeUp(void) { si4735_volumeUp(); };
-/**
- * @ingroup group13 Audio volume
- * @brief Set the Volume Down
- * @details Same volumeDown()
- * @return voi
- */
-static inline void si4735_setVolumeDown(void) { si4735_volumeDown(); };
-
-/**
- * @ingroup group13 Digital Audio setup
- * @brief Sets the Audio Mode. See table below.
- * @details If you want to change the audio mode, call this function before call setAM(), setFM() or setSSB().
- * @details Sets the Si47XX device to use ANALOG or DIGITAL audio output. The table below shows the valid values.
- * @details This function will only take effect after calling setAM(), setFM() or setSSB().
- *
- *
- * | Macro | Value (Binary) | Description |
- * | ----- | ----- | ----------- |
- * | SI473X_ANALOG_AUDIO | 0b00000101 | Analog Audio Inputs |
- * | SI473X_DIGITAL_AUDIO1 | 0b00001011 | Digital audio output (DCLK, LOUT/DFS, ROUT/DIO) |
- * | SI473X_DIGITAL_AUDIO2  | 0b10110000 | Digital audio outputs (DCLK, DFS, DIO) |
- * | SI473X_DIGITAL_AUDIO3 | 0b10110101 | Analog and digital audio outputs (LOUT/ROUT and DCLK, DFS,DIO) |
- *
- * @see setAM(), setFM(), setSSB().
- * @param audioMode One of the values options above
- */
-static inline void si4735_setAudioMode(uint8_t audioMode)
-{
-    currentAudioMode = audioMode;
-};
-
-/**
- * @ingroup group13 Audio Noise Blank Delay
- * @brief Sets the delay before applying impulse blanking
- * @details Delay in micro-seconds before applying impulse blanking to the original samples. Default value is 172.
- *
- * @param value Delay in micro-seconds
- */
-static inline void si4735_setAmDelayNB(uint16_t value)
-{
-    si4735_sendProperty(AM_NB_DELAY, value);
-}
-
-/**
- * @ingroup group08
- * @brief Sets the FM Receive de-emphasis to 50 or 75 ?s.
- * @details valid parameters are 1 = 50 ?s. Usedin Europe, Australia, Japan; 2 = 75 ?s. Used in USA (default)
- *
- * @param parameter 1 or 2 (default 1 - USA)
- */
-static inline void si4735_setFMDeEmphasis(uint8_t parameter)
-{
-    sendProperty(FM_DEEMPHASIS, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the Fm Soft Mute Max Attenuation
- *
- * @details This function can be useful to disable Soft Mute on FM mode. The value 0 disable soft mute.
- * @details Specified in units of dB. Default maximum attenuation is 8 dB. It works for AM and SSB.
- *
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 97.
- *
- * @param smattn Maximum attenuation to apply when in soft mute
- */
-static inline void si4735_setFmSoftMuteMaxAttenuation(uint8_t smattn = 0)
-{
-    sendProperty(FM_SOFT_MUTE_MAX_ATTENUATION, smattn);
-};
-
-/**
- * @brief Set the Fm Noise Blank Threshold
- * @details Sets the threshold for detecting impulses in dB above the noise floor. The CTS bit (and optional interrupt) is set when it is safe to send the next command.
- * @param parameter (from 0 to 90. default is 10)
- */
-static inline void si4735_setFmNoiseBlankThreshold(uint16_t parameter)
-{
-    sendProperty(FM_NB_DETECT_THRESHOLD, parameter);
-};
-
-/**
- * @brief Set the Fm Noise Blank
- * @details Sets Noise blanking rate in 100 Hz units
- * @details Sets the Interval in micro-seconds that original samples are replaced by sample-hold clean samples.
- * @details Sets the bandwidth of the noise floor estimator.
- *
- * @details ATTENTION: It works on SI474X. It may not work on SI473X devices.
- *
- * @param nb_rate Noise blanking rate in 100 Hz units. Default value is 64.
- * @param nb_interval Interval in micro-seconds that original samples are replaced by interpolated clean samples. Default value is 55 ?s.
- * @param nb_irr_filter Sets the bandwidth of the noise floor estimator. Default value is 300.
- */
-static inline void si4735_setFmNoiseBlank(uint16_t nb_rate = 64, uint16_t nb_interval = 55, uint16_t nb_irr_filter = 300)
-{
-    sendProperty(FM_NB_RATE, nb_rate);
-    sendProperty(FM_NB_INTERVAL, nb_interval);
-    sendProperty(FM_NB_IIR_FILTER, nb_irr_filter);
-}
-
-/**
- * @brief Set the Fm Noise Blank Interval
- * @details Interval in micro-seconds that original samples are replaced by interpolated clean samples.
- * @param parameter ( from 8 to 48. default value is 24)
- */
-static inline void si4735_setFmNoiseBlankInterval(uint16_t parameter)
-{
-    sendProperty(FM_NB_INTERVAL, parameter);
-};
-
-/**
- * @brief Set the Fm Noise Blank Rate
- * @details Noise blanking rate in 100 Hz units.
- *
- * @param parameter ( from 1 to 64. default value is 64)
- */
-static inline void si4735_setFmNoiseBlankRate(uint16_t parameter)
-{
-    sendProperty(FM_NB_RATE, parameter);
-};
-
-/**
- * @brief Set the Fm Noise Blank Delay
- * @details Delay in micro-seconds before applying impulse blanking to the original samples.
- * @param parameter ( from 125 to 219. default value is 170)
- */
-static inline void si4735_setFmNoiseBlankDelay(uint16_t parameter)
-{
-    sendProperty(FM_NB_DELAY, parameter);
-};
-
-/**
- * @brief Set the FmNoiseBlank IIR Filter
- * @details Sets the bandwidth of the noise floor estimator.
- * @param parameter (from 300 to 1600. default value is 300)
- */
-static inline void si4735_setFmNoiseBlank_IIR_Filter(uint16_t parameter)
-{
-    sendProperty(FM_NB_IIR_FILTER, parameter);
-}
-
-/**
- * @ingroup group08
- * @brief Sets the AM Receive de-emphasis to 50 or disable.
- * @details valid parameters are 1 = 50 ?s. Usedin urope, Australia, Japan; 2 = 75 ?s. Used in USA (default)
- *
- * @param parameter 1 = enable or 0 = disable
- */
-static inline void si4735_setAMDeEmphasis(uint8_t parameter)
-{
-    sendProperty(AM_DEEMPHASIS, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the AM attenuation slope during soft mute
- * @details Configures attenuation slope during soft mute in dB attenuation per dB SNR below the soft mute SNR threshold.
- * @details Soft mute attenuation is the minimum of SMSLOPEx(SMTHR?SNR) and SMATTN.
- * @details The default slope is 1 dB/dB for AMRX component 5.0 or later and 2 dB/dB for AMRX component 3.0 or earlier.
- *
- * @see setAmSoftMuteMaxAttenuation
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0);
- * @param parameter  the valid values are 1?5 (default 1).
- */
-static inline void si4735_setAMSoftMuteSlop(uint8_t parameter)
-{
-    sendProperty(AM_SOFT_MUTE_SLOPE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the attack and decay rates when entering or leaving soft mute.
- * @details The value specified is multiplied by 4.35 dB/s to come up with the actual attack rate
- * @details The default rate is 278 dB/s.
- * @see setAmSoftMuteMaxAttenuation
- * @see Si47XX PRORAMMING GUIDE; AN332 (REV 1.0);
- * @param parameter  The valid values are 1-255  ( Default is ~64 - [64 x 4.35 = 278] )
- */
-static inline void si4735_setAMSoftMuteRate(uint8_t parameter)
-{
-    sendProperty(AM_SOFT_MUTE_RATE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the SNR threshold to engage soft mute
- * @details Whenever the SNR for a tuned frequency drops below this threshold the AM reception will go in soft mute,
- * @details provided soft mute max attenuation property is non-zero. The default value is 8dB
- * @see setAmSoftMuteMxAttenuation
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.0);
- * @param parameter  0-63 (default is 8)
- */
-static inline void si4735_setAMSoftMuteSnrThreshold(uint8_t parameter)
-{
-    sendProperty(AM_SOFT_MUTE_SNR_THRESHOLD, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the soft mute release rate.
- * @details Smaller values provide slower release and larger values provide faster release. The default is 8192 (approximately 8000 dB/s).
- * @see setAmSoftMuteMxAttenuation
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.0);
- * @param parameter  1?32767
- */
-static inline void si4735_setAMSoftMuteReleaseRate(uint8_t parameter)
-{
-    sendProperty(AM_SOFT_MUTE_RELEASE_RATE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the soft mute attack rate.
- * @details Smaller values provide slower attack and larger values provide faster attack.
- * @see setAmSoftMuteMxAttenuation
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.0);
- * @param parameter  1?32767 (The default is 8192 (approximately 8000 dB/s)
- */
-static inline void si4735_setAMSoftMuteAttackRate(uint16_t parameter)
-{
-    sendProperty(AM_SOFT_MUTE_ATTACK_RATE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the AGC attack rate.
- * @details Large values provide slower attack, and smaller values provide faster attack..
- * @see setAmAgcAttackRate
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.2); page 167
- * @param parameter Range: 4?248 (The default is 0x04)
- */
-static inline void si4735_setAmAgcAttackRate(uint16_t parameter)
-{
-    sendProperty(AM_AGC_ATTACK_RATE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Sets the AGC release rate.
- * @details  Larger values provide slower release, and smaller values provide faster release.
- * @see setAmAgcReleaseRate
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.2); page 168
- * @param parameter Range: 4?248 (The default is 0x8C)
- */
-static inline void si4735_setAmAgcReleaseRate(uint16_t parameter)
-{
-    sendProperty(AM_AGC_RELEASE_RATE, parameter);
-};
-
-/**
- * @ingroup group17
- * @brief Sets the AGC attack rate on SSB mode.
- * @details Large values provide slower attack, and smaller values provide faster attack..
- * @see setSsbAgcAttackRate
- * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE; page 29
- * @param parameter Range: 4?248 (The default is 0x04)
- */
-static inline void si4735_setSsbAgcAttackRate(uint16_t parameter)
-{
-    sendProperty(SSB_RF_AGC_ATTACK_RATE, parameter);
-};
-
-/**
- * @ingroup group17
- * @brief Sets the AGC Release rate on SSB mode.
- * @details Larger values provide slower release, and smaller values provide faster release.
- * @see setSsbAgcAttackRate
- * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE; page 29
- * @param parameter Range: 4?248 (The default is 0x18)
- */
-static inline void si4735_setSsbAgcReleaseRate(uint16_t parameter)
-{
-    sendProperty(SSB_RF_AGC_RELEASE_RATE, parameter);
-};
-
-/**
- * @ingroup group08
- * @brief Adjusts the AM AGC for external front-end attenuator and external front-end cascode LNA.
- * @details This property contains two fields: MIN_GAIN_INDEX and ATTN_BACKUP.
- * @details MIN_GAIN_INDEX impacts sensitivity and U/D performance. Lower values improve sensitivity, but degrade
- * @details far away blocker U/D performance.
- * @details Higher values degrade sensitivity, but improve U/D. With MIN_GAIN_INDEX=19 and Si4743 EVB reference
- * @details design, the Si474x provides sensitivity of 28dBuV typical and U/D exceeding 55dB on far away blockers.
- * @details With MIN_GAIN_INDEX=24, the Si474x provides sensitivity of 34dBuV typical and U/D approaching 70dB on
- * @details far away blockers.
- * @see Si47XX PROAMMING GUIDE; AN332 (REV 1.0); page 168
- * @param MIN_GAIN_INDEX Values below 19 have minimal sensitivity improvement; Higher values degrade sensitivity, but improve U/D.
- * @param ATTN_BACKUP ???
- */
-static inline void si4735_setAMFrontEndAgcControl(uint8_t MIN_GAIN_INDEX, uint8_t ATTN_BACKUP)
-{
-    si47x_frontend_agc_control param;
-
-    param.field.MIN_GAIN_INDEX = MIN_GAIN_INDEX;
-    param.field.ATTN_BACKUP = ATTN_BACKUP;
-
-    sendProperty(AM_FRONTEND_AGC_CONTROL, param.word);
-};
-
-/**
- * @brief Set the Am Noise Blank
- *
- * @details Sets Noise blanking rate in 100 Hz units
- * @details Sets the Interval in micro-seconds that original samples are replaced by sample-hold clean samples.
- * @details Sets the bandwidth of the noise floor estimator.
- *
- * @details ATTENTION: It works on SI474X. It may not work on SI473X devices.
- *
- * @param nb_rate Noise blanking rate in 100 Hz units. Default value is 64.
- * @param nb_interval Interval in micro-seconds that original samples are replaced by interpolated clean samples. Default value is 55 ?s.
- * @param nb_irr_filter Sets the bandwidth of the noise floor estimator. Default value is 300.
- *
- */
-static inline void si4735_setAmNoiseBlank(uint16_t nb_rate = 64, uint16_t nb_interval = 55, uint16_t nb_irr_filter = 300)
-{
-    sendProperty(AM_NB_RATE, nb_rate);
-    sendProperty(AM_NB_INTERVAL, nb_interval);
-    sendProperty(AM_NB_IIR_FILTER, nb_irr_filter);
-}
-
-/* @ingroup group08 Check FM mode status
- * @brief Returns true if the current function is FM (FM_TUNE_FREQ).
- *
- * @return true if the current function is FM (FM_TUNE_FREQ).
- */
-static inline bool si4735_isCurrentTuneFM(void )
-{
-    return (currentTune == FM_TUNE_FREQ);
-}
-
-/**
- * @ingroup group08 Check AM mode status
- *
- * @brief Returns true if the current function is AM (AM_TUNE_FREQ).
- *
- * @return true if the current function is AM (AM_TUNE_FREQ).
- */
-static inline bool si4735_isCurrentTuneAM(void)
-{
-    return (currentTune == AM_TUNE_FREQ);
-}
-
-/**
- * @ingroup group08 Check SSB mode status
- *
- * @brief Returns true if the current function is SSB (SSB_TUNE_FREQ).
- *
- * @return true if the current function is SSB (SSB_TUNE_FREQ).
- */
-static inline bool si4735_isCurrentTuneSSB(void)
-{
-    return (currentTune == SSB_TUNE_FREQ);
-}
-
-/**
- * @brief Sets the Bandwith on FM mode
- * @details Selects bandwidth of channel filter applied at the demodulation stage. Default is automatic which means the device automatically selects proper channel filter. <BR>
- * @details | Filter  | Description |
- * @details | ------- | -------------|
- * @details |    0    | Automatically select proper channel filter (Default) |
- * @details |    1    | Force wide (110 kHz) channel filter |
- * @details |    2    | Force narrow (84 kHz) channel filter |
- * @details |    3    | Force narrower (60 kHz) channel filter |
- * @details |    4    | Force narrowest (40 kHz) channel filter |
- *
- * @param filter_value
- */
-static inline void si4735_setFmBandwidth(uint8_t filter_value = 0)
-{
-    sendProperty(FM_CHANNEL_FILTER, filter_value);
-}
-
-/**
- * @ingroup group08 Tune Frequency
- * @brief Returns the FAST tuning status
- *
- * @retrn uint8_t
- */
-static inline uint8_t si4735_getTuneFrequecyFast(void)
-{
-    return currentFrequencyParams.arg.FAST;
-};
-
-/**
- * @ingroup group08 Tune Frequency
- * @brief Sets the FAST Tuning.
- * @details If set, excutes fast and invalidated tune. Theune status will not be accurate
- *
- * @param FAST
- */
-static inline void si4735_setTuneFrequencyFast(uint8_t FAST)
-{
-    currentFrequencyParams.arg.FAST = FAST;
-};
-
-/**
- * @ingroup group08 Tune Frequency
- * @brief Returns the FREEZE status
- *
- * @return unt8_t
- */
-static inline uint8_t si4735_getTuneFrequecyFreeze(void)
-{
-    return currentFrequencyParams.arg.FREEZE;
-};
-
-/**
- * @ingroup group08 Tune Frequency
- * @brief Sets Freeze Metrics During Alternate Frequency Jum.
- * @details Only on FM mode
- *
- * @param FREEZE
- */
-static inline void si4735_setTuneFrequencyFreze(uint8_t FREEZE)
-{
-    currentFrequencyParams.arg.FREEZE = FREEZE;
-};
-
-/**
- * @ingroup group08 Tune Frequency
- * @brief Set the FrequencyUp
- * @details Same frequencyUp
- * @see frequencyUp
- */
-static inline void si4735_setFrequencyUp(void) { si4735_frequencyUp(); };
-
-/**
- * @ingroup   group08 Tune Frequency
- * @brief Set the Frequency Down
- * @details same frequencyDown
- * @see frequencyDown
- */
-static inline void si4735_setFrequencyDown(void) { si4735_frequencyDown(); };
-
-
-/**
- * @ingroup group08 Seek
- * @brief Sets the maximum time in milliseconds for seeking. The default value is 8000ms (8s).
- * @details Depending on the bandwidth, your reception conditions or step configuration, the seek process can take a long time.
- * @details This function sets a time limit for seeking process and back the control to the system if the time runs out.
- *
- * @addindex Seek
- *
- * @param time_in_ms time in milliseconds.
- */
-static inline void si4735_setMaxSeekTime(long time_in_ms)
-{
-    maxSeekTime = time_in_ms;
-};
-
-/**
- * @ingroup group08 Seek
- *
- * @brief Search for the next station
- * @details Seek a station up. Stop when a station is found or the frequency has reached the upper limit
- * @see seekStation, seekStationProgress, setSeekAmLimits setSeekFmLimits
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 124, 137, 139, 278
- */
-static inline void si4735_seekStationUp(void)
-{
-    si4735_seekStationProgress(NULL, SEEK_UP);
-};
-
-/**
- * @ingroup group08 Seek
- *
- * @brief Search the previous station
- * @details Seek a station Down. Stop when a station is found or the frequency has reached the lower limit
- * @see seekStation, seekStationProgress, setSeekAmLimits, setSeekFmLimits
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 124, 137, 139, 278
- */
-static inline void si4735_seekStationDown(void)
-{
-    si4735_seekStationProgress(NULL, SEEK_DOWN);
-};
-
-/**
- * @ingroup group08 Seek
- * @brief Set the Seek Am Srn Threshold object
- * @deprecated Use setSeekAmSNRThreshold instead.
- * @see setSeekAmSNRThreshold
- * @param value
- */
-static void inline si4735_setSeekAmSrnThreshold(uint16_t value) { si4735_sendProperty(AM_SEEK_SNR_THRESHOLD, value); }; // Wrong name! Will be removed later
-
-/**
- * @ingroup group08 Seek
- *
- * @brief Sets the SNR threshold for a valid AM Seek/Tune.
- *
- * @details If the value is zero then SNR threshold is not considered when doing a seek. Default value is 5 dB.
- * @see Si47XX PROGRAMMING GUIDE;  (REV 1.0); page 127
- */
-static void inline si4735_setSeekAmSNRThreshold(uint16_t value) { si4735_sendProperty(AM_SEEK_SNR_THRESHOLD, value); }; // Fixing the function name
-
-/**
- * @ingroup group08 Seek
- * @brief Set the Seek Fm Srn Threshold object
- * @deprecated Use setSeekFmSNRThreshold instead.
- * @see setSeekFmSNRThreshold
- * @param value
- */
-static void inline si4735_setSeekFmSrnThreshold(uint16_t value) { si4735_sendProperty(FM_SEEK_TUNE_SNR_THRESHOLD, value); }; // Wrong name. Will be removed later
-
-/**
- * @ingroup group08 Seek
- *
- * @brief Sets the SNR threshold for a valid FM Seek/Tune.
- *
- * @details SNR Threshold which determines if a valid channel has been found during Seek/Tune. Specified in units of dB in 1 dB steps (0?127). Default is 3 dB
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 102
- *
- * @param value between 0 and 127.
- */
-static void inline si4735_setSeekFmSNRThreshold(uint16_t value) { si4735_sendProperty(FM_SEEK_TUNE_SNR_THRESHOLD, value); }; // Fixing the function name
-
-/**
- * @ingroup group16 RDS setup 
- * @brief  Starts the control member variables for RDS. It is an alias to RdsInit  (a better name to RdsInit)
- * @details This method is called by setRdsConfig()
- * @see setRdsConfig()
- */
-static void inline si4735_clearRdsBuffer(void) { si4735_RdsInit();};
-
-/**
- * @ingroup group16 RDS status
- *
- * @brief Retrieves the current RDS data to be utilized by other RDS functions.
- * @details Just another way to call getRdsStatus. Both do the same thing.
- * @details This function must be called before calling any RDS function.
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 55 and 77
- * @see getRdsStatus
- */
-static inline void si4735_rdsBeginQuery(void) { si4735_getRdsStatus(0, 0, 0); };
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds Received FIFO
- * @details if FIFO is 1, it means the minimum number of groups was filled
- * @return true if minimum number of groups was filled.
- */
-static inline bool si4735_getRdsReceived(void)
-{
-    return currentRdsStatus.resp.RDSRECV;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds Sync Lost object
- * @details returns true (1) if Lost RDS synchronization is detected.
- * @return true if Lost RDS synchronization detected.
- */
-static inline bool si4735_getRdsSyncLost(void)
-{
-    return currentRdsStatus.resp.RDSSYNCLOST;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds Sync Found
- * @details return true if found RDS synchronization
- * @return true if found RDS synchronization
- */
-static inline bool si4735_getRdsSyncFound(void)
-{
-    return currentRdsStatus.resp.RDSSYNCFOUND;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds New Block A
- *
- * @details Returns true if valid Block A data has been received.
- * @return true or false
- */
-static inline bool si4735_getRdsNewBlockA(void)
-{
-    return currentRdsStatus.resp.RDSNEWBLOCKA;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds New Block B
- * @details Returns true if valid Block B data has been received.
- * @return true or false
- */
-static inline bool si4735_getRdsNewBlockB(void)
-{
-    return currentRdsStatus.resp.RDSNEWBLOCKB;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Rds Sync
- * @details Returns true if RDS currently synchronized.
- * @return true or false
- */
-static inline bool si4735_getRdsSync(void)
-{
-    return currentRdsStatus.resp.RDSSYNC;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Group Lost
- * @details Returns true if one or more RDS groups discarded due to FIFO overrun.
- * @return true or false
- */
-static inline bool si4735_getGroupLost(void)
-{
-    return currentRdsStatus.resp.GRPLOST;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Get the Num Rds Fifo Used
- * @details Return the number of RDS FIFO used
- * @return uint8_t Total RDS FIFO used
- */
-static inline uint8_t si4735_getNumRdsFifoUsed(void)
-{
-    return currentRdsStatus.resp.RDSFIFOUSED;
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Sets the minimum number of RDS groups stored in the RDS FIFO before RDSRECV is set.
- * @details Return the number of RDS FIFO used
- * @param value from 0 to 25. Default value is 0.
- */
-static inline void si4735_setFifoCount(uint16_t value)
-{
-    si4735_sendProperty(FM_RDS_INT_FIFO_COUNT, value);
-};
-
-/**
- * @ingroup group16 RDS
- * @brief Check if 0xD or 0xA special characters were received for group A
- * @see resetEndIndicatorGroupA
- * @return true or false
- */
-static inline bool si4735_getEndIndicatorGroupA(void)
-{
-    return rdsEndGroupA;
-}
-
-/**
- * @ingroup group16 RDS
- * @brief Resets 0xD or 0xA special characters condition (makes it false)
- * @see getEndIndicatorGroupA
- */
-static inline void si4735_resetEndIndicatorGroupA(void)
-{
-    rdsEndGroupA = false;
-}
-
-/**
- * @ingroup group16 RDS
- * @brief Check if 0xD or 0xA special characters were received for group B
- * @see resetEndIndicatorGroupB
- * @return true or false
- */
-static inline bool si4735_getEndIndicatorGroupB(void)
-{
-    return rdsEndGroupB;
-}
-
-/**
- * @ingroup group16 RDS
- * @brief Resets 0xD or 0xA special characters condition (makes it false)
- * @see getEndIndicatorGroupB
- */
-static inline void si4735_resetEndIndicatorGroupB(void)
-{
-    rdsEndGroupB = false;
-}
-
-/**
- * @ingroup group16 RDS status
- *
- * @brief Gets RDS Status.
- *
- * @details Same result of calling getRdsStatus(0,0,0).
- * @details Please, call getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY) instead getRdsStatus()
- * if you want other behaviour.
- *
- * @see SI4735::getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY)
- */
-static inline void si4735_getRdsStatus(void)
-{
-    si4735_getRdsStatus(0, 0, 0);
-}
-
-/**
- * @ingroup group16 RDS status
- * @brief Empty FIFO
- * @details  Clear RDS Receive FIFO.
- * @see getRdsStatus
- */
-static inline void si4735_rdsClearFifo(void)
-{
-    si4735_getRdsStatus(0, 1, 0);
-}
-
-/**
- * @ingroup group16 RDS status
- * @brief Clears RDSINT.
- * @details  INTACK Interrupt Acknowledge; 0 = RDSINT status preserved. 1 = Clears RDSINT.
- * @see getRdsStatus
- */
-static inline void si4735_rdsClearInterrupt(void)
-{
-    si4735_getRdsStatus(1, 0, 0);
-}
-
-/**
- * @ingroup group16
- * @brief Gets the Station Name
- * @details Alias for getRdsText0A
- * @details ATTENTION: You must call getRdsReady before calling this function.
- * @return char* should return a string with the station name. However, some stations send other kind of messages
- * @see getRdsText0A
- */
-static inline char* si4735_getRdsStationName(void) { return si4735_getRdsText0A(); };
-
-/**
- * @ingroup group16
- * @brief Gets the Program Information (RT - Radio Text)
- * @details Process the program information data. Same getRdsText2A(). It is a alias for getRdsText2A.
- * @details ATTENTION: You must call getRdsReady before calling this function.
- * @return char array with the program information (63 bytes)
- * @see getRdsText2A
- */
-static inline char* si4735_getRdsProgramInformation(void) { return si4735_getRdsText2A(); };
-
-/**
- * @ingroup group16
- * @brief Gets the Station Information.
- * @details ATTENTION: You must call getRdsReady before calling this function.
- * @return char array with the Text of Station Information (33 bytes)
- * @see getRdsReady
- */
-static inline char* si4735_getRdsStationInformation(void) { return si4735_getRdsText2B(); };
-
-/**
- * @ingroup group17 Patch and SSB support
- * @deprecated Use setSSBSidebandCutoffFilter instead.
- * @see setSSBSidebandCutoffFilter
- * @param SBCUTFLT
- */
-static void inline si4735_setSBBSidebandCutoffFilter(uint8_t SBCUTFLT) { si4735_setSSBSidebandCutoffFilter(SBCUTFLT); }; // Wrong name! will be removed later.
-
-/**
- * @ingroup group06 Si47XX device Power Up
- * @brief Set the Max Delay Power Up
- * @details Sets the delay needed in ms after a powerup command (default is 10ms).
- * @details Some crystal oscillator might need more time to become stable (500 ms is the recommended).
- * @details Low values make the load SSB patch faster. However, it can make the system unstable.
- *
- * @see MAX_DELAY_AFTER_POWERUP
- * @param ms delay in ms
- */
-static inline void si4735_setMaxDelayPowerUp(uint16_t ms)
-{
-    maxDelayAfterPouwerUp = ms;
-}
-
-/**
- * @ingroup   group08 Tune Frequency
- * @brief Set the Max Delay after Set Frequency
- *
- * @details After the set frequency command, the system need a time to get ready to the next set frequency (default value 30ms).
- * @details Why the waitToSend() does not work in this case? No idea for while!
- * @details A low value makes the getFrequency command inaccurate.
- *
- * @see  MAX_DELAY_AFTER_POWERUP
- * @param ms
- */
-static inline void si4735_setMaxDelaySetFrequency(uint16_t ms)
-{
-    maxDelaySetFrequency = ms;
-}
-
-/**
- * @ingroup group08 Tune Frequency step
- *
- * @brief Sets the current step value.
- *
- * @details This function does not check the limits of the current band. Do not take a step that will extend past the limit of the band.
- * @details Example:
- * @code
- * setFM(6400,10800,10390,10);
- * setFrequencyStep(100); // the step will be 1MHz (you are using FM mode)
- * .
- * .
- * .
- * setAM(7000,7600,7100,5);
- * setFrequencyStep(1); // the step will be 1kHz (you are usin AM or SSB mode)
- * @endcode
- *
- * @see setFM()
- * @see setAM()
- * @see setSSB()
- *
- * @param step if you are using FM, 10 means 100kHz. If you are using AM 10 means 10kHz
- *             For AM, 1 (1kHz) to 1000 (1MHz) are valid values.
- *             For FM 5 (50kHz), 10 (100kHz) and 100 (1MHz) are valid values.
- */
-static inline void si4735_setFrequencyStep(uint16_t step)
-{
-    currentStep = step;
-}
-
-/**
- * @ingroup group08 Frequency
- *
- * @brief Gets the current frequency saved in memory.
- *
- * @details Unlike getFrequency, this method gets the current frequency recorded after the last setFrequency command.
- * @details This method avoids bus traffic and CI processing.
- * @details However, you can not get others status information like RSSI.
- *
- * @see getFrequency()
- */
-static inline uint16_t si4735_getCurrentFrequency()
-{
-    return currentWorkFrequency;
-}
-
 /**
- * @ingroup group08 Si47XX device Status
- *
- * @brief Gets the current status  of the Si47XX (AM, FM or SSB)
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 73 (FM) and 139 (AM)
- */
-static inline void si4735_getStatus(void)
-{
-    si4735_getStatus(0, 1);
-}
-
-/*******************************************************************************
- * The functions below modify the clock frequency for I2C communication.
- * 100kHz  is usually the baseline.
- * Use one of these funcition if you have a problem on the default configuration.
- *******************************************************************************/
-
-/**
- * @ingroup group18 MCU I2C Speed
- * @brief Sets I2C bus to 10kHz
- */
-static inline void si4735_setI2CLowSpeedMode(void)
-{
-    Wire.setClock(10000);
-};
-
-/**
- * @ingroup group18 MCU I2C Speed
- *
- * @brief Sets I2C bus to 100kHz
- */
-static inline void si4735_setI2CStandardMode(void) { Wire.setClock(100000); };
-
-/**
- * @ingroup group18 MCU I2C Speed
- *
- * @brief Sets I2C bus to 400kHz
- */
-static inline void si4735_setI2CFastMode(void)
-{
-    Wire.setClock(400000);
-};
-
-/**
- * @ingroup group18 MCU I2C Speed
- *
- * @brief Sets the I2C bus to a given value.
- * ATTENTION: use this function with caution
- *
- * @param value in Hz. For example: The values 500000 sets the bus to 500kHz.
- */
-static inline void si4735_setI2CFastModeCustom(long value = 500000) { Wire.setClock(value); };
-
-/**
- * @ingroup group18 MCU External Audio Mute
- *
- * @brief Sets the Audio Mute Mcu Pin
- * @details This function sets the mcu digital pin you want to use to control the external audio mute circuit.
- * @details Some users may be uncomfortable with the loud popping of the speaker during some transitions caused by some SI47XX commands.
- * @details This problem occurs during the transition from the power down to power up.
- * @details For example, when the user changes bands (FM to AM or AM to FM), the Si47XX devices must be powered down and powered up again.
- * @details If you have a mute circuit attached to a pin on teh MCU, then you can control the mute circuit from the MCU with this function.
- *
- * @see setHardwareAudioMute
- * @param pin if 0 or greater, sets the MCU digital pin that controls the external circuit.
- */
-static inline void si4735_setAudioMuteMcuPin(int8_t pin)
-{
-    audioMuteMcuPin = pin;
-    pinMode(audioMuteMcuPin, OUTPUT);
-};
-
-/**
- * @ingroup group18 MCU External Audio Mute
- *
- * @brief Sets the Hardware Audio Mute
- * @details Turns the Hardware audio mute on or off
- *
- * @see setAudioMuteMcuPin
- *
- * @param on  True or false
- */
-static inline void si4735_setHardwareAudioMute(bool on)
-{
-    digitalWrite(audioMuteMcuPin, on);
-    delayMicroseconds(300);
-}
-
-static inline void si4735_setAGC(uint8_t AGCDIS, uint8_t AGCIDX) { si4735_setAutomaticGainControl(AGCDIS, AGCIDX); };
-
-
+ * @mainpage SI47XX Arduino Library implementation
+ * 
+ * This is a library for the SI473X and SI474X, BROADCAST AM/FM/SW RADIO RECEIVER, IC from Silicon Labs for the
+ * Arduino development environment.  It works with I2C protocol and provides an easy-to-use interface for controlling the SI47XX IC family.<br>
+ *
+ * This library was built based on [Si47XX PROGRAMMING GUIDE-AN332 (REV 1.0)](https://www.silabs.com/documents/public/application-notes/AN332.pdf) document from Silicon Labs.
+ *
+ * It also can be used on **all members of the SI473X and SI474X family**, though the features you can use depend on which IC version you have.
+ * The functionality of each IC is outlined in the comparison matrix in table 1 (Product Family Function); pages 2 and 3 of the programming guide.
+ * If you need to build a prototype based on SI47XX device, see <https://pu2clr.github.io/SI4735/><br>
+ *
+ * This library has more than 30 examples, and it can be freely distributed using the MIT Free Software model. [Copyright (c) 2019 Ricardo Lima Caratti](https://pu2clr.github.io/SI4735/#mit-license).
+ * Contact: pu2clr@gmail.com
+ *
+ * @details This library uses the I²C communication protocol and implements most of the functions offered by Si47XX (BROADCAST AM / FM / SW / LW RADIO RECEIVER) IC family from Silicon Labs.
+ * @details The main features of this library are listed below.
+ * @details 1. Open Source. It is free. You can use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software. See [MIT License](https://pu2clr.github.io/SI4735/#mit-license) to learn more.
+ * @details 2. Built Based on [Si47XX PROGRAMMING GUIDE](https://www.silabs.com/documents/public/application-notes/AN332.pdf).
+ * @details 3. C++ Language and Object-oriented programming. You can easily extend the SI4735 class if you need new functionality.
+ * @details 4. Available on Arduino IDE (Manage Libraries).
+ * @details 5. Cross-platform. You can compile and run this library on most of boards which Arduino IDE supports (Examples: ATtiny85, boards based on ATmega328 and ATmega-32u4, ATmega2560, 32 ARM Cortex, Arduino DUE, ESP32 and more). See [Boards where this library has been successfully tested](https://pu2clr.github.io/SI4735/#boards-where-this-library-has-been-successfully-tested).
+ * @details 6. Simplifies projects based on SS4735-D60, SI4732-A10, SI4730-D60, and other SI473X devices;
+ * @details 7. I²C communication and Automatic I²C bus address detection.
+ * @details 8. More than 120 functions implemented. You can customize almost every feature available on Si47XX family.
+ * @details 9. RDS support.
+ * @details 10. SSB (Single Side Band) patch support (SI4735-D60 and SI4732-A10).
+ * @details 11. Digital Audio (__Attention__: Crystal and digital audio mode cannot be used at the same time).
+ * @details 12. More than 30 example available.  See <https://github.com/pu2clr/SI4735/tree/master/examples><br>
+ *
+ *  Some texts were extracted directly from the Silicon Labs documentation. The name of the Silicon Labs document and pages are described in the source code comments.
+ *
+ * @see [General Documentation](https://pu2clr.github.io/SI4735/)
+ * @see [Schematics](https://pu2clr.github.io/SI4735/extras/schematic/)
+ * @see Si47XX PROGRAMMING GUIDE AN332 (REV 1.0): https://www.silabs.com/documents/public/application-notes/AN332.pdf
+ * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE; AMENDMENT FOR SI4735-D60 SSB AND NBFM PATCHES
+ *
+ * @author PU2CLR - Ricardo Lima Caratti
+ * @date  2019-2022
+ * @copyright MIT Free Software model. See [Copyright (c) 2019 Ricardo Lima Caratti](https://pu2clr.github.io/SI4735/#mit-license).
+ */
+
+#include "SI4735.h"
 
 /**
  * @brief Construct a new SI4735::SI4735
  *
  * @details This class has a set of functions that can help you to build your receiver based on Si47XX IC family.
- * @details This library uses the I�C communication protocol and implements most of the functions offered by Si47XX (BROADCAST AM / FM / SW / LW RADIO RECEIVER) IC family from Silicon Labs.
+ * @details This library uses the I²C communication protocol and implements most of the functions offered by Si47XX (BROADCAST AM / FM / SW / LW RADIO RECEIVER) IC family from Silicon Labs.
  * @details Currently you have more than 120 functions implemented to control the Si47XX devices. These functions are listed and documented here.
  * @details Some methods were implemented using inline resource. Inline methods are implemented in SI4735.h
  *
@@ -1671,7 +57,7 @@ static inline void si4735_setAGC(uint8_t AGCDIS, uint8_t AGCIDX) { si4735_setAut
  * The first byte is a command, and the next seven bytes are arguments. Writing more than 8 bytes results
  * in unpredictable device behavior". If you extend this library, remember the 8 byte restriction.
  */
-void si4735_init(void)
+SI4735::SI4735()
 {
     // 1 = LSB and 2 = USB; 0 = AM, FM or WB
     currentSsbStatus = 0;
@@ -1694,7 +80,7 @@ void si4735_init(void)
  *
  * @return si47x_status the bit data structure with the status response
  */
-si47x_status si4735_getInterruptStatus(void)
+si47x_status SI4735::getInterruptStatus()
 {
     si47x_status status;
 
@@ -1730,7 +116,7 @@ si47x_status si4735_getInterruptStatus(void)
  * @param GPO2OEN
  * @param GPO3OEN
  */
-void si4735_setGpioCtl(uint8_t GPO1OEN, uint8_t GPO2OEN, uint8_t GPO3OEN)
+void SI4735::setGpioCtl(uint8_t GPO1OEN, uint8_t GPO2OEN, uint8_t GPO3OEN)
 {
     si473x_gpio gpio;
 
@@ -1769,7 +155,7 @@ void si4735_setGpioCtl(uint8_t GPO1OEN, uint8_t GPO2OEN, uint8_t GPO3OEN)
  * @param GPO2LEVEL
  * @param GPO3LEVEL
  */
-void si4735_setGpio(uint8_t GPO1LEVEL, uint8_t GPO2LEVEL, uint8_t GPO3LEVEL)
+void SI4735::setGpio(uint8_t GPO1LEVEL, uint8_t GPO2LEVEL, uint8_t GPO3LEVEL)
 {
     si473x_gpio gpio;
 
@@ -1806,7 +192,7 @@ void si4735_setGpio(uint8_t GPO1LEVEL, uint8_t GPO2LEVEL, uint8_t GPO3LEVEL)
  * @param STCREP STC Interrupt Repeat (0 or 1).
  * @param RSQREP RSQ Interrupt Repeat(0 or 1).
  */
-void si4735_setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t CTSIEN, uint8_t STCREP, uint8_t RSQREP)
+void SI4735::setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t CTSIEN, uint8_t STCREP, uint8_t RSQREP)
 {
     si473x_gpio_ien gpio;
 
@@ -1818,7 +204,7 @@ void si4735_setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t C
     gpio.arg.STCREP = STCREP;
     gpio.arg.RSQREP = RSQREP;
 
-    si4735_sendProperty(GPO_IEN, gpio.raw);
+    sendProperty(GPO_IEN, gpio.raw);
 }
 
 /**
@@ -1836,13 +222,13 @@ void si4735_setGpioIen(uint8_t STCIEN, uint8_t RSQIEN, uint8_t ERRIEN, uint8_t C
  *
  * @return int16_t 0x11   if the SEN pin of the Si47XX is low or 0x63 if the SEN pin of the Si47XX is HIGH or 0x0 if error.
  */
-int16_t si4735_getDeviceI2CAddress(uint8_t resetPin)
+int16_t SI4735::getDeviceI2CAddress(uint8_t resetPin)
 {
     int16_t error;
 
-    resetPin = resetPin;
+    this->resetPin = resetPin;
 
-    si4735_reset();
+    reset();
 
     Wire.begin();
     // check 0X11 I2C address
@@ -1850,7 +236,7 @@ int16_t si4735_getDeviceI2CAddress(uint8_t resetPin)
     error = Wire.endTransmission();
     if (error == 0)
     {
-        si4735_setDeviceI2CAddress(0);
+        setDeviceI2CAddress(0);
         return SI473X_ADDR_SEN_LOW;
     }
 
@@ -1859,7 +245,7 @@ int16_t si4735_getDeviceI2CAddress(uint8_t resetPin)
     error = Wire.endTransmission();
     if (error == 0)
     {
-        si4735_setDeviceI2CAddress(1);
+        setDeviceI2CAddress(1);
         return SI473X_ADDR_SEN_HIGH;
     }
 
@@ -1884,7 +270,7 @@ int16_t si4735_getDeviceI2CAddress(uint8_t resetPin)
  *
  * @see: getDeviceI2CAddress
  */
-void si4735_setDeviceI2CAddress(uint8_t senPin)
+void SI4735::setDeviceI2CAddress(uint8_t senPin)
 {
     deviceAddress = (senPin) ? SI473X_ADDR_SEN_HIGH : SI473X_ADDR_SEN_LOW;
 };
@@ -1899,7 +285,7 @@ void si4735_setDeviceI2CAddress(uint8_t senPin)
  *
  * @param uint8_t i2cAddr (example 0x10)
  */
-void si4735_setDeviceOtherI2CAddress(uint8_t i2cAddr)
+void SI4735::setDeviceOtherI2CAddress(uint8_t i2cAddr)
 {
     deviceAddress = i2cAddr;
 };
@@ -1913,7 +299,7 @@ void si4735_setDeviceOtherI2CAddress(uint8_t i2cAddr)
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0);
  */
-void si4735_reset()
+void SI4735::reset()
 {
     pinMode(resetPin, OUTPUT);
     delay(10);
@@ -1932,7 +318,7 @@ void si4735_reset()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 63, 128
  */
-void si4735_waitToSend()
+void SI4735::waitToSend()
 {
     do
     {
@@ -1962,7 +348,7 @@ void si4735_waitToSend()
  * @param uint8_t FUNC sets the receiver function have to be used [0 = FM Receive; 1 = AM (LW/MW/SW) and SSB (if SSB patch apllied)]
  * @param uint8_t OPMODE set the kind of audio mode you want to use.
  */
-void si4735_setPowerUp(uint8_t CTSIEN, uint8_t GPO2OEN, uint8_t PATCH, uint8_t XOSCEN, uint8_t FUNC, uint8_t OPMODE)
+void SI4735::setPowerUp(uint8_t CTSIEN, uint8_t GPO2OEN, uint8_t PATCH, uint8_t XOSCEN, uint8_t FUNC, uint8_t OPMODE)
 {
     powerUp.arg.CTSIEN = CTSIEN;   // 1 -> Interrupt anabled;
     powerUp.arg.GPO2OEN = GPO2OEN; // 1 -> GPO2 Output Enable;
@@ -1974,7 +360,7 @@ void si4735_setPowerUp(uint8_t CTSIEN, uint8_t GPO2OEN, uint8_t PATCH, uint8_t X
     // Set the current tuning frequancy mode 0X20 = FM and 0x40 = AM (LW/MW/SW)
     // See See Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 55 and 124
 
-    currentClockType = XOSCEN;
+    this->currentClockType = XOSCEN;
 
     if (FUNC == 0)
     {
@@ -2020,7 +406,7 @@ void si4735_setPowerUp(uint8_t CTSIEN, uint8_t GPO2OEN, uint8_t PATCH, uint8_t X
  * @see  SI4735::setPowerUp()
  * @see  Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 64, 129
  */
-void si4735_radioPowerUp(void)
+void SI4735::radioPowerUp(void)
 {
     // delayMicroseconds(1000);
     waitToSend();
@@ -2032,16 +418,16 @@ void si4735_radioPowerUp(void)
     // Delay at least 500 ms between powerup command and first tune command to wait for
     // the oscillator to stabilize if XOSCEN is set and crystal is used as the RCLK.
     waitToSend();
-    delay(maxDelayAfterPouwerUp);
+    delay(maxDelayAfterPowerUp);
 
     // Turns the external mute circuit off
     if (audioMuteMcuPin >= 0)
-        si4735_setHardwareAudioMute(false);
+        setHardwareAudioMute(false);
 
-    if (currentClockType == XOSCEN_RCLK)
+    if (this->currentClockType == XOSCEN_RCLK)
     {
-        si4735_setRefClock(refClock);
-        si4735_setRefClockPrescaler(this->refClockPrescale, this->refClockSourcePin);
+        setRefClock(this->refClock);
+        setRefClockPrescaler(this->refClockPrescale, this->refClockSourcePin);
     }
 }
 
@@ -2055,9 +441,9 @@ void si4735_radioPowerUp(void)
  * @see  SI4735::setPowerUp()
  * @see  Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 64, 129
  */
-void si4735_analogPowerUp(void)
+void SI4735::analogPowerUp(void)
 {
-    si4735_radioPowerUp();
+    radioPowerUp();
 }
 
 /**
@@ -2070,11 +456,11 @@ void si4735_analogPowerUp(void)
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 67, 132
  * @see radioPowerUp()
  */
-void si4735_powerDown(void)
+void SI4735::powerDown(void)
 {
     // Turns the external mute circuit on
     if (audioMuteMcuPin >= 0)
-        si4735_setHardwareAudioMute(true);
+        setHardwareAudioMute(true);
 
     waitToSend();
     Wire.beginTransmission(deviceAddress);
@@ -2092,7 +478,7 @@ void si4735_powerDown(void)
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 66, 131
  * @see firmwareInfo
  */
-void si4735_getFirmware(void)
+void SI4735::getFirmware(void)
 {
     waitToSend();
 
@@ -2113,7 +499,7 @@ void si4735_getFirmware(void)
 /**
  * @ingroup group07
  * @brief Sets the frequency of the REFCLK from the output of the prescaler
- * @details The REFCLK range is 31130 to 34406 Hz (32768 �5% Hz) in 1 Hz steps, or 0 (to disable AFC). For example, an RCLK of 13 MHz would require a prescaler value of 400 to divide it to 32500 Hz REFCLK.
+ * @details The REFCLK range is 31130 to 34406 Hz (32768 ±5% Hz) in 1 Hz steps, or 0 (to disable AFC). For example, an RCLK of 13 MHz would require a prescaler value of 400 to divide it to 32500 Hz REFCLK.
  * @details The reference clock frequency property would then need to be set to 32500 Hz.
  * @details RCLK frequencies between 31130 Hz and 40 MHz are supported, however, there are gaps in frequency coverage for prescaler values ranging from 1 to 10, or frequencies up to 311300 Hz. See table below.
  *
@@ -2133,12 +519,12 @@ void si4735_getFirmware(void)
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 34 and 35
  *
- * @param refclk The allowed REFCLK frequency range is between 31130 and 34406 Hz (32768 �5%), or 0 (to disable AFC).
+ * @param refclk The allowed REFCLK frequency range is between 31130 and 34406 Hz (32768 ±5%), or 0 (to disable AFC).
  */
-void si4735_setRefClock(uint16_t refclk)
+void SI4735::setRefClock(uint16_t refclk)
 {
-    si4735_sendProperty(REFCLK_FREQ, refclk);
-    refClock = refclk;
+    sendProperty(REFCLK_FREQ, refclk);
+    this->refClock = refclk;
 }
 
 /**
@@ -2164,11 +550,11 @@ void si4735_setRefClock(uint16_t refclk)
  * @param prescale  Prescaler for Reference Clock value; Between 1 and 4095 in 1 unit steps. Default is 1.
  * @param rclk_sel  0 = RCLK pin is clock source (default); 1 = DCLK pin is clock source
  */
-void si4735_setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel)
+void SI4735::setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel)
 {
-    si4735_sendProperty(REFCLK_PRESCALE, prescale); //| (rclk_sel << 13)); // Sets the D12 to rclk_sel
-    refClockPrescale = prescale;
-    refClockSourcePin = rclk_sel;
+    sendProperty(REFCLK_PRESCALE, prescale); //| (rclk_sel << 13)); // Sets the D12 to rclk_sel
+    this->refClockPrescale = prescale;
+    this->refClockSourcePin = rclk_sel;
 }
 
 /**
@@ -2190,14 +576,14 @@ void si4735_setRefClockPrescaler(uint16_t prescale, uint8_t rclk_sel)
  * @param clockType 0 = Use external RCLK (crystal oscillator disabled); 1 = Use crystal oscillator
  * @param gpo2Enable GPO2OE (GPO2 Output) 1 = Enable; 0 Disable (defult)
  */
-void si4735_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode, uint8_t clockType, uint8_t gpo2Enable)
+void SI4735::setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunction, uint8_t audioMode, uint8_t clockType, uint8_t gpo2Enable)
 {
     Wire.begin();
 
-    resetPin = resetPin;
-    ctsIntEnable = (ctsIntEnable != 0) ? 1 : 0; // Keeps old versions of the sketches running
-    gpo2Enable = gpo2Enable;
-    currentAudioMode = audioMode;
+    this->resetPin = resetPin;
+    this->ctsIntEnable = (ctsIntEnable != 0) ? 1 : 0; // Keeps old versions of the sketches running
+    this->gpo2Enable = gpo2Enable;
+    this->currentAudioMode = audioMode;
 
     // Set the initial SI473X behavior
     // CTSIEN   interruptEnable -> Interrupt anabled or disable;
@@ -2206,16 +592,16 @@ void si4735_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunctio
     // XOSCEN   clockType -> Use external crystal oscillator (XOSCEN_CRYSTAL) or reference clock (XOSCEN_RCLK);
     // FUNC     defaultFunction = 0 = FM Receive; 1 = AM (LW/MW/SW) Receiver.
     // OPMODE   SI473X_ANALOG_AUDIO or SI473X_DIGITAL_AUDIO.
-    si4735_setPowerUp(ctsIntEnable, gpo2Enable, 0, clockType, defaultFunction, audioMode);
+    setPowerUp(ctsIntEnable, gpo2Enable, 0, clockType, defaultFunction, audioMode);
 
     if (audioMuteMcuPin >= 0)
-        si4735_setHardwareAudioMute(true); // If you are using external citcuit to mute the audio, it turns the audio mute
+        setHardwareAudioMute(true); // If you are using external citcuit to mute the audio, it turns the audio mute
 
-    si4735_reset();
+    reset();
 
-    si4735_radioPowerUp();
-    si4735_setVolume(30); // Default volume level.
-    si4735_getFirmware();
+    radioPowerUp();
+    setVolume(30); // Default volume level.
+    getFirmware();
 }
 
 /**
@@ -2230,9 +616,9 @@ void si4735_setup(uint8_t resetPin, uint8_t ctsIntEnable, uint8_t defaultFunctio
  * @param uint8_t resetPin Digital Arduino Pin used to RESET command.
  * @param uint8_t defaultFunction. 0 =  FM mode; 1 = AM
  */
-void si4735_setup(uint8_t resetPin, uint8_t defaultFunction)
+void SI4735::setup(uint8_t resetPin, uint8_t defaultFunction)
 {
-    si4735_setup(resetPin, 0, defaultFunction, SI473X_ANALOG_AUDIO, XOSCEN_CRYSTAL, 0);
+    setup(resetPin, 0, defaultFunction, SI473X_ANALOG_AUDIO, XOSCEN_CRYSTAL, 0);
     delay(250);
 }
 
@@ -2248,18 +634,18 @@ void si4735_setup(uint8_t resetPin, uint8_t defaultFunction)
  * The valid range is 0 to 191. Automatic capacitor tuning is recommended.
  * For example, if the varactor is set to a value of 5 manually, when read back the value will be 1.
  * @details on AM mode, If the value is set to anything other than 0, the tuning capacitance is manually set as 95 fF x ANTCAP + 7 pF.
- * ANTCAP manual range is 1?6143. Automatic capacitor tuning is recommended. In SW mode, ANTCAPH[15:8] (high byte) needs to be set to 0 and ANTCAPL[7:0] (low byte) needs to be set to 1.
+ * ANTCAP manual range is 1–6143. Automatic capacitor tuning is recommended. In SW mode, ANTCAPH[15:8] (high byte) needs to be set to 0 and ANTCAPL[7:0] (low byte) needs to be set to 1.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 71 and 136
  *
  * @param capacitor If zero, the tuning capacitor value is selected automatically.
  *                  If the value is set to anything other than 0:
  *                  AM - the tuning capacitance is manually set as 95 fF x ANTCAP + 7 pF.
- *                       ANTCAP manual range is 1?6143;
+ *                       ANTCAP manual range is 1–6143;
  *                  FM - the valid range is 0 to 191.
  *                  According to Silicon Labs, automatic capacitor tuning is recommended (value 0).
  */
-void si4735_setTuneFrequencyAntennaCapacitor(uint16_t capacitor)
+void SI4735::setTuneFrequencyAntennaCapacitor(uint16_t capacitor)
 {
     si47x_antenna_capacitor cap;
 
@@ -2282,7 +668,7 @@ void si4735_setTuneFrequencyAntennaCapacitor(uint16_t capacitor)
         }
     }
     // Tune the device again with the current frequency.
-    si4735_setFrequency(currentWorkFrequency);
+    this->setFrequency(this->currentWorkFrequency);
 }
 
 /**
@@ -2299,7 +685,7 @@ void si4735_setTuneFrequencyAntennaCapacitor(uint16_t capacitor)
  *
  * @param uint16_t  freq is the frequency to change. For example, FM => 10390 = 103.9 MHz; AM => 810 = 810 kHz.
  */
-void si4735_setFrequency(uint16_t freq)
+void SI4735::setFrequency(uint16_t freq)
 {
     waitToSend(); // Wait for the si473x is ready.
     currentFrequency.value = freq;
@@ -2337,14 +723,14 @@ void si4735_setFrequency(uint16_t freq)
  *
  * @see setFrequencyStep()
  */
-void si4735_frequencyUp()
+void SI4735::frequencyUp()
 {
     if (currentWorkFrequency >= currentMaximumFrequency)
         currentWorkFrequency = currentMinimumFrequency;
     else
         currentWorkFrequency += currentStep;
 
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
 }
 
 /**
@@ -2354,7 +740,7 @@ void si4735_frequencyUp()
  *
  * @see setFrequencyStep()
  */
-void si4735_frequencyDown()
+void SI4735::frequencyDown()
 {
 
     if (currentWorkFrequency <= currentMinimumFrequency)
@@ -2362,7 +748,7 @@ void si4735_frequencyDown()
     else
         currentWorkFrequency -= currentStep;
 
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
 }
 
 /**
@@ -2376,17 +762,17 @@ void si4735_frequencyDown()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 129.
  */
-void si4735_setAM()
+void SI4735::setAM()
 {
-    // If you?re already using AM mode, it is not necessary to call powerDown and radioPowerUp.
+    // If you’re already using AM mode, it is not necessary to call powerDown and radioPowerUp.
     // The other properties also should have the same value as the previous status.
     if (lastMode != AM_CURRENT_MODE)
     {
-        si4735_powerDown();
-        si4735_setPowerUp(ctsIntEnable, 0, 0, this->currentClockType, AM_CURRENT_MODE, this->currentAudioMode);
-        si4735_radioPowerUp();
-        si4735_setAvcAmMaxGain(currentAvcAmMaxGain); // Set AM Automatic Volume Gain (default value is DEFAULT_CURRENT_AVC_AM_MAX_GAIN)
-        si4735_setVolume(volume);                    // Set to previus configured volume
+        powerDown();
+        setPowerUp(this->ctsIntEnable, 0, 0, this->currentClockType, AM_CURRENT_MODE, this->currentAudioMode);
+        radioPowerUp();
+        setAvcAmMaxGain(currentAvcAmMaxGain); // Set AM Automatic Volume Gain (default value is DEFAULT_CURRENT_AVC_AM_MAX_GAIN)
+        setVolume(volume);                    // Set to previus configured volume
     }
     currentSsbStatus = 0;
     lastMode = AM_CURRENT_MODE;
@@ -2401,14 +787,14 @@ void si4735_setAM()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 64.
  */
-void si4735_setFM(void)
+void SI4735::setFM()
 {
-    si4735_powerDown();
-    si4735_setPowerUp(ctsIntEnable, gpo2Enable, 0, currentClockType, FM_CURRENT_MODE, currentAudioMode);
-    si4735_radioPowerUp();
-    si4735_setVolume(volume); // Set to previus configured volume
+    powerDown();
+    setPowerUp(this->ctsIntEnable, this->gpo2Enable, 0, this->currentClockType, FM_CURRENT_MODE, this->currentAudioMode);
+    radioPowerUp();
+    setVolume(volume); // Set to previus configured volume
     currentSsbStatus = 0;
-    si4735_disableFmDebug();
+    disableFmDebug();
     lastMode = FM_CURRENT_MODE;
 }
 
@@ -2431,7 +817,7 @@ void si4735_setFM(void)
  * @param initialFreq initial frequency
  * @param step step used to go to the next channel
  */
-void si4735_setAM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
+void SI4735::setAM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
 {
 
     currentMinimumFrequency = fromFreq;
@@ -2441,9 +827,9 @@ void si4735_setAM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint
     if (initialFreq < fromFreq || initialFreq > toFreq)
         initialFreq = fromFreq;
 
-    si4735_setAM();
+    setAM();
     currentWorkFrequency = initialFreq;
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
 }
 
 /**
@@ -2469,7 +855,7 @@ void si4735_setAM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint
  * @param initialFreq initial frequency (default frequency)
  * @param step step used to go to the next channel
  */
-void si4735_setFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
+void SI4735::setFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
 {
     currentMinimumFrequency = fromFreq;
     currentMaximumFrequency = toFreq;
@@ -2478,10 +864,10 @@ void si4735_setFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint
     if (initialFreq < fromFreq || initialFreq > toFreq)
         initialFreq = fromFreq;
 
-    si4735_setFM();
+    setFM();
 
     currentWorkFrequency = initialFreq;
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
 }
 
 /** @defgroup group08 Tune */
@@ -2502,10 +888,10 @@ void si4735_setFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint
  *                                   4 = 1 kHz Bandwidth
  *                                   5 = 1.8 kHz Bandwidth
  *                                   6 = 2.5 kHz Bandwidth, gradual roll off
- *                                   7?15 = Reserved (Do not use).
+ *                                   7–15 = Reserved (Do not use).
  * @param AMPLFLT Enables the AM Power Line Noise Rejection Filter.
  */
-void si4735_setBandwidth(uint8_t AMCHFLT, uint8_t AMPLFLT)
+void SI4735::setBandwidth(uint8_t AMCHFLT, uint8_t AMPLFLT)
 {
     si47x_bandwidth_config filter;
     si47x_property property;
@@ -2545,10 +931,10 @@ void si4735_setBandwidth(uint8_t AMCHFLT, uint8_t AMPLFLT)
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 73 (FM) and 139 (AM)
  */
-uint16_t si4735_getFrequency()
+uint16_t SI4735::getFrequency()
 {
     si47x_frequency freq;
-    si4735_getStatus(0, 1);
+    getStatus(0, 1);
 
     freq.raw.FREQL = currentStatus.resp.READFREQL;
     freq.raw.FREQH = currentStatus.resp.READFREQH;
@@ -2567,7 +953,7 @@ uint16_t si4735_getFrequency()
  * @param uint8_t INTACK Seek/Tune Interrupt Clear. If set, clears the seek/tune complete interrupt status indicator;
  * @param uint8_t CANCEL Cancel seek. If set, aborts a seek currently in progress;
  */
-void si4735_getStatus(uint8_t INTACK, uint8_t CANCEL)
+void SI4735::getStatus(uint8_t INTACK, uint8_t CANCEL)
 {
     si47x_tune_status status;
     uint8_t cmd = FM_TUNE_STATUS;
@@ -2616,7 +1002,7 @@ void si4735_getStatus(uint8_t INTACK, uint8_t CANCEL)
  * @see AN332 REV 0.8 Universal Programming Guide Amendment for SI4735-D60 SSB and NBFM patches; page 18.
  *
  */
-void si4735_getAutomaticGainControl()
+void SI4735::getAutomaticGainControl()
 {
     uint8_t cmd;
 
@@ -2661,10 +1047,10 @@ void si4735_getAutomaticGainControl()
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); For FM page 81; for AM page 143
  *
  * @param uint8_t AGCDIS This param selects whether the AGC is enabled or disabled (0 = AGC enabled; 1 = AGC disabled);
- * @param uint8_t AGCIDX AGC Index (0 = Minimum attenuation (max gain); 1 ? 36 = Intermediate attenuation);
+ * @param uint8_t AGCIDX AGC Index (0 = Minimum attenuation (max gain); 1 – 36 = Intermediate attenuation);
  *                if >greater than 36 - Maximum attenuation (min gain) ).
  */
-void si4735_setAutomaticGainControl(uint8_t AGCDIS, uint8_t AGCIDX)
+void SI4735::setAutomaticGainControl(uint8_t AGCDIS, uint8_t AGCIDX)
 {
     si47x_agc_overrride agc;
 
@@ -2704,7 +1090,7 @@ void si4735_setAutomaticGainControl(uint8_t AGCDIS, uint8_t AGCIDX)
  *
  * @param uint8_t gain  Select a value between 12 and 90.  Defaul value 48dB.
  */
-void si4735_setAvcAmMaxGain(uint8_t gain)
+void SI4735::setAvcAmMaxGain(uint8_t gain)
 {
     if (gain < 12 || gain > 90)
         return;
@@ -2726,7 +1112,7 @@ void si4735_setAvcAmMaxGain(uint8_t gain)
  *        0 = Interrupt status preserved;
  *        1 = Clears RSQINT, BLENDINT, SNRHINT, SNRLINT, RSSIHINT, RSSILINT, MULTHINT, MULTLINT.
  */
-void si4735_getCurrentReceivedSignalQuality(uint8_t INTACK)
+void SI4735::getCurrentReceivedSignalQuality(uint8_t INTACK)
 {
     uint8_t arg;
     uint8_t cmd;
@@ -2778,9 +1164,9 @@ void si4735_getCurrentReceivedSignalQuality(uint8_t INTACK)
  *        0 = Interrupt status preserved;
  *        1 = Clears RSQINT, BLENDINT, SNRHINT, SNRLINT, RSSIHINT, RSSILINT, MULTHINT, MULTLINT.
  */
-void si4735_getCurrentReceivedSignalQuality(void)
+void SI4735::getCurrentReceivedSignalQuality(void)
 {
-    si4735_getCurrentReceivedSignalQuality(0);
+    getCurrentReceivedSignalQuality(0);
 }
 
 /**
@@ -2794,7 +1180,7 @@ void si4735_getCurrentReceivedSignalQuality(void)
  * @param SEEKUP Seek Up/Down. Determines the direction of the search, either UP = 1, or DOWN = 0.
  * @param Wrap/Halt. Determines whether the seek should Wrap = 1, or Halt = 0 when it hits the band limit.
  */
-void si4735_seekStation(uint8_t SEEKUP, uint8_t WRAP)
+void SI4735::seekStation(uint8_t SEEKUP, uint8_t WRAP)
 {
     si47x_seek seek;
     si47x_seek_am_complement seek_am_complement;
@@ -2837,11 +1223,11 @@ void si4735_seekStation(uint8_t SEEKUP, uint8_t WRAP)
  *
  * @see seekStation, seekStationUp, seekStationDown, seekPreviousStation, seekStationProgress
  */
-void si4735_seekNextStation()
+void SI4735::seekNextStation()
 {
-    si4735_seekStation(1, 1);
+    seekStation(1, 1);
     delay(maxDelaySetFrequency);
-    si4735_getFrequency();
+    getFrequency();
 }
 
 /**
@@ -2852,11 +1238,11 @@ void si4735_seekNextStation()
  * @details The main difference is the method used to look for a station.
  * @see seekStation, seekStationUp, seekStationDown, seekPreviousStation, seekStationProgress
  */
-void si4735_seekPreviousStation()
+void SI4735::seekPreviousStation()
 {
-    si4735_seekStation(0, 1);
+    seekStation(0, 1);
     delay(maxDelaySetFrequency);
-    si4735_getFrequency();
+    getFrequency();
 }
 
 /**
@@ -2889,7 +1275,7 @@ void si4735_seekPreviousStation()
  * @param showFunc  function that you have to implement to show the frequency during the seeking process. Set NULL if you do not want to show the progress.
  * @param up_down   set up_down = 1 for seeking station up; set up_down = 0 for seeking station down
  */
-void si4735_seekStationProgress(void (*showFunc)(uint16_t f), uint8_t up_down)
+void SI4735::seekStationProgress(void (*showFunc)(uint16_t f), uint8_t up_down)
 {
     si47x_frequency freq;
     long elapsed_seek = millis();
@@ -2899,9 +1285,9 @@ void si4735_seekStationProgress(void (*showFunc)(uint16_t f), uint8_t up_down)
         return;
     do
     {
-        si4735_seekStation(up_down, 0);
+        seekStation(up_down, 0);
         delay(maxDelaySetFrequency);
-        si4735_getStatus(0, 0);
+        getStatus(0, 0);
         delay(maxDelaySetFrequency);
         freq.raw.FREQH = currentStatus.resp.READFREQH;
         freq.raw.FREQL = currentStatus.resp.READFREQL;
@@ -2944,7 +1330,7 @@ void si4735_seekStationProgress(void (*showFunc)(uint16_t f), uint8_t up_down)
  * @param stopSeeking functionthat you have to implement if you want to control the stop seeking action. Useful if you want abort the seek process.
  * @param up_down   set up_down = 1 for seeking station up; set up_down = 0 for seeking station down
  */
-void si4735_seekStationProgress(void (*showFunc)(uint16_t f), bool (*stopSeking)(), uint8_t up_down)
+void SI4735::seekStationProgress(void (*showFunc)(uint16_t f), bool (*stopSeking)(), uint8_t up_down)
 {
     si47x_frequency freq;
     long elapsed_seek = millis();
@@ -2954,9 +1340,9 @@ void si4735_seekStationProgress(void (*showFunc)(uint16_t f), bool (*stopSeking)
         return;
     do
     {
-        si4735_seekStation(up_down, 0);
+        seekStation(up_down, 0);
         delay(maxDelaySetFrequency);
-        si4735_getStatus(0, 0);
+        getStatus(0, 0);
         delay(maxDelaySetFrequency);
         freq.raw.FREQH = currentStatus.resp.READFREQH;
         freq.raw.FREQL = currentStatus.resp.READFREQL;
@@ -2980,10 +1366,10 @@ void si4735_seekStationProgress(void (*showFunc)(uint16_t f), bool (*stopSeking)
  * @param uint16_t bottom - the bottom of the AM (MW/SW) mode for seek
  * @param uint16_t    top - the top of the AM (MW/SW) mode for seek
  */
-void si4735_setSeekAmLimits(uint16_t bottom, uint16_t top)
+void SI4735::setSeekAmLimits(uint16_t bottom, uint16_t top)
 {
-    si4735_sendProperty(AM_SEEK_BAND_BOTTOM, bottom);
-    si4735_sendProperty(AM_SEEK_BAND_TOP, top);
+    sendProperty(AM_SEEK_BAND_BOTTOM, bottom);
+    sendProperty(AM_SEEK_BAND_TOP, top);
 }
 
 /**
@@ -2996,10 +1382,10 @@ void si4735_setSeekAmLimits(uint16_t bottom, uint16_t top)
  * @param uint16_t bottom - the bottom of the FM(VHF) mode for seek
  * @param uint16_t    top - the top of the FM(VHF) mode for seek
  */
-void si4735_setSeekFmLimits(uint16_t bottom, uint16_t top)
+void SI4735::setSeekFmLimits(uint16_t bottom, uint16_t top)
 {
-    si4735_sendProperty(FM_SEEK_BAND_BOTTOM, bottom);
-    si4735_sendProperty(FM_SEEK_BAND_TOP, top);
+    sendProperty(FM_SEEK_BAND_BOTTOM, bottom);
+    sendProperty(FM_SEEK_BAND_TOP, top);
 }
 
 /**
@@ -3011,9 +1397,9 @@ void si4735_setSeekFmLimits(uint16_t bottom, uint16_t top)
  *
  * @param uint16_t spacing - step in kHz
  */
-void si4735_setSeekAmSpacing(uint16_t spacing)
+void SI4735::setSeekAmSpacing(uint16_t spacing)
 {
-    si4735_sendProperty(AM_SEEK_FREQ_SPACING, spacing);
+    sendProperty(AM_SEEK_FREQ_SPACING, spacing);
 }
 
 /**
@@ -3025,9 +1411,9 @@ void si4735_setSeekAmSpacing(uint16_t spacing)
  *
  * @param uint16_t spacing - step in kHz
  */
-void si4735_setSeekFmSpacing(uint16_t spacing)
+void SI4735::setSeekFmSpacing(uint16_t spacing)
 {
-    si4735_sendProperty(FM_SEEK_FREQ_SPACING, spacing);
+    sendProperty(FM_SEEK_FREQ_SPACING, spacing);
 }
 
 /**
@@ -3035,13 +1421,13 @@ void si4735_setSeekFmSpacing(uint16_t spacing)
  *
  * @brief Sets the RSSI threshold for a valid AM Seek/Tune.
  *
- * @details If the value is zero then RSSI threshold is not considered when doing a seek. Default value is 25 dB?V.
+ * @details If the value is zero then RSSI threshold is not considered when doing a seek. Default value is 25 dBμV.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 127
  */
-void si4735_setSeekAmRssiThreshold(uint16_t value)
+void SI4735::setSeekAmRssiThreshold(uint16_t value)
 {
-    si4735_sendProperty(AM_SEEK_RSSI_THRESHOLD, value);
+    sendProperty(AM_SEEK_RSSI_THRESHOLD, value);
 }
 
 /**
@@ -3049,13 +1435,13 @@ void si4735_setSeekAmRssiThreshold(uint16_t value)
  *
  * @brief Sets the RSSI threshold for a valid FM Seek/Tune.
  *
- * @details RSSI threshold which determines if a valid channel has been found during seek/tune. Specified in units of dB?V in 1 dB?V steps (0?127). Default is 20 dB?V.
+ * @details RSSI threshold which determines if a valid channel has been found during seek/tune. Specified in units of dBμV in 1 dBμV steps (0–127). Default is 20 dBμV.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 102
  */
-void si4735_setSeekFmRssiThreshold(uint16_t value)
+void SI4735::setSeekFmRssiThreshold(uint16_t value)
 {
-    si4735_sendProperty(FM_SEEK_TUNE_RSSI_THRESHOLD, value);
+    sendProperty(FM_SEEK_TUNE_RSSI_THRESHOLD, value);
 }
 
 /** @defgroup group10 Generic SI473X Command and Property methods
@@ -3075,7 +1461,7 @@ void si4735_setSeekFmRssiThreshold(uint16_t value)
  * @param propertyNumber property number (example: RX_VOLUME)
  * @param parameter   property value that will be seted
  */
-void si4735_sendProperty(uint16_t propertyNumber, uint16_t parameter)
+void SI4735::sendProperty(uint16_t propertyNumber, uint16_t parameter)
 {
     si47x_property property;
     si47x_property param;
@@ -3099,7 +1485,7 @@ void si4735_sendProperty(uint16_t propertyNumber, uint16_t parameter)
  * @brief Sends a given command to the SI47XX devices.
  * @details This function can be useful when you want to execute a SI47XX device command and it was not implemented by this library.
  * @details In this case you have to check the  AN332-Si47XX PROGRAMMING GUIDE to know how the command works.
- * @details Also, you need to work with bit operators to compose the parameters of the command [ &(and), ?(xor), |(or) etc ].
+ * @details Also, you need to work with bit operators to compose the parameters of the command [ &(and), ˆ(xor), |(or) etc ].
  *
  * @see getCommandResponse, setProperty
  *
@@ -3107,7 +1493,7 @@ void si4735_sendProperty(uint16_t propertyNumber, uint16_t parameter)
  * @param parameter_size Parameter size in bytes. Tell the number of argument used by the command.
  * @param parameter unsigned byte array with the arguments of the command
  */
-void si4735_sendCommand(uint8_t cmd, int parameter_size, const uint8_t *parameter)
+void SI4735::sendCommand(uint8_t cmd, int parameter_size, const uint8_t *parameter)
 {
     waitToSend();
     Wire.beginTransmission(deviceAddress);
@@ -3129,7 +1515,7 @@ void si4735_sendCommand(uint8_t cmd, int parameter_size, const uint8_t *paramete
  * @param response_size  num of bytes returned by the command.
  * @param response  byte array where the response will be stored.
  */
-void si4735_getCommandResponse(int response_size, uint8_t *response)
+void SI4735::getCommandResponse(int response_size, uint8_t *response)
 {
     waitToSend();
     // Asks the device to return a given number o bytes response
@@ -3149,7 +1535,7 @@ void si4735_getCommandResponse(int response_size, uint8_t *response)
  *
  * @return si47x_status
  */
-si47x_status si4735_getStatusResponse()
+si47x_status SI4735::getStatusResponse()
 {
     si47x_status status;
 
@@ -3174,7 +1560,8 @@ si47x_status si4735_getStatusResponse()
  *
  * @return property value  (the content of the property)
  */
-int32_t si4735_getProperty(uint16_t propertyNumber)
+int32_t
+SI4735::getProperty(uint16_t propertyNumber)
 {
     si47x_property property;
     si47x_status status;
@@ -3205,26 +1592,6 @@ int32_t si4735_getProperty(uint16_t propertyNumber)
     return property.value;
 }
 
-/**
- * @ingroup group10 Generic set and get property
- *
- * @brief Sets a given SI47XX device property
- *
- * @details Sets the Si47XX device with a given attribute.
- * @details You might need to use the bit operations or some bit field structure to set right the values.
- * @details Used this function instead of the sendProperty.
- *
- * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 55, 69, 124 and  134.
- * @see getProperty, sendProperty
- * @param propertyNumber
- * @param param  pamameter value
- */
-inline void si4735_setProperty(uint16_t propertyNumber, uint16_t param)
-{
-    si4735_sendProperty(propertyNumber, param);
-};
-
-
 /** @defgroup group12 FM Mono Stereo audio setup */
 
 /**
@@ -3238,9 +1605,9 @@ inline void si4735_setProperty(uint16_t propertyNumber, uint16_t param)
  *
  * @param parameter  valid values: 0 to 127
  */
-void si4735_setFmBlendStereoThreshold(uint8_t parameter)
+void SI4735::setFmBlendStereoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_STEREO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_STEREO_THRESHOLD, parameter);
 }
 
 /**
@@ -3248,15 +1615,15 @@ void si4735_setFmBlendStereoThreshold(uint8_t parameter)
  *
  * @brief Sets RSSI threshold for mono blend (Full mono below threshold, blend above threshold).
  *
- * @details To force stereo set this to 0. To force mono set this to 127. Default value is 30 dB?V.
+ * @details To force stereo set this to 0. To force mono set this to 127. Default value is 30 dBμV.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 56.
  *
  * @param parameter valid values: 0 to 127
  */
-void si4735_setFmBlendMonoThreshold(uint8_t parameter)
+void SI4735::setFmBlendMonoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_MONO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_MONO_THRESHOLD, parameter);
 }
 
 /**
@@ -3264,15 +1631,15 @@ void si4735_setFmBlendMonoThreshold(uint8_t parameter)
  *
  * @brief Sets RSSI threshold for stereo blend. (Full stereo above threshold, blend below threshold.)
  *
- * @details To force stereo, set this to 0. To force mono, set this to 127. Default value is 49 dB?V.
+ * @details To force stereo, set this to 0. To force mono, set this to 127. Default value is 49 dBμV.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 59.
  *
  * @param parameter valid values: 0 to 127
  */
-void si4735_setFmBlendRssiStereoThreshold(uint8_t parameter)
+void SI4735::setFmBlendRssiStereoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_RSSI_STEREO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_RSSI_STEREO_THRESHOLD, parameter);
 }
 
 /**
@@ -3280,15 +1647,15 @@ void si4735_setFmBlendRssiStereoThreshold(uint8_t parameter)
  *
  * @brief Sets RSSI threshold for mono blend (Full mono below threshold, blend above threshold).
  *
- * @details To force stereo, set this to 0. To force mono, set this to 127. Default value is 30 dB?V.
+ * @details To force stereo, set this to 0. To force mono, set this to 127. Default value is 30 dBμV.
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 59.
  *
  * @param parameter valid values: 0 to 127
  */
-void si4735_setFmBLendRssiMonoThreshold(uint8_t parameter)
+void SI4735::setFmBLendRssiMonoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_RSSI_MONO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_RSSI_MONO_THRESHOLD, parameter);
 }
 
 /**
@@ -3302,9 +1669,9 @@ void si4735_setFmBLendRssiMonoThreshold(uint8_t parameter)
  *
  * @param parameter valid values: 0 to 127
  */
-void si4735_setFmBlendSnrStereoThreshold(uint8_t parameter)
+void SI4735::setFmBlendSnrStereoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_SNR_STEREO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_SNR_STEREO_THRESHOLD, parameter);
 }
 
 /**
@@ -3318,9 +1685,9 @@ void si4735_setFmBlendSnrStereoThreshold(uint8_t parameter)
  *
  * @param parameter valid values: 0 to 127
  */
-void si4735_setFmBLendSnrMonoThreshold(uint8_t parameter)
+void SI4735::setFmBLendSnrMonoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_SNR_MONO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_SNR_MONO_THRESHOLD, parameter);
 }
 
 /**
@@ -3334,9 +1701,9 @@ void si4735_setFmBLendSnrMonoThreshold(uint8_t parameter)
  *
  * @param parameter valid values: 0 to 100
  */
-void si4735_setFmBlendMultiPathStereoThreshold(uint8_t parameter)
+void SI4735::setFmBlendMultiPathStereoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_MULTIPATH_STEREO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_MULTIPATH_STEREO_THRESHOLD, parameter);
 }
 
 /**
@@ -3350,9 +1717,9 @@ void si4735_setFmBlendMultiPathStereoThreshold(uint8_t parameter)
  *
  * @param parameter valid values: 0 to 100
  */
-void si4735_setFmBlendMultiPathMonoThreshold(uint8_t parameter)
+void SI4735::setFmBlendMultiPathMonoThreshold(uint8_t parameter)
 {
-    si4735_sendProperty(FM_BLEND_MULTIPATH_MONO_THRESHOLD, parameter);
+    sendProperty(FM_BLEND_MULTIPATH_MONO_THRESHOLD, parameter);
 }
 
 /**
@@ -3360,7 +1727,7 @@ void si4735_setFmBlendMultiPathMonoThreshold(uint8_t parameter)
  * @todo
  * @brief Turn Off Stereo operation.
  */
-void si4735_setFmStereoOff()
+void SI4735::setFmStereoOff()
 {
     //! TO DO
 }
@@ -3370,7 +1737,7 @@ void si4735_setFmStereoOff()
  * @todo
  * @brief Turn Off Stereo operation.
  */
-void si4735_setFmStereoOn()
+void SI4735::setFmStereoOn()
 {
     //! TO DO
 }
@@ -3385,7 +1752,7 @@ void si4735_setFmStereoOn()
  *
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); page 299.
  */
-void si4735_disableFmDebug()
+void SI4735::disableFmDebug()
 {
     Wire.beginTransmission(deviceAddress);
     Wire.write(0x12);
@@ -3418,7 +1785,7 @@ void si4735_disableFmDebug()
  * @param uint8_t OMODE Digital Output Mode (0=I2S, 6 = Left-justified, 8 = MSB at second DCLK after DFS pulse, 12 = MSB at first DCLK after DFS pulse).
  * @param uint8_t OFALL Digital Output DCLK Edge (0 = use DCLK rising edge, 1 = use DCLK falling edge)
  */
-void si4735_digitalOutputFormat(uint8_t OSIZE, uint8_t OMONO, uint8_t OMODE, uint8_t OFALL)
+void SI4735::digitalOutputFormat(uint8_t OSIZE, uint8_t OMONO, uint8_t OMODE, uint8_t OFALL)
 {
     si4735_digital_output_format df;
     df.refined.OSIZE = OSIZE;
@@ -3426,7 +1793,7 @@ void si4735_digitalOutputFormat(uint8_t OSIZE, uint8_t OMONO, uint8_t OMODE, uin
     df.refined.OMODE = OMODE;
     df.refined.OFALL = OFALL;
     df.refined.dummy = 0;
-    si4735_sendProperty(DIGITAL_OUTPUT_FORMAT, df.raw);
+    sendProperty(DIGITAL_OUTPUT_FORMAT, df.raw);
 }
 
 /**
@@ -3446,11 +1813,11 @@ void si4735_digitalOutputFormat(uint8_t OSIZE, uint8_t OMONO, uint8_t OMODE, uin
  * @see Si47XX PROGRAMINGGUIDE; AN332 (REV 1.0); page 196.
  * @see Si47XX ANTENNA, SCHEMATIC, LAYOUT, AND DESIGN GUIDELINES; AN383; rev 0.8; page 6
  *
- * @param uint16_t DOSR Digital Output Sample Rate(32?48 ksps .0 to disable digital audio output).
+ * @param uint16_t DOSR Digital Output Sample Rate(32–48 ksps .0 to disable digital audio output).
  */
-void si4735_digitalOutputSampleRate(uint16_t DOSR)
+void SI4735::digitalOutputSampleRate(uint16_t DOSR)
 {
-    si4735_sendProperty(DIGITAL_OUTPUT_SAMPLE_RATE, DOSR);
+    sendProperty(DIGITAL_OUTPUT_SAMPLE_RATE, DOSR);
 }
 
 /**
@@ -3462,9 +1829,9 @@ void si4735_digitalOutputSampleRate(uint16_t DOSR)
  *
  * @param uint8_t volume (domain: 0 - 63)
  */
-void si4735_setVolume(uint8_t volume)
+void SI4735::setVolume(uint8_t volume)
 {
-    si4735_sendProperty(RX_VOLUME, volume);
+    sendProperty(RX_VOLUME, volume);
     this->volume = volume;
 }
 
@@ -3479,10 +1846,10 @@ void si4735_setVolume(uint8_t volume)
  *
  * @param value if true, mute the audio; if false unmute the audio.
  */
-void si4735_setAudioMute(bool off)
+void SI4735::setAudioMute(bool off)
 {
     uint16_t value = (off) ? 3 : 0; // 3 means mute; 0 means unmute
-    si4735_sendProperty(RX_HARD_MUTE, value);
+    sendProperty(RX_HARD_MUTE, value);
 }
 
 /**
@@ -3494,7 +1861,7 @@ void si4735_setAudioMute(bool off)
  *
  * @return volume (domain: 0 - 63)
  */
-uint8_t si4735_getVolume()
+uint8_t SI4735::getVolume()
 {
     return this->volume;
 }
@@ -3506,11 +1873,11 @@ uint8_t si4735_getVolume()
  *
  * @see setVolume()
  */
-void si4735_volumeUp()
+void SI4735::volumeUp()
 {
     if (volume < 63)
         volume++;
-    si4735_setVolume(volume);
+    setVolume(volume);
 }
 
 /**
@@ -3520,11 +1887,11 @@ void si4735_volumeUp()
  *
  * @see setVolume()
  */
-void si4735_volumeDown()
+void SI4735::volumeDown()
 {
     if (volume > 0)
         volume--;
-    si4735_setVolume(volume);
+    setVolume(volume);
 }
 
 /**
@@ -3545,11 +1912,11 @@ void si4735_volumeDown()
  * 
  * @see setRdsConfig()
  */
-void si4735_RdsInit()
+void SI4735::RdsInit()
 {
-    si4735_clearRdsBuffer2A();
-    si4735_clearRdsBuffer2B();
-    si4735_clearRdsBuffer0A();
+    clearRdsBuffer2A();
+    clearRdsBuffer2B();
+    clearRdsBuffer0A();
     rdsTextAdress2A = rdsTextAdress2B = lastTextFlagAB = rdsTextAdress0A = 0;
 }
 
@@ -3568,8 +1935,8 @@ void si4735_RdsInit()
  * |Value | Description |
  * |------| ----------- | 
  * | 0    | No errors |
- * | 1    | 1?2 bit errors detected and corrected |
- * | 2    | 3?5 bit errors detected and corrected |
+ * | 1    | 1–2 bit errors detected and corrected |
+ * | 2    | 3–5 bit errors detected and corrected |
  * | 3    | Uncorrectable |
  * 
  * @details Recommended Block Error Threshold options:
@@ -3588,7 +1955,7 @@ void si4735_RdsInit()
  * @param uint8_t BLETHC Block Error Threshold BLOCKC.  
  * @param uint8_t BLETHD Block Error Threshold BLOCKD. 
  */
-void si4735_setRdsConfig(uint8_t RDSEN, uint8_t BLETHA, uint8_t BLETHB, uint8_t BLETHC, uint8_t BLETHD)
+void SI4735::setRdsConfig(uint8_t RDSEN, uint8_t BLETHA, uint8_t BLETHB, uint8_t BLETHC, uint8_t BLETHD)
 {
     si47x_property property;
     si47x_rds_config config;
@@ -3616,7 +1983,7 @@ void si4735_setRdsConfig(uint8_t RDSEN, uint8_t BLETHA, uint8_t BLETHB, uint8_t 
     Wire.endTransmission();
     delayMicroseconds(550);
 
-    si4735_RdsInit();
+    RdsInit();
 }
 
 /** 
@@ -3634,7 +2001,7 @@ void si4735_setRdsConfig(uint8_t RDSEN, uint8_t BLETHA, uint8_t BLETHB, uint8_t 
  * @param RDSNEWBLOCKA If set, generate an interrupt when Block A data is found or subsequently changed
  * @param RDSNEWBLOCKB If set, generate an interrupt when Block B data is found or subsequently changed
  */
-void si4735_setRdsIntSource(uint8_t RDSRECV, uint8_t RDSSYNCLOST, uint8_t RDSSYNCFOUND, uint8_t RDSNEWBLOCKA, uint8_t RDSNEWBLOCKB)
+void SI4735::setRdsIntSource(uint8_t RDSRECV, uint8_t RDSSYNCLOST, uint8_t RDSSYNCFOUND, uint8_t RDSNEWBLOCKA, uint8_t RDSNEWBLOCKB)
 {
     si47x_property property;
     si47x_rds_int_source rds_int_source;
@@ -3678,7 +2045,7 @@ void si4735_setRdsIntSource(uint8_t RDSRECV, uint8_t RDSSYNCLOST, uint8_t RDSSYN
  *                   0 = Data in BLOCKA, BLOCKB, BLOCKC, BLOCKD, and BLE contain the oldest data in the RDS FIFO.
  *                   1 = Data in BLOCKA will contain the last valid block A data received for the cur- rent station. Data in BLOCKB will contain the last valid block B data received for the current station. Data in BLE will describe the bit errors for the data in BLOCKA and BLOCKB.
  */
-void si4735_getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY)
+void SI4735::getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY)
 {
     si47x_rds_command rds_cmd;
     static uint16_t lastFreq;
@@ -3689,9 +2056,9 @@ void si4735_getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY)
     if (lastFreq != currentWorkFrequency)
     {
         lastFreq = currentWorkFrequency;
-        si4735_clearRdsBuffer2A();
-        si4735_clearRdsBuffer2B();
-        si4735_clearRdsBuffer0A();
+        clearRdsBuffer2A();
+        clearRdsBuffer2B();
+        clearRdsBuffer0A();
     }
 
     waitToSend();
@@ -3730,9 +2097,9 @@ void si4735_getRdsStatus(uint8_t INTACK, uint8_t MTFIFO, uint8_t STATUSONLY)
  * 
  * @return BLOCKAL
  */
-uint16_t si4735_getRdsPI(void)
+uint16_t SI4735::getRdsPI(void)
 {
-    if (si4735_getRdsReceived() && si4735_getRdsNewBlockA())
+    if (getRdsReceived() && getRdsNewBlockA())
     {
         return currentRdsStatus.resp.BLOCKAL;
     }
@@ -3746,7 +2113,7 @@ uint16_t si4735_getRdsPI(void)
  * 
  * @return BLOCKBL 
  */
-uint8_t si4735_getRdsGroupType(void)
+uint8_t SI4735::getRdsGroupType(void)
 {
     si47x_rds_blockb blkb;
 
@@ -3763,7 +2130,7 @@ uint8_t si4735_getRdsGroupType(void)
  * 
  * @return uint8_t current Text Flag A/B  
  */
-uint8_t si4735_getRdsFlagAB(void)
+uint8_t SI4735::getRdsFlagAB(void)
 {
     si47x_rds_blockb blkb;
 
@@ -3785,7 +2152,7 @@ uint8_t si4735_getRdsFlagAB(void)
  * 
  * @return uint8_t the address of the text segment.
  */
-uint8_t si4735_getRdsTextSegmentAddress(void)
+uint8_t SI4735::getRdsTextSegmentAddress(void)
 {
     si47x_rds_blockb blkb;
     blkb.raw.lowValue = currentRdsStatus.resp.BLOCKBL;
@@ -3801,7 +2168,7 @@ uint8_t si4735_getRdsTextSegmentAddress(void)
  * 
  * @returns  0=A or 1=B
  */
-uint8_t si4735_getRdsVersionCode(void)
+uint8_t SI4735::getRdsVersionCode(void)
 {
     si47x_rds_blockb blkb;
 
@@ -3820,7 +2187,7 @@ uint8_t si4735_getRdsVersionCode(void)
  * 
  * @return program type (an integer betwenn 0 and 31)
  */
-uint8_t si4735_getRdsProgramType(void)
+uint8_t SI4735::getRdsProgramType(void)
 {
     si47x_rds_blockb blkb;
 
@@ -3837,7 +2204,7 @@ uint8_t si4735_getRdsProgramType(void)
  * 
  * @param c  char array reference to the "group 2B" text 
  */
-void si4735_getNext2Block(char *c)
+void SI4735::getNext2Block(char *c)
 {
     c[1] = currentRdsStatus.resp.BLOCKDL;
     c[0] = currentRdsStatus.resp.BLOCKDH;
@@ -3850,7 +2217,7 @@ void si4735_getNext2Block(char *c)
  * 
  * @param c  char array reference to the "group  2A" text 
  */
-void si4735_getNext4Block(char *c)
+void SI4735::getNext4Block(char *c)
 {
     c[0] = currentRdsStatus.resp.BLOCKCH;
     c[1] = currentRdsStatus.resp.BLOCKCL;
@@ -3866,7 +2233,7 @@ void si4735_getNext4Block(char *c)
  * 
  * @return char*  The string (char array) with the content (Text) received from group 2A 
  */
-char* si4735_getRdsText(void)
+char *SI4735::getRdsText(void)
 {
 
     // Needs to get the "Text segment address code".
@@ -3875,7 +2242,7 @@ char* si4735_getRdsText(void)
     if (rdsTextAdress2A >= 16)
         rdsTextAdress2A = 0;
 
-    si4735_getNext4Block(&rds_buffer2A[rdsTextAdress2A * 4]);
+    getNext4Block(&rds_buffer2A[rdsTextAdress2A * 4]);
 
     rdsTextAdress2A += 4;
 
@@ -3890,17 +2257,17 @@ char* si4735_getRdsText(void)
  * @return char* should return a string with the station name. 
  *         However, some stations send other kind of messages
  */
-char* si4735_getRdsText0A(void)
+char *SI4735::getRdsText0A(void)
 {
     si47x_rds_blockb blkB;
 
-    if (si4735_getRdsReceived())
+    if (getRdsReceived())
     {
-        if (si4735_getRdsGroupType() == 0)
+        if (getRdsGroupType() == 0)
         {
             if ( lastTextFlagAB != this->getRdsFlagAB() )  {
                  lastTextFlagAB = this->getRdsFlagAB(); 
-                 si4735_clearRdsBuffer0A();
+                 this->clearRdsBuffer0A();
             } 
             // Process group type 0
             blkB.raw.highValue = currentRdsStatus.resp.BLOCKBH;
@@ -3925,12 +2292,12 @@ char* si4735_getRdsText0A(void)
  * 
  * @return char* string with the Text of the group A2  
  */
-char* si4735_getRdsText2A(void)
+char *SI4735::getRdsText2A(void)
 {
     si47x_rds_blockb blkB;
 
-    // si4735_getRdsStatus();
-    if (si4735_getRdsReceived())
+    // getRdsStatus();
+    if (getRdsReceived())
     {
         if (getRdsGroupType() == 2 /* && getRdsVersionCode() == 0 */)
         {
@@ -3958,7 +2325,7 @@ char* si4735_getRdsText2A(void)
  * 
  * @return char* string with the Text of the group AB  
  */
-char* si4735_getRdsText2B(void)
+char *SI4735::getRdsText2B(void)
 {
     si47x_rds_blockb blkB;
 
@@ -3967,7 +2334,7 @@ char* si4735_getRdsText2B(void)
     // {
     // if (getRdsNewBlockB())
     // {
-    if (si4735_getRdsGroupType() == 2 /* && si4735_getRdsVersionCode() == 1 */)
+    if (getRdsGroupType() == 2 /* && getRdsVersionCode() == 1 */)
     {
         // Process group 2B
         blkB.raw.highValue = currentRdsStatus.resp.BLOCKBH;
@@ -4060,15 +2427,15 @@ char* si4735_getRdsText2B(void)
  * @return True if found at least one valid data
  * @see setRDS, setRdsFifo, getRdsAllData
  */
-bool si4735_getRdsAllData(char **stationName, char **stationInformation, char **programInformation, char **utcTime)
+bool SI4735::getRdsAllData(char **stationName, char **stationInformation, char **programInformation, char **utcTime)
 {
     this->rdsBeginQuery();
     if (!this->getRdsReceived())  return false;
     if (!this->getRdsSync() || this->getNumRdsFifoUsed() == 0) return false;
-    *stationName = si4735_getRdsText0A();        // returns NULL if no information
-    *stationInformation = si4735_getRdsText2B(); // returns NULL if no information
-    *programInformation = si4735_getRdsText2A(); // returns NULL if no information
-    *utcTime = si4735_getRdsTime();              // returns NULL if no information
+    *stationName = this->getRdsText0A();        // returns NULL if no information
+    *stationInformation = this->getRdsText2B(); // returns NULL if no information
+    *programInformation = this->getRdsText2A(); // returns NULL if no information
+    *utcTime = this->getRdsTime();              // returns NULL if no information
 
     return (bool)stationName | (bool)stationInformation | (bool)programInformation | (bool)utcTime;
 }
@@ -4084,7 +2451,7 @@ bool si4735_getRdsAllData(char **stationName, char **stationInformation, char **
  * 
  * @return  point to char array. Format:  +/-hh:mm (offset)
  */
-char* si4735_getRdsTime()
+char *SI4735::getRdsTime()
 {
     // Under Test and construction
     // Need to check the Group Type before.
@@ -4093,7 +2460,7 @@ char* si4735_getRdsTime()
     uint16_t minute;
     uint16_t hour;
 
-    if (si4735_getRdsGroupType() == 4)
+    if (getRdsGroupType() == 4)
     {
         char offset_sign;
         int offset_h;
@@ -4109,7 +2476,7 @@ char* si4735_getRdsTime()
         dt.raw[1] = currentRdsStatus.resp.BLOCKDH;
 
         // Unfortunately it was necessary dues to  the GCC compiler on 32-bit platform.
-        // See si47x_rds_date_time (typedef union) and CGG ?Crosses boundary? issue/features.
+        // See si47x_rds_date_time (typedef union) and CGG “Crosses boundary” issue/features.
         // Now it is working on Atmega328, STM32, Arduino DUE, ESP32 and more.
         minute =  dt.refined.minute;
         hour =   dt.refined.hour;
@@ -4125,14 +2492,14 @@ char* si4735_getRdsTime()
         if (offset_h > 12 || offset_m > 60 || hour > 24 || minute > 60)
             return NULL;
 
-        si4735_convertToChar(hour, rds_time, 2, 0, ' ', false);
+        this->convertToChar(hour, rds_time, 2, 0, ' ', false);
         rds_time[2] = ':';
-        si4735_convertToChar(minute, &rds_time[3], 2, 0, ' ', false);
+        this->convertToChar(minute, &rds_time[3], 2, 0, ' ', false);
         rds_time[5] = ' ';
         rds_time[6] = offset_sign;
-        si4735_convertToChar(offset_h, &rds_time[7], 2, 0, ' ', false);
+        this->convertToChar(offset_h, &rds_time[7], 2, 0, ' ', false);
         rds_time[9] = ':';
-        si4735_convertToChar(offset_m, &rds_time[10], 2, 0, ' ', false);
+        this->convertToChar(offset_m, &rds_time[10], 2, 0, ' ', false);
         rds_time[12] = '\0';
         
             
@@ -4152,7 +2519,7 @@ char* si4735_getRdsTime()
  * @param month month variable reference 
  * @param day day variable reference 
  */
-void si4735_mjdConverter(uint32_t mjd, uint32_t *year, uint32_t *month, uint32_t *day)
+void SI4735::mjdConverter(uint32_t mjd, uint32_t *year, uint32_t *month, uint32_t *day)
 {
     uint32_t jd, ljd, njd;
     jd = mjd + 2400001;
@@ -4191,7 +2558,7 @@ void si4735_mjdConverter(uint32_t mjd, uint32_t *year, uint32_t *month, uint32_t
  * @param rMinute local minute variable reference 
  * @return true, it the RDS Date and time were processed 
  */
-bool si4735_getRdsDateTime(uint16_t *rYear, uint16_t *rMonth, uint16_t *rDay, uint16_t *rHour, uint16_t *rMinute)
+bool SI4735::getRdsDateTime(uint16_t *rYear, uint16_t *rMonth, uint16_t *rDay, uint16_t *rHour, uint16_t *rMinute)
 {
     si47x_rds_date_time dt;
 
@@ -4200,7 +2567,7 @@ bool si4735_getRdsDateTime(uint16_t *rYear, uint16_t *rMonth, uint16_t *rDay, ui
     uint16_t hour;
     uint32_t mjd, day, month, year;
 
-    if (si4735_getRdsGroupType() == 4)
+    if (getRdsGroupType() == 4)
     {
 
         dt.raw[4] = currentRdsStatus.resp.BLOCKBL;
@@ -4211,7 +2578,7 @@ bool si4735_getRdsDateTime(uint16_t *rYear, uint16_t *rMonth, uint16_t *rDay, ui
         dt.raw[1] = currentRdsStatus.resp.BLOCKDH;
 
         // Unfortunately the resource below was necessary dues to  the GCC compiler on 32-bit platform.
-        // See si47x_rds_date_time (typedef union) and CGG ?Crosses boundary? issue/features.
+        // See si47x_rds_date_time (typedef union) and CGG “Crosses boundary” issue/features.
         // Now it is working on Atmega328, STM32, Arduino DUE, ESP32 and more.
 
         mjd = dt.refined.mjd;
@@ -4265,7 +2632,7 @@ bool si4735_getRdsDateTime(uint16_t *rYear, uint16_t *rMonth, uint16_t *rDay, ui
  * 
  * @return array of char yy-mm-dd hh:mm +/-hh:mm offset
  */
-char* si4735_getRdsDateTime()
+char *SI4735::getRdsDateTime()
 {
     si47x_rds_date_time dt;
 
@@ -4273,7 +2640,7 @@ char* si4735_getRdsDateTime()
     uint16_t hour;
     uint32_t mjd, day, month, year;    
 
-    if (si4735_getRdsGroupType() == 4)
+    if (getRdsGroupType() == 4)
     {
         char offset_sign;
         int offset_h;
@@ -4287,7 +2654,7 @@ char* si4735_getRdsDateTime()
         dt.raw[1] = currentRdsStatus.resp.BLOCKDH;
 
         // Unfortunately the resource below was necessary dues to  the GCC compiler on 32-bit platform.
-        // See si47x_rds_date_time (typedef union) and CGG ?Crosses boundary? issue/features.
+        // See si47x_rds_date_time (typedef union) and CGG “Crosses boundary” issue/features.
         // Now it is working on Atmega328, STM32, Arduino DUE, ESP32 and more.
 
         mjd |= dt.refined.mjd;
@@ -4296,7 +2663,7 @@ char* si4735_getRdsDateTime()
         hour =  dt.refined.hour;
 
         // calculates the jd (Year, Month and Day) base on mjd number
-        si4735_mjdConverter(mjd, &year, &month, &day);
+        mjdConverter(mjd, &year, &month, &day);
 
         // Calculating hour, minute and offset
         offset_sign = (dt.refined.offset_sense == 1) ? '+' : '-';
@@ -4309,20 +2676,20 @@ char* si4735_getRdsDateTime()
         if (offset_h > 12 || offset_m > 60 || hour > 24 || minute > 60 || day > 31 || month > 12 )
             return NULL;
 
-        si4735_convertToChar(year, rds_time, 4, 0, ' ', false);
+        this->convertToChar(year, rds_time, 4, 0, ' ', false);
         rds_time[4] = '-';
-        si4735_convertToChar(month, &rds_time[5], 2, 0, ' ', false);
+        this->convertToChar(month, &rds_time[5], 2, 0, ' ', false);
         rds_time[7] = '-';
-        si4735_convertToChar(day, &rds_time[8], 2, 0, ' ', false);
+        this->convertToChar(day, &rds_time[8], 2, 0, ' ', false);
         rds_time[10] = ' ';
-        si4735_convertToChar(hour, &rds_time[11], 2, 0, ' ', false);
+        this->convertToChar(hour, &rds_time[11], 2, 0, ' ', false);
         rds_time[13] = ':';
-        si4735_convertToChar(minute, &rds_time[14], 2, 0, ' ', false);
+        this->convertToChar(minute, &rds_time[14], 2, 0, ' ', false);
         rds_time[16] = ' ';
         rds_time[17] = offset_sign;
-        si4735_convertToChar(offset_h, &rds_time[18], 2, 0, ' ', false);
+        this->convertToChar(offset_h, &rds_time[18], 2, 0, ' ', false);
         rds_time[20] = ':';
-        si4735_convertToChar(offset_m, &rds_time[21], 2, 0, ' ', false);
+        this->convertToChar(offset_m, &rds_time[21], 2, 0, ' ', false);
         rds_time[23] = '\0';
 
         return rds_time;
@@ -4375,9 +2742,9 @@ char* si4735_getRdsDateTime()
  *
  * @details ATTENTION: The author of this project cannot guarantee that procedures shown
  * here will work in your development environment. Proceed at your own risk.
- * This library works with the I�C communication protocol to send an SSB extension PATCH to
+ * This library works with the I²C communication protocol to send an SSB extension PATCH to
  * SI4735-D60 and SI4732-A10 devices. Once again, the author disclaims any and all liability for any
- * damage or effects this procedure may have on your devices. Procced at your own risk.
+ * damage or effects this procedure may have on your devices. Proceed at your own risk.
  * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE; pages 3 and 5
  */
 
@@ -4390,7 +2757,7 @@ char* si4735_getRdsDateTime()
  *
  * @param offset 16-bit signed value (unit in Hz). The valid range is -16383 to +16383 Hz.
  */
-void si4735_setSSBBfo(int offset)
+void SI4735::setSSBBfo(int offset)
 {
 
     si47x_property property;
@@ -4439,7 +2806,7 @@ void si4735_setSSBBfo(int offset)
  * @param SMUTESEL SSB Soft-mute Based on RSSI or SNR.
  * @param DSP_AFCDIS DSP AFC Disable or enable; 0=SYNC MODE, AFC enable; 1=SSB MODE, AFC disable.
  */
-void si4735_setSSBConfig(uint8_t AUDIOBW, uint8_t SBCUTFLT, uint8_t AVC_DIVIDER, uint8_t AVCEN, uint8_t SMUTESEL, uint8_t DSP_AFCDIS)
+void SI4735::setSSBConfig(uint8_t AUDIOBW, uint8_t SBCUTFLT, uint8_t AVC_DIVIDER, uint8_t AVCEN, uint8_t SMUTESEL, uint8_t DSP_AFCDIS)
 {
     if (currentTune == FM_TUNE_FREQ) // Only AM/SSB mode
         return;
@@ -4452,7 +2819,7 @@ void si4735_setSSBConfig(uint8_t AUDIOBW, uint8_t SBCUTFLT, uint8_t AVC_DIVIDER,
     currentSSBMode.param.DUMMY1 = 0;
     currentSSBMode.param.DSP_AFCDIS = DSP_AFCDIS;
 
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4464,10 +2831,10 @@ void si4735_setSSBConfig(uint8_t AUDIOBW, uint8_t SBCUTFLT, uint8_t AVC_DIVIDER,
  *
  * @param DSP_AFCDIS 0 = SYNC mode, AFC enable; 1 = SSB mode, AFC disable
  */
-void si4735_setSSBDspAfc(uint8_t DSP_AFCDIS)
+void SI4735::setSSBDspAfc(uint8_t DSP_AFCDIS)
 {
     currentSSBMode.param.DSP_AFCDIS = DSP_AFCDIS;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4479,10 +2846,10 @@ void si4735_setSSBDspAfc(uint8_t DSP_AFCDIS)
  *
  * @param SMUTESEL  0 = Soft-mute based on RSSI (default); 1 = Soft-mute based on SNR.
  */
-void si4735_setSSBSoftMute(uint8_t SMUTESEL)
+void SI4735::setSSBSoftMute(uint8_t SMUTESEL)
 {
     currentSSBMode.param.SMUTESEL = SMUTESEL;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4494,10 +2861,10 @@ void si4735_setSSBSoftMute(uint8_t SMUTESEL)
  *
  * @param AVCEN 0 = Disable AVC; 1 = Enable AVC (default).
  */
-void si4735_setSSBAutomaticVolumeControl(uint8_t AVCEN)
+void SI4735::setSSBAutomaticVolumeControl(uint8_t AVCEN)
 {
     currentSSBMode.param.AVCEN = AVCEN;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4509,10 +2876,10 @@ void si4735_setSSBAutomaticVolumeControl(uint8_t AVCEN)
  *
  * @param AVC_DIVIDER  SSB mode, set divider = 0; SYNC mode, set divider = 3; Other values = not allowed.
  */
-void si4735_setSSBAvcDivider(uint8_t AVC_DIVIDER)
+void SI4735::setSSBAvcDivider(uint8_t AVC_DIVIDER)
 {
     currentSSBMode.param.AVC_DIVIDER = AVC_DIVIDER;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4527,10 +2894,10 @@ void si4735_setSSBAvcDivider(uint8_t AVC_DIVIDER)
  *
  * @param SBCUTFLT 0 or 1; see above
  */
-void si4735_setSSBSidebandCutoffFilter(uint8_t SBCUTFLT)
+void SI4735::setSSBSidebandCutoffFilter(uint8_t SBCUTFLT)
 {
     currentSSBMode.param.SBCUTFLT = SBCUTFLT;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4557,11 +2924,11 @@ void si4735_setSSBSidebandCutoffFilter(uint8_t SBCUTFLT)
  *
  * @param AUDIOBW the valid values are 0, 1, 2, 3, 4 or 5; see description above
  */
-void si4735_setSSBAudioBandwidth(uint8_t AUDIOBW)
+void SI4735::setSSBAudioBandwidth(uint8_t AUDIOBW)
 {
     // Sets the audio filter property parameter
     currentSSBMode.param.AUDIOBW = AUDIOBW;
-    si4735_sendSSBModeProperty();
+    sendSSBModeProperty();
 }
 
 /**
@@ -4580,16 +2947,16 @@ void si4735_setSSBAudioBandwidth(uint8_t AUDIOBW)
  *
  * @param usblsb upper or lower side band;  1 = LSB; 2 = USB
  */
-void si4735_setSSB(uint8_t usblsb)
+void SI4735::setSSB(uint8_t usblsb)
 {
     // Is it needed to load patch when switch to SSB?
     // powerDown();
     // It starts with the same AM parameters.
     // setPowerUp(1, 1, 0, 1, 1, currentAudioMode);
-    si4735_setPowerUp(ctsIntEnable, 0, 0, currentClockType, 1, currentAudioMode);
-    si4735_radioPowerUp();
+    setPowerUp(this->ctsIntEnable, 0, 0, this->currentClockType, 1, this->currentAudioMode);
+    radioPowerUp();
     // ssbPowerUp(); // Not used for regular operation
-    si4735_setVolume(volume); // Set to previus configured volume
+    setVolume(volume); // Set to previus configured volume
     currentSsbStatus = usblsb;
     lastMode = SSB_CURRENT_MODE;
 }
@@ -4614,7 +2981,7 @@ void si4735_setSSB(uint8_t usblsb)
  *               value 2 (banary 10) = USB;
  *               value 1 (banary 01) = LSB.
  */
-void si4735_setSSB(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step, uint8_t usblsb)
+void SI4735::setSSB(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step, uint8_t usblsb)
 {
     currentMinimumFrequency = fromFreq;
     currentMaximumFrequency = toFreq;
@@ -4623,10 +2990,10 @@ void si4735_setSSB(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uin
     if (initialFreq < fromFreq || initialFreq > toFreq)
         initialFreq = fromFreq;
 
-    si4735_setSSB(usblsb);
+    setSSB(usblsb);
 
     currentWorkFrequency = initialFreq;
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
     // delayMicroseconds(550);
 }
 
@@ -4635,7 +3002,7 @@ void si4735_setSSB(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uin
  *
  * @brief Just send the property SSB_MOD to the device.  Internal use (privete method).
  */
-void si4735_sendSSBModeProperty()
+void SI4735::sendSSBModeProperty()
 {
     si47x_property property;
     property.value = SSB_MODE;
@@ -4661,7 +3028,7 @@ void si4735_sendSSBModeProperty()
  * @see AN332 REV 0.8 Universal Programming Guide Amendment for SI4735-D60 SSB and NBFM patches; page 18.
  *
  */
-void si4735_getSsbAgcStatus()
+void SI4735::getSsbAgcStatus()
 {
     waitToSend();
 
@@ -4688,7 +3055,7 @@ void si4735_getSsbAgcStatus()
  * @param uint8_t SSBAGCNDX If 1, this byte forces the AGC gain index. if 0,  Minimum attenuation (max gain)
  *
  */
-void si4735_setSsbAgcOverrite(uint8_t SSBAGCDIS, uint8_t SSBAGCNDX, uint8_t reserved)
+void SI4735::setSsbAgcOverrite(uint8_t SSBAGCDIS, uint8_t SSBAGCNDX, uint8_t reserved)
 {
     si47x_agc_overrride agc;
 
@@ -4733,11 +3100,11 @@ void si4735_setSsbAgcOverrite(uint8_t SSBAGCDIS, uint8_t SSBAGCNDX, uint8_t rese
  *
  * @return a struct si47x_firmware_query_library (see it in SI4735.h)
  */
-si47x_firmware_query_library si4735_queryLibraryId()
+si47x_firmware_query_library SI4735::queryLibraryId()
 {
     si47x_firmware_query_library libraryID;
 
-    si4735_powerDown(); // Is it necessary
+    powerDown(); // Is it necessary
 
     // delay(500);
 
@@ -4774,7 +3141,7 @@ si47x_firmware_query_library si4735_queryLibraryId()
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 64 and 215-220 and
  * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE AMENDMENT FOR SI4735-D60 SSB AND NBFM PATCHES; page 7.
  */
-void si4735_patchPowerUp()
+void SI4735::patchPowerUp()
 {
     waitToSend();
     Wire.beginTransmission(deviceAddress);
@@ -4782,7 +3149,7 @@ void si4735_patchPowerUp()
     Wire.write(0b00110001);          // This is a condition for loading the patch: Set to AM, Enable External Crystal Oscillator; Set patch enable; GPO2 output disabled; CTS interrupt disabled. You can change this calling setSSB.
     Wire.write(SI473X_ANALOG_AUDIO); // This is a condition for loading the patch: Set to Analog Output. You can change this calling setSSB.
     Wire.endTransmission();
-    delay(maxDelayAfterPouwerUp);
+    delay(maxDelayAfterPowerUp);
 }
 
 /**
@@ -4790,7 +3157,7 @@ void si4735_patchPowerUp()
  *
  * @brief This function can be useful for debug and test.
  */
-void si4735_ssbPowerUp()
+void SI4735::ssbPowerUp()
 {
     waitToSend();
     Wire.beginTransmission(deviceAddress);
@@ -4848,7 +3215,7 @@ void si4735_ssbPowerUp()
  *
  *  @return false if an error is found.
  */
-bool si4735_downloadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size)
+bool SI4735::downloadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size)
 {
     uint8_t content;
     // Send patch to the SI4735 device
@@ -4936,7 +3303,7 @@ bool si4735_downloadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_p
  * @param cmd_0x15                  Array of lines where the first byte of each patch content line is 0x15
  * @param cmd_0x15_size             Array size
  */
-bool si4735_downloadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, const uint16_t *cmd_0x15, const int16_t cmd_0x15_size)
+bool SI4735::downloadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, const uint16_t *cmd_0x15, const int16_t cmd_0x15_size)
 {
     uint8_t cmd, content;
     uint16_t command_line = 0;
@@ -4977,12 +3344,12 @@ bool si4735_downloadCompressedPatch(const uint8_t *ssb_patch_content, const uint
  * @param ssb_patch_content_size   size of patch content
  * @param ssb_audiobw              SSB Audio bandwidth; 0 = 1.2kHz (default); 1=2.2kHz; 2=3kHz; 3=4kHz; 4=500Hz; 5=1kHz.
  */
-void si4735_loadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, uint8_t ssb_audiobw)
+void SI4735::loadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, uint8_t ssb_audiobw)
 {
-    si4735_queryLibraryId();
-    si4735_patchPowerUp();
+    queryLibraryId();
+    patchPowerUp();
     delay(50);
-    si4735_downloadPatch(ssb_patch_content, ssb_patch_content_size);
+    downloadPatch(ssb_patch_content, ssb_patch_content_size);
     // Parameters
     // AUDIOBW - SSB Audio bandwidth; 0 = 1.2kHz (default); 1=2.2kHz; 2=3kHz; 3=4kHz; 4=500Hz; 5=1kHz;
     // SBCUTFLT SSB - side band cutoff filter for band passand low pass filter ( 0 or 1)
@@ -4990,7 +3357,7 @@ void si4735_loadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch
     // AVCEN - SSB Automatic Volume Control (AVC) enable; 0=disable; 1=enable (default).
     // SMUTESEL - SSB Soft-mute Based on RSSI or SNR (0 or 1).
     // DSP_AFCDIS - DSP AFC Disable or enable; 0=SYNC MODE, AFC enable; 1=SSB MODE, AFC disable.
-    si4735_setSSBConfig(ssb_audiobw, 1, 0, 0, 0, 1);
+    setSSBConfig(ssb_audiobw, 1, 0, 0, 0, 1);
     delay(25);
 }
 
@@ -5005,12 +3372,12 @@ void si4735_loadPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch
  * @param cmd_0x15_size             Array size
  * @param ssb_audiobw              SSB Audio bandwidth; 0 = 1.2kHz (default); 1=2.2kHz; 2=3kHz; 3=4kHz; 4=500Hz; 5=1kHz.
  */
-void si4735_loadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, const uint16_t *cmd_0x15, const int16_t cmd_0x15_size, uint8_t ssb_audiobw)
+void SI4735::loadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t ssb_patch_content_size, const uint16_t *cmd_0x15, const int16_t cmd_0x15_size, uint8_t ssb_audiobw)
 {
-    si4735_queryLibraryId();
-    si4735_patchPowerUp();
+    queryLibraryId();
+    patchPowerUp();
     delay(50);
-    si4735_downloadCompressedPatch(ssb_patch_content, ssb_patch_content_size, cmd_0x15, cmd_0x15_size);
+    downloadCompressedPatch(ssb_patch_content, ssb_patch_content_size, cmd_0x15, cmd_0x15_size);
     // Parameters
     // AUDIOBW - SSB Audio bandwidth; 0 = 1.2kHz (default); 1=2.2kHz; 2=3kHz; 3=4kHz; 4=500Hz; 5=1kHz;
     // SBCUTFLT SSB - side band cutoff filter for band passand low pass filter ( 0 or 1)
@@ -5018,7 +3385,7 @@ void si4735_loadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t
     // AVCEN - SSB Automatic Volume Control (AVC) enable; 0=disable; 1=enable (default).
     // SMUTESEL - SSB Soft-mute Based on RSSI or SNR (0 or 1).
     // DSP_AFCDIS - DSP AFC Disable or enable; 0=SYNC MODE, AFC enable; 1=SSB MODE, AFC disable.
-    si4735_setSSBConfig(ssb_audiobw, 1, 0, 0, 0, 1);
+    setSSBConfig(ssb_audiobw, 1, 0, 0, 0, 1);
     delay(25);
 }
 
@@ -5035,7 +3402,7 @@ void si4735_loadCompressedPatch(const uint8_t *ssb_patch_content, const uint16_t
  * @param eeprom_i2c_address
  * @return false if an error is found.
  */
-si4735_eeprom_patch_header si4735_downloadPatchFromEeprom(int eeprom_i2c_address)
+si4735_eeprom_patch_header SI4735::downloadPatchFromEeprom(int eeprom_i2c_address)
 {
     si4735_eeprom_patch_header eep;
     const int header_size = sizeof eep;
@@ -5111,7 +3478,7 @@ si4735_eeprom_patch_header si4735_downloadPatchFromEeprom(int eeprom_i2c_address
  * @param separator symbol "." or ","
  * @param remove_leading_zeros if true removes up to two leading zeros (default is true)
  */
-void si4735_convertToChar(uint16_t value, char *strValue, uint8_t len, uint8_t dot, uint8_t separator, bool remove_leading_zeros)
+void SI4735::convertToChar(uint16_t value, char *strValue, uint8_t len, uint8_t dot, uint8_t separator, bool remove_leading_zeros)
 {
     char d;
     for (int i = (len - 1); i >= 0; i--)
@@ -5149,7 +3516,7 @@ void si4735_convertToChar(uint16_t value, char *strValue, uint8_t len, uint8_t d
  * @param *str - string char array
  * @param size - char array size
  */
-void si4735_removeUnwantedChar(char *str, int size) {
+void SI4735::removeUnwantedChar(char *str, int size) {
   for (int i = 0; str[i] != '\0' && i < size; i++) 
     if ( str[i] != 0 && str[i] < 32 ) str[i] = ' ';
     str[size-1] = '\0';
@@ -5199,7 +3566,7 @@ void si4735_removeUnwantedChar(char *str, int size) {
  *
  * @details ATTENTION: The author of this project cannot guarantee that procedures shown
  *  here will work in your development environment. Proceed at your own risk.
- *  This library works with the I�C communication protocol to send an SSB extension
+ *  This library works with the I²C communication protocol to send an SSB extension
  *  PATCH to SI4735-D60 and SI4732-A10 devices. Once again, the author disclaims any
  *  and all liability for any damage or effects this procedure may have on your devices.
  *  Proceed at your own risk.
@@ -5219,7 +3586,7 @@ void si4735_removeUnwantedChar(char *str, int size) {
  * @see Si47XX PROGRAMMING GUIDE; AN332 (REV 1.0); pages 64 and 215-220 and
  * @see AN332 REV 0.8 UNIVERSAL PROGRAMMING GUIDE AMENDMENT FOR SI4735-D60 SSB AND NBFM PATCHES; page 32.
  */
-void si4735_patchPowerUpNBFM()
+void SI4735::patchPowerUpNBFM()
 {
     waitToSend();
     Wire.beginTransmission(deviceAddress);
@@ -5227,7 +3594,7 @@ void si4735_patchPowerUpNBFM()
     Wire.write(0b00110000);          // This is a condition for loading the patch: Set to AM, Enable External Crystal Oscillator; Set patch enable; GPO2 output disabled; CTS interrupt disabled.
     Wire.write(SI473X_ANALOG_AUDIO); // This is a condition for loading the patch: Set to Analog Output. You can change this calling setNBFM.
     Wire.endTransmission();
-    delay(maxDelayAfterPouwerUp);
+    delay(maxDelayAfterPowerUp);
 }
 
 /**
@@ -5238,12 +3605,12 @@ void si4735_patchPowerUpNBFM()
  * @param patch_content        point to patch content array
  * @param patch_content_size   size of patch content
  */
-void si4735_loadPatchNBFM(const uint8_t *patch_content, const uint16_t patch_content_size)
+void SI4735::loadPatchNBFM(const uint8_t *patch_content, const uint16_t patch_content_size)
 {
-    si4735_queryLibraryId();
-    si4735_patchPowerUpNBFM();
+    queryLibraryId();
+    patchPowerUpNBFM();
     delay(50);
-    si4735_downloadPatch(patch_content, patch_content_size);
+    downloadPatch(patch_content, patch_content_size);
     // TODO
     delay(25);
 }
@@ -5251,7 +3618,7 @@ void si4735_loadPatchNBFM(const uint8_t *patch_content, const uint16_t patch_con
 /**
  * @ingroup group20 Patch and NBFM support
  *
- * @brief Set the radio to FM function.
+ * @brief Set the radio to NBFM function.
  *
  * @todo Adjust the power up parameters
  *
@@ -5262,17 +3629,17 @@ void si4735_loadPatchNBFM(const uint8_t *patch_content, const uint16_t patch_con
  * @see setFrequencyStep()
  * @see void SI4735::setFrequency(uint16_t freq)
  */
-void si4735_setNBFM()
+void SI4735::setNBFM()
 {
     // Is it needed to load patch when switch to SSB?
     // powerDown();
     // It starts with the same AM parameters.
     // setPowerUp(1, 1, 0, 1, 1, currentAudioMode);
-    si4735_setPowerUp(ctsIntEnable, gpo2Enable, 0, currentClockType, 0, currentAudioMode);
-    si4735_radioPowerUp();
+    setPowerUp(this->ctsIntEnable, this->gpo2Enable, 0, this->currentClockType, 0, this->currentAudioMode);
+    radioPowerUp();
     currentTune = NBFM_TUNE_FREQ; // Force current tune to NBFM commands
     // ssbPowerUp(); // Not used for regular operation
-    si4735_setVolume(volume); // Set to previus configured volume
+    setVolume(volume); // Set to previus configured volume
     currentSsbStatus = 0;
     lastMode = NBFM_CURRENT_MODE;
 }
@@ -5293,7 +3660,7 @@ void si4735_setNBFM()
  * @param step step used to go to the next channel
 
  */
-void si4735_setNBFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
+void SI4735::setNBFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, uint16_t step)
 {
     currentMinimumFrequency = fromFreq;
     currentMaximumFrequency = toFreq;
@@ -5302,10 +3669,10 @@ void si4735_setNBFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, ui
     if (initialFreq < fromFreq || initialFreq > toFreq)
         initialFreq = fromFreq;
 
-    si4735_setNBFM();
+    setNBFM();
 
     currentWorkFrequency = initialFreq;
-    si4735_setFrequency(currentWorkFrequency);
+    setFrequency(currentWorkFrequency);
 }
 
 /**
@@ -5321,7 +3688,7 @@ void si4735_setNBFM(uint16_t fromFreq, uint16_t toFreq, uint16_t initialFreq, ui
  *
  * @param uint16_t  freq is the frequency to change. For example, FM => 10390 = 103.9 MHz; AM => 810 = 810 kHz.
  */
-void si4735_setFrequencyNBFM(uint16_t freq)
+void SI4735::setFrequencyNBFM(uint16_t freq)
 {
     waitToSend(); // Wait for the si473x is ready.
     currentFrequency.value = freq;
