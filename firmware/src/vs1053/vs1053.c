@@ -983,7 +983,7 @@ void VS1053_stop(void) {
         case STREAM_HTTP_PROCESS_HEADER:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
-            http_release_parser();
+            if (StreamState == STREAM_HTTP_PROCESS_HEADER) { http_release_parser(); }
             if (uri.server[0] != '\0') {
                 TCPIP_DNS_RemoveEntry(uri.server);
             }
