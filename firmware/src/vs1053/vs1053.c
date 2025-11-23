@@ -244,8 +244,8 @@ void VS1053_handle(void) {
 				break;
 			}
             
-            uint8_t data[32];
-            int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+            uint8_t data[512];
+            size_t w = TCPIP_TCP_ArrayGet(VS_Socket, data, sizeof(data)-1);
             if (w) {
                 http_res_t http_result = http_parse_headers((char*)data, w, &uri);
                 switch (http_result) {
@@ -295,9 +295,9 @@ void VS1053_handle(void) {
             
         case STREAM_HTTP_FILL_BUFFER:
         {
-            uint8_t data[32];
-            while (get_remaining_space_in_ringbuffer() > 128) {
-                int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+            uint8_t data[512];
+            while (get_remaining_space_in_ringbuffer() > sizeof(data)) {
+                size_t w = TCPIP_TCP_ArrayGet(VS_Socket, data, sizeof(data));
                 if (w) {
                     timer = millis();
                     write_array_to_ringbuffer(data, w);
@@ -341,9 +341,9 @@ void VS1053_handle(void) {
 
 		case STREAM_HTTP_GET_DATA:
         {
-            uint8_t data[32];
-            while (get_remaining_space_in_ringbuffer() > 128) {
-                int w = TCPIP_TCP_ArrayGet(VS_Socket, data, 32);
+            uint8_t data[512];
+            while (get_remaining_space_in_ringbuffer() > sizeof(data)) {
+                size_t w = TCPIP_TCP_ArrayGet(VS_Socket, data, sizeof(data));
                 if (w) {
                     timer = millis();
                     write_array_to_ringbuffer(data, w);
@@ -388,9 +388,9 @@ void VS1053_handle(void) {
             
         case STREAM_FILE_FILL_BUFFER:
         {
-            uint8_t data[32];
-            while (get_remaining_space_in_ringbuffer() > 128) {
-                int br = SYS_FS_FileRead(fsrc, data, 32);
+            uint8_t data[512];
+            while (get_remaining_space_in_ringbuffer() > sizeof(data)) {
+                size_t br = SYS_FS_FileRead(fsrc, data, sizeof(data));
                 if (br != -1) {
                     consecutiveReadErrors = 0;
                     if (br != 0) { write_array_to_ringbuffer(data, br); }
@@ -418,9 +418,9 @@ void VS1053_handle(void) {
             
         case STREAM_FILE_GET_DATA:
         {
-            uint8_t data[32];
-            while (get_remaining_space_in_ringbuffer() > 128) {
-                int br = SYS_FS_FileRead(fsrc, data, 32);
+            uint8_t data[512];
+            while (get_remaining_space_in_ringbuffer() > sizeof(data)) {
+                int br = SYS_FS_FileRead(fsrc, data, sizeof(data));
                 if ( br != -1 ) {
                     consecutiveReadErrors = 0;
                     if (br) {write_array_to_ringbuffer(data, br); }
