@@ -1096,6 +1096,116 @@ static void get_uri_from_stream_id(uint16_t id, uri_t* uri) {
     parse_url(url, strlen(url), uri);
 }
 
+/*
+ * VS1053_startLineInPassthrough()
+ *
+ * Stops any current playback and configures the VS1053b for line-in
+ * monitoring: ADC records from LINE1 and the signal is routed back to
+ * the DAC output via the hardware DAC_VOL register (§10.8.7).
+ *
+ * There is NO hardware analog bypass on VS1053b.  The only supported
+ * monitoring path is: LINE1 ? ADC ? DSP (ADPCM/PCM record mode) ? DAC.
+ * The DSP must therefore be kept in PCM recording mode while monitoring.
+ *
+ * Call VS1053_stopLineInPassthrough() to return to normal decode mode.
+ */
+void VS1053_startLineInPassthrough(void) {
+    VS1053_fullStop();
+
+    /* Soft reset ? known state.  Does NOT reset SCI_VOL (§9.6.11). */
+    VS1053_soft_reset();
+    while (!VS_DREQ_PIN) {}
+
+    /* Sample rate for the ADC (must be set BEFORE activating ADPCM mode,
+       as it is only read at recording startup ? §10.8.1). */
+    VS1053_write_register(SCI_AICTRL0, 44100);
+
+    /* Recording gain: 0 = automatic gain control (AGC).
+       Use 1024 for unity gain (1×) if you prefer fixed gain. */
+    VS1053_write_register(SCI_AICTRL1, 1024);
+
+    /* Maximum AGC amplification: 1024 = 1×.  Only relevant when
+       SCI_AICTRL1 == 0 (AGC mode). */
+    VS1053_write_register(SCI_AICTRL2, 1024);
+
+    /* AICTRL3 bits [1:0]: 00 = joint stereo (common AGC)
+       AICTRL3 bit  [2]:    1 = LINEAR PCM (not IMA ADPCM)
+       All other bits must be 0 (§10.8.1). */
+    VS1053_write_register(SCI_AICTRL3, (1 << 2)); /* = 0x0004 */
+    while (!VS_DREQ_PIN) {}
+
+    /* Activate PCM recording mode via SM_RESET | SM_ADPCM | SM_LINE1.
+     *   SM_RESET  (bit 2)  ? required to latch the AICTRL0/3 values
+     *   SM_ADPCM  (bit 12) ? activates the ADC/DAC record path
+     *   SM_LINE_IN (bit 14) ? selects LINE_IN input instead of mic (§9.6.1)
+     *   SM_SDINEW (bit 11) ? keep SPI in VS10xx native mode
+     */
+    VS1053_write_register(SCI_MODE,
+        (1 << SM_RESET)  |
+        (1 << SM_ADPCM)  |
+        (1 << SM_LINE_IN)  |
+        (1 << SM_SDINEW)
+    );
+    while (!VS_DREQ_PIN) {}
+
+    /*
+     * Apply the mandatory VS1053b ADPCM encoder patch (§10.8.1).
+     * Without this patch, recording (and therefore monitoring) is broken
+     * on VS1053b/VS8053b.  This is the same patch your existing
+     * VS1053_startRecordingPCM() should also be calling.
+     */
+    VS1053B_apply_patch();
+    while (!VS_DREQ_PIN) {}
+
+    /*
+     * Enable record monitoring via the hardware DAC_VOL register (§10.8.7).
+     * SCI_VOL writes are IGNORED while in ADPCM recording mode.
+     * DAC_VOL at address 0xC045: high byte = left ch, low byte = right ch.
+     * 0x0000 = 0 dB (full volume), see §10.8.7 table for attenuation steps.
+     */
+    VS1053_write_register(SCI_WRAMADDR, 0xC045); /* DAC_VOL */
+    VS1053_write_register(SCI_WRAM,     0x0000); /* 0 dB both channels */
+
+    StreamState = STREAM_HOME;
+
+    #ifdef USE_LCD_UI
+    ui_update_state_info("Line-in monitor");
+    #endif
+
+    SYS_CONSOLE_PRINT("VS1053: line-in passthrough active (PCM monitor mode)\r\n");
+}
+
+/*
+ * VS1053_stopLineInPassthrough()
+ *
+ * Mutes DAC_VOL first to suppress any pop, then soft-resets the chip to
+ * return it to normal decode mode.  Re-applies the patch so plugin-
+ * dependent features are available again.
+ */
+void VS1053_stopLineInPassthrough(void) {
+    /* Mute via DAC_VOL before reset to avoid a loud pop (§10.8.7).
+       0xFEFE is not a valid DAC_VOL value; use 0x0E0E (-84 dB) instead,
+       or just pull volume to a safe low before the reset. */
+    VS1053_write_register(SCI_WRAMADDR, 0xC045);
+    VS1053_write_register(SCI_WRAM,     0x0E0E); /* ? -84 dB */
+
+    VS1053_soft_reset();
+    while (!VS_DREQ_PIN) {}
+
+    /* Re-apply patch so normal decode features work again. */
+    VS1053B_apply_patch();
+    while (!VS_DREQ_PIN) {}
+
+    StreamState = STREAM_HOME;
+
+    #ifdef USE_LCD_UI
+    ui_clear_state_info();
+    #endif
+
+    SYS_CONSOLE_PRINT("VS1053: line-in passthrough stopped\r\n");
+}
+
+
 //#define BASE 0x1800
 //
 //void VS1053_read_spectrum_analyzer(void) {

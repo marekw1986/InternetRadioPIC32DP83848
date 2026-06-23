@@ -79,6 +79,8 @@ void VS1053_read_spectrum_analyzer(void);
 void VS1053_send_cmd_thread_safe(uint8_t cmd, uint32_t param);
 const char* VS1053_get_state_description(void);
 void VS1053B_apply_patch(void);
+void VS1053_startLineInPassthrough(void);
+void VS1053_stopLineInPassthrough(void);
 
 
 #ifdef	__cplusplus
