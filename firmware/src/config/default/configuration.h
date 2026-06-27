@@ -201,7 +201,7 @@ extern "C" {
 
 /* MIIM RTOS Configurations*/
 #define DRV_MIIM_RTOS_STACK_SIZE                1280
-#define DRV_MIIM_RTOS_TASK_PRIORITY             1
+#define DRV_MIIM_RTOS_TASK_PRIORITY             2
 
 
 
@@ -235,6 +235,34 @@ extern "C" {
 /*** ICMPv4 Server Configuration ***/
 #define TCPIP_STACK_USE_ICMP_SERVER
 #define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
+
+
+
+/*** wolfMQTT configuration ***/
+#define WOLFMQTT_NONBLOCK
+#define WOLFMQTT_USER_SETTINGS
+// #define WOLFMQTT_NO_TIMEOUT
+// #define WOLFMQTT_NO_STDIN_CAP
+
+#define WOLFMQTT_DISCONNECT_CB
+#define WOLFMQTT_NO_ERROR_STRINGS
+#define WOLFMQTT_NO_STDIO
+
+// #define ENABLE_MQTT_TLS
+
+/*** wolMQTT Net Glue configuration ***/
+#define WMQTT_NET_GLUE_FORCE_TLS			false
+#define WMQTT_NET_GLUE_IPV6					false
+#define WMQTT_NET_GLUE_MAX_BROKER_NAME		64
+#define WMQTT_NET_GLUE_DEBUG_ENABLE			false
+#define WMQTT_NET_GLUE_ERROR_STRINGS		true
+#define WMQTT_NET_GLUE_MALLOC				malloc
+#define WMQTT_NET_GLUE_FREE					free
+#define WMQTT_NET_SKT_TX_BUFF				2048
+#define WMQTT_NET_SKT_RX_BUFF				2048
+
+
+
 
 
 
@@ -544,7 +572,7 @@ extern "C" {
 
 /* TCP/IP RTOS Configurations*/
 #define TCPIP_RTOS_STACK_SIZE                1280
-#define TCPIP_RTOS_PRIORITY             1
+#define TCPIP_RTOS_PRIORITY             3
 
 
 /* Number of MSD Function driver instances in the application */
@@ -605,7 +633,7 @@ extern "C" {
 
 /* Net Pres RTOS Configurations*/
 #define NET_PRES_RTOS_STACK_SIZE                1024
-#define NET_PRES_RTOS_TASK_PRIORITY             1
+#define NET_PRES_RTOS_TASK_PRIORITY             3
 	
 
 

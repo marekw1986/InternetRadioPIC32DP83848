@@ -304,6 +304,7 @@ void APP_Tasks ( void )
         }
     }
     WDT_Clear();
+    vTaskDelay(1);
 }
 
 

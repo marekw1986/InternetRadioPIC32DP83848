@@ -4,7 +4,7 @@
 
 
 project: InternetRadioPIC32DP83848
-creation_date: 2025-10-22T20:59:23.949+02:00[Europe/Warsaw]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
+creation_date: 2025-10-22T00:21:00.193+02:00[Europe/Warsaw]    # ISO 8601 format: https://www.w3.org/TR/NOTE-datetime
 operating_system: Linux
 mhc_mode: IDE            # [IDE|Standalone|Headless]
 mhc_version: unknown
@@ -18,7 +18,6 @@ modules:
     - {name: "usb", version: "v3.10.0"}
     - {name: "dev_packs", version: "v3.14.0"}
     - {name: "littlefs", version: "unknown"}
-    - {name: "wolfMQTT", version: "v1.14.0"}
     - {name: "net", version: "v3.9.0"}
     - {name: "CMSIS-FreeRTOS", version: "v10.4.6"}
 

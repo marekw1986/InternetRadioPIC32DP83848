@@ -98,6 +98,7 @@ void VS1053_handle(void) {
                 if (dnsres < 0) {
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
+                    ui_clear_content_info();
                     ui_clear_state_info();
                     #endif
                     SYS_CONSOLE_PRINT("TCPIP_DNS_Resolve error %d\r\n", dnsres);
@@ -119,6 +120,7 @@ void VS1053_handle(void) {
             else {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
+                ui_clear_content_info();
                 ui_clear_state_info();
                 #endif                
                 SYS_CONSOLE_PRINT("DNS uri.server empty\r\n");
@@ -135,6 +137,7 @@ void VS1053_handle(void) {
             if (dnsres < 0) {
                 StreamState = STREAM_HOME;
                 #ifdef USE_LCD_UI
+                ui_clear_content_info();
                 ui_clear_state_info();
                 #endif
                 SYS_CONSOLE_PRINT("TCPIP_DNS_IsResolved error: %d\r\n", dnsres);
@@ -471,6 +474,7 @@ void VS1053_handle(void) {
                 case DO_NOT_RECONNECT:
                     StreamState = STREAM_HOME;
                     #ifdef USE_LCD_UI
+                    ui_clear_content_info();
                     ui_clear_state_info();
                     #endif
                     break;
@@ -483,6 +487,7 @@ void VS1053_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
+                        ui_clear_content_info();
                         ui_clear_state_info();
                         #endif
                     }
@@ -497,6 +502,7 @@ void VS1053_handle(void) {
                         StreamState = STREAM_HOME;
                         SYS_CONSOLE_PRINT("Reconnect limit reached\r\n");
                         #ifdef USE_LCD_UI
+                        ui_clear_content_info();
                         ui_clear_state_info();
                         #endif
                     }
@@ -534,6 +540,7 @@ void VS1053_handle(void) {
                     VS1053_fullStop();
                     break;
                 case VS_MSG_PLAY_STREAM_BY_ID:
+                    VS1053_fullStop();
                     VS1053_play_http_stream_by_id(rcv.param);
                     break;
                 case VS_MSG_PLAY_FILE:;
@@ -725,7 +732,6 @@ bool VS1053_play_http_stream_by_id(uint16_t id) {
     memset(name, 0x00, sizeof(name));
 	char* url = get_station_url_from_file(id, working_buffer, sizeof(working_buffer), name, sizeof(name)-1);
 	if (url) {
-		VS1053_stop();
         mediainfo_title_set(name);
         #ifdef USE_LCD_UI
         ui_update_content_info(mediainfo_title_get());
@@ -977,7 +983,7 @@ void VS1053_stop(void) {
         case STREAM_HTTP_PROCESS_HEADER:
         case STREAM_HTTP_FILL_BUFFER:
         case STREAM_HTTP_GET_DATA:
-            http_release_parser();
+            if (StreamState == STREAM_HTTP_PROCESS_HEADER) { http_release_parser(); }
             if (uri.server[0] != '\0') {
                 TCPIP_DNS_RemoveEntry(uri.server);
             }
