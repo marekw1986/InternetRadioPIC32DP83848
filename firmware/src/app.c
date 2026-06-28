@@ -46,6 +46,7 @@
 #include "lcd/hd44780.h"
 #include "lcd/ui.h"
 #include "lcd/i2c.h"
+#include "radio/si4735.h"
 #include "common.h"
 #include "stream_list.h"
 
@@ -227,6 +228,7 @@ void APP_Tasks ( void )
             
             VS1053_init();
             VS1053_setVolume(50);
+            si4735_init();
             vTaskDelay(100);
             SYS_FS_EventHandlerSet((void *)APP_SYSFSEventHandler, (uintptr_t)NULL);
             USB_HOST_EventHandlerSet(APP_USBHostEventHandler, 0);            

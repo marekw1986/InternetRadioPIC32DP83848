@@ -16,6 +16,7 @@
 #include "../io/rotary.h"
 #include "../common.h"
 #include "../stream_list.h"
+#include "../radio/si4735.h"
 #endif
 
 #define BACKLIGHT_DURATION 10000

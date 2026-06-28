@@ -5,6 +5,7 @@
 #include "dir_list.h"
 #include "ui.h"
 #include "scrollable_list.h"
+#include "../vs1053/vs1053.h"
 #include "common.h"
 
 char* main_list_get_content(uint16_t number, char* working_buffer, size_t working_buffer_len, char* name, size_t name_len) {
@@ -66,6 +67,8 @@ void main_list_perform_action(void) {
 		break;
 		
 		case 4:
+        VS1053_startLineInPassthrough();
+        
 		break;
 		
 		default:
